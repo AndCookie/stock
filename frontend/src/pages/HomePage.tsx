@@ -1,43 +1,33 @@
-import React from 'react';
 import Slider from 'react-slick';
-import styles from '@/styles/HomePage.module.css';
+import styles from './HomePage.module.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const HomePage = () => {
 
   const sliderSettings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    arrows: true,
-    centerMode: true,  // 센터 모드를 켜서 간격 조정 가능
-    centerPadding: "40px", // 슬라이드 간격 설정
+    dots: false, // 슬라이더 아래 페이지 네비게이션 도트
+    infinite: true, // 슬라이드가 끝에 도달했을 때 처음으로 돌아가도록 설정
+    speed: 500, // 슬라이드가 전환되는 속도
+    slidesToShow: 4, // 한 화면에 동시에 보여질 슬라이드의 개수
+    slidesToScroll: 4, // 한 번에 스크롤할 슬라이드의 개수
+    swipeToSlide: true, // 사용자가 드래그한 위치로 이동
+    arrows: true, // 좌우 화살표
+    centerMode: true,  // 슬라이드를 중앙에 배치하고, 양 옆의 슬라이드 일부를 노출
+    centerPadding: "100px", // 슬라이드의 양쪽에 남길 여백
     responsive: [
       {
         breakpoint: 768, // 모바일 대응
         settings: {
-          slidesToShow: 3,
-          centerPadding: "20px",
+          slidesToShow: 2,
+          centerPadding: "40px",
         },
       },
     ],
   };
 
   return (
-    <div className={styles.mainContainer}>
-      {/* Header 영역 */}
-      <header className={styles.header}>
-        <div className={styles.logo}>모두모투</div>
-        <input className={styles.search} placeholder="주식, 메뉴, 종목코드를 검색하세요" />
-        <div className={styles.icons}>
-          <div className={styles.icon}></div>
-          <div className={styles.icon}></div>
-          <div className={styles.icon}></div>
-        </div>
-      </header>
+    <>
 
       {/* 주요 지표 영역 - 캐러셀 */}
       <section className={styles.metrics}>
@@ -66,7 +56,7 @@ const HomePage = () => {
         <div className={styles.newsItem}>뉴스 2</div>
         <div className={styles.newsItem}>뉴스 3</div>
       </section>
-    </div>
+    </>
   );
 };
 

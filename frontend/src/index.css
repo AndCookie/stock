@@ -29,7 +29,7 @@ html, body {
   height: 100%;
   overflow: auto;
   background-color: #101013;
-  border: 2px solid green;
+  /* border: 2px solid green; */
   box-sizing: border-box;
   overflow-x: hidden;
 }
