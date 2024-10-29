@@ -7,6 +7,10 @@ import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import MarketPage from './pages/MarketPage';
 
+import ChatBot from './common/nav/chatBot/ChatBot';
+import HeatMap from './common/nav/heatMap/HeatMap';
+import Heart from './common/nav/heart/Heart';
+
 
 function App() {
 
@@ -18,6 +22,10 @@ function App() {
           <Route path="" element={<HomePage />}></Route>
           <Route path="/dashboard" element={<DashboardPage />}></Route>
           <Route path="/market" element={<MarketPage />}></Route>
+
+          <Route path="/chatbot" element={<ChatBot />} />
+          <Route path="/heatmap" element={<HeatMap />} />
+          <Route path="/heart" element={<Heart />} />
         </Routes>
       </div>
     </div>

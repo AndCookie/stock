@@ -17,7 +17,7 @@ const HomePage = () => {
     centerPadding: "100px", // 슬라이드의 양쪽에 남길 여백
     responsive: [
       {
-        breakpoint: 768, // 모바일 대응
+        breakpoint: 1024,
         settings: {
           slidesToShow: 2,
           centerPadding: "40px",

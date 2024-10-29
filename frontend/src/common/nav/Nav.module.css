@@ -3,35 +3,87 @@
 /* Header */
 .header {
   grid-column: span 12;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); /* 12개의 구역으로 나누기 */
   align-items: center;
-  /* border: 2px solid red; */
-  /* width: 100%; */
-}
-
-.logo {
-  color: #7B00F7;
-  font-family: 'Black Han Sans', sans-serif;
-  font-size: 2rem;
-  font-weight: 400;
-}
-
-.search {
-  width: 50%;
-  padding: 8px;
-  border-radius: 5px;
-  border: none;
-}
-
-.icons {
-  display: flex;
   gap: 10px;
 }
 
+.logo {
+  grid-column: span 3; /* 3칸 차지 */
+  color: #7B00F7;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 2.5rem;
+  font-weight: normal;
+  min-width: 150px;
+  /* border: 1px solid white; */
+}
+
+.modu {
+  color: #B469FF;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 2.5rem;
+  font-weight: normal;
+}
+
+/* 검색 */
+.searchContainer {
+  grid-column: span 6; /* 6칸 차지 */
+  position: relative;
+  width: 100%; /* 부모 grid의 크기에 맞추기 */
+}
+
+.search {
+  width: 100%;
+  padding: 10px 20px 10px 50px; /* 왼쪽에 아이콘 공간 확보 */
+  border-radius: 30px; /* 둥근 모서리 */
+  border: none;
+  background-color: #2E2E2E; /* 배경색 */
+  color: #B3B3B3; /* 글자 색 */
+  font-size: 1rem;
+}
+
+.search::placeholder {
+  color: #B3B3B3; /* 플레이스홀더 글자 색 */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px; /* input 내부의 왼쪽 위치 */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #B3B3B3; /* 아이콘 색상 */
+  font-size: 1.2rem;
+}
+
+.icons {
+  grid-column: span 3; /* 3칸 차지 */
+  gap: 20px;
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  align-items: flex-end;
+  height: 100%;
+  /* border: 1px solid white; */
+  padding-bottom: 7px;
+}
+
 .icon {
-  width: 24px;
-  height: 24px;
-  background-color: #555;
-  border-radius: 50%;
+  /* border: 1px solid white; */
+}
+
+.icon1 {
+  width: 40px;
+  height: 40px;
+}
+
+.icon2 {
+  width: 32px;
+  height: 32px;
+  margin: 7px 5px 0px 7px;
+}
+
+.icon3 {
+  width: 43px;
+  height: 43px;
+  margin-bottom: -5px;
 }
