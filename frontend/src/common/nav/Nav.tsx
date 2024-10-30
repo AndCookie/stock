@@ -2,17 +2,31 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Nav.module.css';
 import { FaSearch } from 'react-icons/fa';
-import heart from '../../assets/images/heart.png';
+
+import member from '../../assets/images/member.png';
 import chatBot from '../../assets/images/chatBot.png';
 import heatMap from '../../assets/images/heatMap.png';
-import Heart from './heart/Heart';
+
+import MyPage from './myPage/myPage';
+import ChatBot from './chatBot/ChatBot';
+import HeatMap from './heatMap/HeatMap';
 
 const Nav = () => {
   const navigate = useNavigate();
-  const [isHeartModalOpen, setHeartModalOpen] = useState(false); // 모달 상태 관리
 
-  const openHeartModal = () => setHeartModalOpen(true);
-  const closeHeartModal = () => setHeartModalOpen(false);
+  // 각각의 모달 상태 관리
+  const [isChatBotModalOpen, setChatBotModalOpen] = useState(false);
+  const [isHeatMapModalOpen, setHeatMapModalOpen] = useState(false);
+  const [isMyPageModalOpen, setMyPageModalOpen] = useState(false);
+
+  const openChatBotModal = () => setChatBotModalOpen(true);
+  const closeChatBotModal = () => setChatBotModalOpen(false);
+  
+  const openHeatMapModal = () => setHeatMapModalOpen(true);
+  const closeHeatMapModal = () => setHeatMapModalOpen(false);
+  
+  const openMyPageModal = () => setMyPageModalOpen(true);
+  const closeMyPageModal = () => setMyPageModalOpen(false);
 
   return (
     <>
@@ -26,20 +40,22 @@ const Nav = () => {
           <input className={styles.search} placeholder="주식, 메뉴, 종목코드를 검색하세요" />
         </div>
         <div className={styles.icons}>
-          <div className={styles.icon} onClick={() => navigate('/chatbot')}>
+          <div className={styles.icon} onClick={openChatBotModal}>
             <img className={styles.icon1} src={chatBot} alt="chatBot" />
           </div>
-          <div className={styles.icon} onClick={() => navigate('/heatmap')}>
+          <div className={styles.icon} onClick={openHeatMapModal}>
             <img className={styles.icon2} src={heatMap} alt="heatMap" />
           </div>
-          <div className={styles.icon} onClick={openHeartModal}>
-            <img className={styles.icon3} src={heart} alt="heart" />
+          <div className={styles.icon} onClick={openMyPageModal}>
+            <img className={styles.icon3} src={member} alt="member" />
           </div>
         </div>
       </header>
 
-      {/* Heart 모달이 열릴 때만 렌더링 */}
-      {isHeartModalOpen && <Heart closeModal={closeHeartModal} />}
+      {/* 모달이 열릴 때만 렌더링 */}
+      {isChatBotModalOpen && <ChatBot closeModal={closeChatBotModal} />}
+      {isHeatMapModalOpen && <HeatMap closeModal={closeHeatMapModal} />}
+      {isMyPageModalOpen && <MyPage closeModal={closeMyPageModal} />}
     </>
   );
 };
