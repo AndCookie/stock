@@ -88,25 +88,11 @@
   margin: 0px 10px 50px 10px;
 }
 
-.portfolio,
-.rankings,
-.realtimeChart {
-  background-color: #2b2b2b;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-/* 뉴스 영역 */
-.news {
+/* 하단 영역 */
+.bottomContent {
   grid-column: span 12;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 0px 10px 50px 10px;
-}
-
-.newsItem {
-  background-color: #2b2b2b;
-  padding: 15px;
-  border-radius: 8px;
+  grid-template-columns: 3.4fr 8.66fr;
+  gap: 30px;
+  margin: 0px 10px 20px 10px;
 }
