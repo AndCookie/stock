@@ -29,9 +29,9 @@ const generateData = (): TotalData => {
 
   const currentDate = new Date(startDate);
   let previousClose = 50000;
+  let previousVolume = 1000000;
   const minVolume = 1000000;
   const maxVolume = 5000000;
-  let previousVolume = 1000000;
 
   while (currentDate <= endDate) {
     // 주가 데이터
@@ -50,7 +50,7 @@ const generateData = (): TotalData => {
 
     // 거래량 데이터
     const volume = Math.floor(Math.random() * (maxVolume - minVolume) + minVolume);
-    const color = volume ? "#872523" : "#334f92";
+    const color = volume >= previousVolume ? "#872523" : "#334f92";
 
     volumeData.push({
       time: currentDate.toISOString().split("T")[0],
@@ -59,6 +59,7 @@ const generateData = (): TotalData => {
     });
 
     previousClose = close;
+    previousVolume = volume;
     currentDate.setDate(currentDate.getDate() + 1);
   }
 

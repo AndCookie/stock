@@ -19,13 +19,8 @@ const Chart = () => {
         mode: 0,
       },
       timeScale: {
-        timeVisible: true,
-        borderColor: "dimgray",
         tickMarkFormatter: (time: string) => {
-          const date = new Date(time);
-          const year = date.getFullYear();
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const day = date.getDay().toString().padStart(2, "0");
+          const [year, month, day] = time.split("-");
           return `${year}/${month}/${day}`;
         },
       },
