@@ -1,10 +1,10 @@
-import Slider from 'react-slick';
-import styles from './HomePage.module.css';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import Slider from "react-slick";
+import styles from "./HomePage.module.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import AiNews from "../home/aiNews/AiNews";
 
 const HomePage = () => {
-
   const sliderSettings = {
     dots: false, // 슬라이더 아래 페이지 네비게이션 도트
     infinite: true, // 슬라이드가 끝에 도달했을 때 처음으로 돌아가도록 설정
@@ -13,7 +13,7 @@ const HomePage = () => {
     slidesToScroll: 4, // 한 번에 스크롤할 슬라이드의 개수
     swipeToSlide: true, // 사용자가 드래그한 위치로 이동
     arrows: true, // 좌우 화살표
-    centerMode: true,  // 슬라이드를 중앙에 배치하고, 양 옆의 슬라이드 일부를 노출
+    centerMode: true, // 슬라이드를 중앙에 배치하고, 양 옆의 슬라이드 일부를 노출
     centerPadding: "100px", // 슬라이드의 양쪽에 남길 여백
     responsive: [
       {
@@ -28,7 +28,6 @@ const HomePage = () => {
 
   return (
     <>
-
       {/* 주요 지표 영역 - 캐러셀 */}
       <section className={styles.metrics}>
         <Slider {...sliderSettings}>
@@ -52,9 +51,10 @@ const HomePage = () => {
 
       {/* 하단 뉴스 영역 */}
       <section className={styles.news}>
-        <div className={styles.newsItem}>뉴스 1</div>
-        <div className={styles.newsItem}>뉴스 2</div>
-        <div className={styles.newsItem}>뉴스 3</div>
+        <AiNews />
+        {/* <div className={styles.newsItem}>뉴스 1</div> */}
+        {/* <div className={styles.newsItem}>뉴스 2</div> */}
+        {/* <div className={styles.newsItem}>뉴스 3</div> */}
       </section>
     </>
   );
