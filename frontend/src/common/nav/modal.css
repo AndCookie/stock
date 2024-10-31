@@ -1,0 +1,39 @@
+/* modal.css */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 999;
+}
+
+.modal {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  bottom: 30px;
+  background-color: #101013;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #fff;
+}

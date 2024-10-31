@@ -11,15 +11,13 @@ import MarketPage from './pages/MarketPage';
 function App() {
 
   return (
-    <div id='app'>
-      <div className={styles.mainContainer}>
-        <Nav />
-        <Routes>
-          <Route path="" element={<HomePage />}></Route>
-          <Route path="/dashboard" element={<DashboardPage />}></Route>
-          <Route path="/market" element={<MarketPage />}></Route>
-        </Routes>
-      </div>
+    <div id="app" className={styles.mainContainer}>
+      <Nav />
+      <Routes>
+        <Route path="" element={<HomePage />}></Route>
+        <Route path="/dashboard" element={<DashboardPage />}></Route>
+        <Route path="/market" element={<MarketPage />}></Route>
+      </Routes>
     </div>
   )
 }

@@ -1,10 +1,10 @@
 
-// import styles from './UserRanking.module.css'
+import styles from './UserRanking.module.css'
 
 const UserRanking = () => {
   // const data = useIndexData()
   return(
-    <div>
+    <div className={styles.container}>
       UserRanking
     </div>
   )

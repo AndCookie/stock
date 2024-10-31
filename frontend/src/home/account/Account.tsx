@@ -1,10 +1,10 @@
 
-// import styles from './Account.module.css'
+import styles from './Account.module.css'
 
 const Account = () => {
   // const data = useIndexData()
   return(
-    <div>
+    <div className={styles.container}>
       Account
     </div>
   )

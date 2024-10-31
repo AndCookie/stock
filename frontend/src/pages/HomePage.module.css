@@ -47,7 +47,7 @@
 /* 주요 지표 영역 */
 .metrics {
   grid-column: span 12;
-  margin: 20px 30px;
+  margin: 50px 30px;
   padding: 0 20px;
   /* border: 1px solid white; */
 }
@@ -70,11 +70,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 240px !important;
+  width: 300px !important;
+  height: 120px;
   margin: 0 30px;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border: 2px solid white;
+  border: 2px solid #444;
 }
 
 
@@ -83,27 +84,15 @@
   grid-column: span 12;
   display: grid;
   grid-template-columns: 2fr 2fr 3fr;
-  gap: 10px;
+  gap: 30px;
+  margin: 0px 10px 50px 10px;
 }
 
-.portfolio,
-.rankings,
-.realtimeChart {
-  background-color: #2b2b2b;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-/* 뉴스 영역 */
-.news {
+/* 하단 영역 */
+.bottomContent {
   grid-column: span 12;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.newsItem {
-  background-color: #2b2b2b;
-  padding: 15px;
-  border-radius: 8px;
+  grid-template-columns: 3.4fr 8.66fr;
+  gap: 30px;
+  margin: 0px 10px 20px 10px;
 }

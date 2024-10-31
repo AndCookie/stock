@@ -1,13 +1,13 @@
 
-import styles from './AiNews.module.css'
+import styles from './Advice.module.css'
 
-const AiNews = () => {
+const Advice = () => {
   // const data = useIndexData()
   return(
     <div className={styles.container}>
-      AiNews
+      Advice
     </div>
   )
 }
 
-export default AiNews
+export default Advice
