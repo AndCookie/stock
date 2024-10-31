@@ -1,16 +1,18 @@
 import { useEffect, useRef } from "react";
-import { useIndexData } from "./hooks/useIndexData";
+import { useFetchIndexData } from "./hooks/useIndexData";
 import { createChart, ColorType, IChartApi } from "lightweight-charts";
 
 interface IIndexChartProps {
-  index: string;
+  indexType: string;
 }
 
-const IndexChart: React.FC<IIndexChartProps> = ({ index }) => {
+const IndexChart: React.FC<IIndexChartProps> = ({ indexType }) => {
   const chartContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const indexData = useIndexData(index);
+  const indexData = useFetchIndexData(indexType);
 
   useEffect(() => {
+    if (!indexData) return;
+
     const charts: IChartApi[] = [];
 
     const chartOptions = {
@@ -47,11 +49,10 @@ const IndexChart: React.FC<IIndexChartProps> = ({ index }) => {
   return (
     <>
       {Object.keys(indexData).map((key, i) => (
-        <div
-          key={key}
-          ref={(el) => (chartContainerRefs.current[i] = el)}
-          style={{ width: "500px", height: "500px" }}
-        />
+        <div key={key}>
+          <div>{key}</div>
+          <div ref={(el) => (chartContainerRefs.current[i] = el)} style={{ width: "500px", height: "500px" }} />
+        </div>
       ))}
     </>
   );

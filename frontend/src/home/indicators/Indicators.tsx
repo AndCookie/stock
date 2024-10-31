@@ -25,19 +25,20 @@ const sliderSettings = {
 };
 
 const Indicators: React.FC = () => {
+  const indices = ['코스피', '코스닥', '나스닥', 'S&P 500', '다우존스', '원/달러', '금', 'WTI'];
+
   const navigate = useNavigate();
 
-  // MetricCard 클릭 시 이동 함수
-  const handleCardClick = () => {
-    navigate('/market');
+  const cardClick = (indexTypeId: number) => {
+    navigate(`/market/${indexTypeId}`);
   };
 
   return (
     <section className={styles.metrics}>
       <Slider {...sliderSettings}>
-        {['코스피', '코스닥', '나스닥', 'S&P 500', '다우존스', '원/달러', '금', 'WTI'].map((name) => (
-          <div key={name} className={styles.metricBox} onClick={handleCardClick}>
-            {name}
+        {indices.map((index, i) => (
+          <div key={index} className={styles.metricBox} onClick={() => cardClick(Math.floor(i / 2))}>
+            {index}
           </div>
         ))}
       </Slider>

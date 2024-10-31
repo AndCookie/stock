@@ -1,19 +1,22 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+
 import IndexChart from '../market/IndexChart';
 // import styles from './MarketPage.module.css';
 
 const MarketPage = () => {
-  const [selectedIndex, setSelectedIndex] = useState('국내');
+  const { indexTypeId } = useParams();
+  const indexTypes = ['국내', '해외', '환율', '원자재']
 
-  const indices = ['국내', '해외', '환율', '원자재']
+  const [selectedIndex, setSelectedIndex] = useState(indexTypes[indexTypeId]);
 
   return (
     <>
       <div>오늘의 지수</div>
-      {indices.map((index, i) => (
-        <button key={i} onClick={() => setSelectedIndex(index)}>{index}</button>
+      {indexTypes.map((indexType) => (
+        <button key={indexType} onClick={() => setSelectedIndex(indexType)}>{indexType}</button>
       ))}
-      <IndexChart index={selectedIndex} />
+      <IndexChart indexType={selectedIndex} />
     </>
   );
 };
