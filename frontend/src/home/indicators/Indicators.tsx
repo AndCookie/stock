@@ -24,17 +24,11 @@ const sliderSettings = {
   ],
 };
 
-// MetricCard 컴포넌트
-const MetricCard: React.FC<{ name: string; onClick: () => void }> = ({ name, onClick }) => (
-  <div className={styles.metricBox} onClick={onClick} role="button" style={{ cursor: 'pointer' }}>
-    {name}
-  </div>
-);
-
 const Indicators: React.FC = () => {
   const navigate = useNavigate();
 
-  const clickIndicator = () => {
+  // MetricCard 클릭 시 이동 함수
+  const handleCardClick = () => {
     navigate('/market');
   };
 
@@ -42,7 +36,9 @@ const Indicators: React.FC = () => {
     <section className={styles.metrics}>
       <Slider {...sliderSettings}>
         {['코스피', '코스닥', '나스닥', 'S&P 500', '다우존스', '원/달러', '금', 'WTI'].map((name) => (
-          <MetricCard key={name} name={name} onClick={clickIndicator} />
+          <div key={name} className={styles.metricBox} onClick={handleCardClick}>
+            {name}
+          </div>
         ))}
       </Slider>
     </section>
