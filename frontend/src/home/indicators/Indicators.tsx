@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import styles from './Indicators.module.css';
 import 'slick-carousel/slick/slick.css';
@@ -24,18 +25,28 @@ const sliderSettings = {
 };
 
 // MetricCard 컴포넌트
-const MetricCard: React.FC<{ name: string }> = ({ name }) => (
-  <div className={styles.metricBox}>{name}</div>
+const MetricCard: React.FC<{ name: string; onClick: () => void }> = ({ name, onClick }) => (
+  <div className={styles.metricBox} onClick={onClick} role="button" style={{ cursor: 'pointer' }}>
+    {name}
+  </div>
 );
 
-const Indicators: React.FC = () => (
-  <section className={styles.metrics}>
-    <Slider {...sliderSettings}>
-      {['코스피', '코스닥', '나스닥', 'S&P 500', '다우존스', '원/달러', '금', 'WTI'].map((name) => (
-        <MetricCard key={name} name={name} />
-      ))}
-    </Slider>
-  </section>
-);
+const Indicators: React.FC = () => {
+  const navigate = useNavigate();
+
+  const clickIndicator = () => {
+    navigate('/market');
+  };
+
+  return (
+    <section className={styles.metrics}>
+      <Slider {...sliderSettings}>
+        {['코스피', '코스닥', '나스닥', 'S&P 500', '다우존스', '원/달러', '금', 'WTI'].map((name) => (
+          <MetricCard key={name} name={name} onClick={clickIndicator} />
+        ))}
+      </Slider>
+    </section>
+  );
+};
 
 export default Indicators;
