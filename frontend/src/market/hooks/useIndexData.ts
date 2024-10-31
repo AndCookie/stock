@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+interface IIndexData {
+  [key: string]: { time: string; value: number }[];
+}
+
 // 데이터 생성 함수
 const generateData = () => {
   const data = [];
@@ -24,12 +28,8 @@ const generateData = () => {
   return data;
 };
 
-type indexData = {
-  [key: string]: { time: string; value: number }[];
-} | null;
-
 export const useIndexData = (index: string) => {
-  const [data, setData] = useState<indexData>(null);
+  const [data, setData] = useState<IIndexData>({});
 
   useEffect(() => {
     if (index === '국내') {
