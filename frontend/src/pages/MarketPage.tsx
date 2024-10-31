@@ -6,7 +6,7 @@ const MarketPage = () => {
 
 
   return (
-    <div >
+    <div>
       MarketPage
     </div>
   );
