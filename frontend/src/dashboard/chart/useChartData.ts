@@ -1,28 +1,10 @@
 import { useState, useEffect } from "react";
-
-interface StockPriceData {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-}
-
-interface VolumeData {
-  time: string;
-  value: number;
-  color?: string;
-}
-
-interface TotalData {
-  stockPriceData: StockPriceData[];
-  volumeData: VolumeData[];
-}
+import { IStockPriceData, ITotalData, IVolumeData } from "./definitions";
 
 // 데이터 생성 함수
-const generateData = (): TotalData => {
-  const stockPriceData: StockPriceData[] = [];
-  const volumeData: VolumeData[] = [];
+const generateData = (): ITotalData => {
+  const stockPriceData: IStockPriceData[] = [];
+  const volumeData: IVolumeData[] = [];
 
   const startDate = new Date("2024-07-01");
   const endDate = new Date("2024-10-30");
@@ -67,7 +49,7 @@ const generateData = (): TotalData => {
 };
 
 export const useTotalData = () => {
-  const [data, setData] = useState<TotalData>({ stockPriceData: [], volumeData: [] });
+  const [data, setData] = useState<ITotalData>({ stockPriceData: [], volumeData: [] });
 
   useEffect(() => {
     setData(generateData());
