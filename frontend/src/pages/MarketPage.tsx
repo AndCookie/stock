@@ -1,14 +1,20 @@
+import { useState } from 'react';
+import IndexChart from '../market/IndexChart';
 // import styles from './MarketPage.module.css';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 
 const MarketPage = () => {
+  const [selectedIndex, setSelectedIndex] = useState('국내');
 
+  const indices = ['국내', '해외', '환율', '원자재']
 
   return (
-    <div >
-      MarketPage
-    </div>
+    <>
+      <div>오늘의 지수</div>
+      {indices.map((index, i) => (
+        <button key={i} onClick={() => setSelectedIndex(index)}>{index}</button>
+      ))}
+      <IndexChart index={selectedIndex} />
+    </>
   );
 };
 

@@ -1,13 +1,13 @@
 
-import styles from './Account.module.css'
+import styles from './Advice.module.css'
 
-const Account = () => {
+const Advice = () => {
   // const data = useIndexData()
   return(
     <div className={styles.container}>
-      Account
+      Advice
     </div>
   )
 }
 
-export default Account
+export default Advice

@@ -1,14 +1,12 @@
 // import styles from './DashboardPage.module.css';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+
+import Chart from "../dashboard/chart/Chart";
 
 const DashboardPage = () => {
-
-
   return (
-    <div >
-      dashboard
-    </div>
+    <>
+      <Chart />
+    </>
   );
 };
 
