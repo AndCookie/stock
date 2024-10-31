@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { createChart, ColorType } from "lightweight-charts";
-import { useTotalData } from "./hooks/useChartData";
+import { useTotalData } from "./useChartData";
 
 const Chart = () => {
   const chartContainerRef = useRef(null);
