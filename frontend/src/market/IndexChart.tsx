@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useFetchIndexData } from "./hooks/useIndexData";
+import { useFetchIndexData } from "./useIndexData";
 import { createChart, ColorType, IChartApi } from "lightweight-charts";
 
 interface IIndexChartProps {
