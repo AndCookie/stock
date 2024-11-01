@@ -1,6 +1,6 @@
 export interface IndexEntry {
+  time: string;
   value: number;
-  date: string;
 }
 
 export interface IndexCategory {
