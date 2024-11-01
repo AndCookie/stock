@@ -173,5 +173,63 @@ mock.onGet(BASEURL + "aiNews").reply(200, [
   },
 ]);
 
+// dashboard-chart
+const generateStockData = () => {
+  const stockPriceData = [];
+
+  const startDate = new Date("2024-07-01");
+  const endDate = new Date("2024-10-30");
+
+  const currentDate = new Date(startDate);
+  let previousClose = 50000;
+
+  while (currentDate <= endDate) {
+    const open = parseFloat((previousClose * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2));
+    const high = parseFloat((open * (1 + Math.random() * 0.02)).toFixed(2));
+    const low = parseFloat((open * (1 - Math.random() * 0.02)).toFixed(2));
+    const close = parseFloat((open * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2));
+
+    stockPriceData.push({
+      time: currentDate.toISOString().split("T")[0],
+      open,
+      high,
+      low,
+      close,
+    });
+
+    previousClose = close;
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return stockPriceData;
+};
+
+const generateVolumeData = () => {
+  const volumeData = [];
+
+  const startDate = new Date("2024-07-01");
+  const endDate = new Date("2024-10-30");
+
+  const currentDate = new Date(startDate);
+  const minVolume = 1000000;
+  const maxVolume = 5000000;
+
+  while (currentDate <= endDate) {
+    const volume = Math.floor(Math.random() * (maxVolume - minVolume) + minVolume);
+
+    volumeData.push({
+      time: currentDate.toISOString().split("T")[0],
+      value: volume,
+    });
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return volumeData;
+};
+
+mock.onGet(BASEURL + "stockDetail").reply(200, generateStockData());
+mock.onGet(BASEURL + "volumeDetail").reply(200, generateVolumeData());
+
 export default mock;
 
