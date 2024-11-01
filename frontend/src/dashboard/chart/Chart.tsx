@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { createChart, ColorType } from "lightweight-charts";
 import { useTotalData } from "./useChartData";
+import { COLORS } from "../../common/utils";
 
 const Chart = () => {
   const chartContainerRef = useRef(null);
@@ -30,7 +31,7 @@ const Chart = () => {
 
     // 주가 캔들 차트
     const candlestickSeries = chart.addCandlestickSeries({
-      upColor: "#ef2d21", downColor: "#4881ff", wickUpColor: "#ef2d21", wickDownColor: "#4881ff",
+      upColor: COLORS.positive, downColor: COLORS.negative, wickUpColor: COLORS.positive, wickDownColor: COLORS.negative,
       borderVisible: false,
     });
     candlestickSeries.setData(totalData.stockPriceData);
