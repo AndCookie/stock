@@ -29,7 +29,12 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
       if (chartContainerRefs.current[i]) {
         const chart = createChart(chartContainerRefs.current[i], chartOptions)
 
-        const lineSeries = chart.addLineSeries({ color: COLORS.positive });
+        const current = data[1][data[1].length - 1];
+        const previous = data[1][data[1].length - 2];
+
+        const changeValue = current.value - previous.value;
+
+        const lineSeries = chart.addLineSeries({ color: changeValue >= 0 ? COLORS.positive : COLORS.negative });
         lineSeries.setData(data[1]);
         chart.timeScale().fitContent();
 

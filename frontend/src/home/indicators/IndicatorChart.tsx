@@ -33,7 +33,6 @@ const IndicatorChart = ({ indexTypeId, index, color }: IIndicatorCardProps) => {
     const chart = createChart(chartContainerRef.current, chartOptions);
 
     const lineSeries = chart.addLineSeries({ color: color });
-    console.log(indexList);
     lineSeries.setData(indexList);
     chart.timeScale().fitContent();
 
