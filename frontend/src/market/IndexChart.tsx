@@ -3,6 +3,8 @@ import { createChart, ColorType, IChartApi } from "lightweight-charts";
 import { IIndexChartProps } from "./definitions";
 import { COLORS } from "../common/utils";
 import { useIndexStore } from "../store/useIndexStore";
+import styles from './IndexChart.module.css';
+
 
 const IndexChart = ({ indexType }: IIndexChartProps) => {
   const chartContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -45,9 +47,9 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
   return (
     <>
       {Object.keys(indexData![indexType]).map((key, i) => (
-        <div key={key}>
-          <div>{key}</div>
-          <div ref={(el) => (chartContainerRefs.current[i] = el)} style={{ width: "500px", height: "500px" }} />
+        <div className={styles.graph} key={key}>
+          <div className={styles.graphTitle}>{key}</div>
+          <div className={styles.graphContent} ref={(el) => (chartContainerRefs.current[i] = el)} style={{ width: "500px", height: "250px"}} />
         </div>
       ))}
     </>
