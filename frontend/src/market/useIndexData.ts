@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-
-interface IIndexData {
-  [key: string]: { time: string; value: number }[];
-}
+import { IIndexData } from "./definitions";
 
 export const useFetchIndexData = (indexType: string) => {
   const [indexData, setIndexData] = useState<IIndexData>({});

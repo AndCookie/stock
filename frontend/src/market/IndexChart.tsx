@@ -1,12 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useFetchIndexData } from "./useIndexData";
 import { createChart, ColorType, IChartApi } from "lightweight-charts";
+import { IIndexChartProps } from "./definitions";
 
-interface IIndexChartProps {
-  indexType: string;
-}
-
-const IndexChart: React.FC<IIndexChartProps> = ({ indexType }) => {
+const IndexChart = ({ indexType }: IIndexChartProps) => {
   const chartContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const indexData = useFetchIndexData(indexType);
 
