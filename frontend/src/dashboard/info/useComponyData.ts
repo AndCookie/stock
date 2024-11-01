@@ -14,6 +14,7 @@ const useCompanyData = (companyId: number) => {
       try {
         setLoading(true);
         const res = await axios.get(`${BASEURL}company/${companyId}`);
+        console.log(res);
         setData(res.data);
       } catch (error) {
         setError(error as Error);
