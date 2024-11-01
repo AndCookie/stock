@@ -1,5 +1,5 @@
-import { DateTime } from "luxon";
 import { INews } from "./definitions";
+import { stringToRelativeDate } from "../../common/utils";
 
 const NewsCard = ({
   news,
@@ -9,7 +9,7 @@ const NewsCard = ({
   openModal: () => void;
 }) => {
   const { author, image, title, created_at } = news;
-  const relativeDate = DateTime.fromISO(created_at).toRelative();
+  const relativeDate = stringToRelativeDate(created_at);
 
   return (
     <div onClick={openModal}>
