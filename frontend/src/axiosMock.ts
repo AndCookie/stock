@@ -5,6 +5,52 @@ const mock = new AxiosMockAdapter(axios);
 
 const BASEURL = "http://localhost:3000/api/v1/";
 
+// home-indicators
+const generateIndexData = () => {
+  const startDate = new Date("2024-07-01");
+  const endDate = new Date("2024-10-30");
+
+  const data = [];
+
+  const currentDate = new Date(startDate);
+  let indexValue = 3000;
+
+  while (currentDate <= endDate) {
+    const dailyChangeRate = (Math.random() - 0.5) * 0.01;
+    indexValue = parseFloat((indexValue * (1 + dailyChangeRate)).toFixed(2));
+
+    data.push({
+      time: currentDate.toISOString().split("T")[0],
+      value: indexValue,
+    });
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return data;
+};
+
+const indexData = {
+  '국내': {
+    '코스피': generateIndexData(),
+    '코스닥': generateIndexData(),
+  },
+  '해외': {
+    '다우존스': generateIndexData(),
+    '나스닥': generateIndexData(),
+  },
+  '환율': {
+    '원/달러': generateIndexData(),
+    '엔/달러': generateIndexData(),
+  },
+  '원자재': {
+    'WTI': generateIndexData(),
+    '금': generateIndexData(),
+  }
+}
+
+mock.onGet(BASEURL + "indexDetail").reply(200, indexData);
+
+
 // dashboard-info-overview
 mock.onGet(BASEURL + "company/1").reply(200, {
   market: "KOSPI",
@@ -128,3 +174,4 @@ mock.onGet(BASEURL + "aiNews").reply(200, [
 ]);
 
 export default mock;
+
