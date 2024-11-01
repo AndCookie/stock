@@ -1,16 +1,14 @@
 import { useEffect, useRef } from "react";
-import { useFetchIndexData } from "./useIndexData";
 import { createChart, ColorType, IChartApi } from "lightweight-charts";
 import { IIndexChartProps } from "./definitions";
 import { COLORS } from "../common/utils";
+import { useIndexStore } from "../store/useIndexStore";
 
 const IndexChart = ({ indexType }: IIndexChartProps) => {
   const chartContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const indexData = useFetchIndexData(indexType);
+  const { indexData } = useIndexStore();
 
   useEffect(() => {
-    if (!indexData) return;
-
     const charts: IChartApi[] = [];
 
     const chartOptions = {
@@ -27,7 +25,7 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
       },
     };
 
-    Object.entries(indexData).forEach((data, i) => {
+    Object.entries(indexData![indexType]).forEach((data, i) => {
       if (chartContainerRefs.current[i]) {
         const chart = createChart(chartContainerRefs.current[i], chartOptions)
 
@@ -42,11 +40,11 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
     return () => {
       charts.forEach((chart) => chart.remove());
     };
-  }, [indexData]);
+  }, [indexData, indexType]);
 
   return (
     <>
-      {Object.keys(indexData).map((key, i) => (
+      {Object.keys(indexData![indexType]).map((key, i) => (
         <div key={key}>
           <div>{key}</div>
           <div ref={(el) => (chartContainerRefs.current[i] = el)} style={{ width: "500px", height: "500px" }} />
