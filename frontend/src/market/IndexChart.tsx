@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useFetchIndexData } from "./useIndexData";
 import { createChart, ColorType, IChartApi } from "lightweight-charts";
 import { IIndexChartProps } from "./definitions";
+import { COLORS } from "../common/utils";
 
 const IndexChart = ({ indexType }: IIndexChartProps) => {
   const chartContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -30,7 +31,7 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
       if (chartContainerRefs.current[i]) {
         const chart = createChart(chartContainerRefs.current[i], chartOptions)
 
-        const lineSeries = chart.addLineSeries({ color: "#ef2d21" });
+        const lineSeries = chart.addLineSeries({ color: COLORS.positive });
         lineSeries.setData(data[1]);
         chart.timeScale().fitContent();
 
