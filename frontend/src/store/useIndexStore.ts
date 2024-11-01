@@ -1,17 +1,14 @@
+// src/store/useIndexStore.ts
 import axios from "axios";
 import { create } from "zustand";
+import { IndexState } from "./definitions";
 
-export const useIndexStore = create((set) => ({
-  indexData: {},
+export const useIndexStore = create<IndexState>((set) => ({
+  indexData: null,
 
-  fetchIndexData: async (indexType: string) => {
+  fetchIndexData: async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/v1/indexDetail", {
-        params: {
-          indexType: indexType,
-        },
-      });
-
+      const response = await axios.get("http://localhost:3000/api/v1/indexDetail");
       set(() => ({
         indexData: response.data,
       }));
