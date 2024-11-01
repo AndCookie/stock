@@ -32,7 +32,7 @@ const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
           ({changeRate.toFixed(1)}%)
         </div>
       </div>
-      <IndicatorChart indexTypeId={indexTypeId} index={index} color={changeValue >= 0 ? COLORS.positive : COLORS.negative} />
+        <IndicatorChart indexTypeId={indexTypeId} index={index} color={changeValue >= 0 ? COLORS.positive : COLORS.negative} />
     </>
   );
 };
