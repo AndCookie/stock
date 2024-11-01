@@ -1,9 +1,5 @@
 .container {
-  background-color: #141414;
-  color: #fff;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  border-radius: 8px;
+  margin: 10px 20px 20px 5px;
 }
 
 .title {
@@ -12,25 +8,28 @@
   margin-bottom: 16px;
 }
 
-.balance {
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
 .totalValue {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
-  margin-top: 0;
 }
 
 .totalChange {
-  color: #4a90e2;
-  font-size: 16px;
+  color: #4881FF;
+  font-size: 14px;
   margin-bottom: 16px;
 }
 
+.balance {
+  font-size: 13px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 기준 */
 .sorting {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
@@ -45,28 +44,12 @@
   background: #333;
   color: #bbb;
   border: none;
+  width: 88px;
   padding: 4px 8px;
   cursor: pointer;
   border-radius: 4px;
-}
-
-.sortOptions {
   display: flex;
-  gap: 8px;
-}
-
-.sortButton {
-  background: #333;
-  color: #bbb;
-  border: none;
-  padding: 4px 8px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.activeSortButton {
-  background-color: #555;
-  color: #fff;
+  justify-content: space-between;
 }
 
 .arrow {
@@ -79,14 +62,16 @@
   left: 0;
   background-color: #333;
   color: #bbb;
-  padding: 8px 0;
+  margin: 0;
+  padding: 8px 2px;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
 
 .dropdownContent div {
-  padding: 8px 16px;
+  width: 100%;
+  padding: 8px 14px;
   cursor: pointer;
 }
 
@@ -95,6 +80,39 @@
   color: #fff;
 }
 
+.sortOptions {
+  display: flex;
+  border-radius: 4px;
+  /* gap: 8px; */
+}
+
+.sortButtonOne {
+  width: 56px;
+  background: #333;
+  color: #bbb;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px 0px 0px 4px;
+}
+
+.sortButtonTwo {
+  width: 56px;
+  background: #333;
+  color: #bbb;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 0px 4px 4px 0px;
+}
+
+.activeSortButton {
+  background-color: #555;
+  color: #fff;
+}
+
+
+/* 주식 리스트 */
 .holding {
   margin-top: 16px;
 }

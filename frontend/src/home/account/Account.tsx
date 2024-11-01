@@ -32,7 +32,9 @@ const Account = () => {
           </button>
         ))}
       </div>
-      {renderContent()}
+      <div className={styles.content}>
+        {renderContent()}
+      </div>
     </div>
   );
 };

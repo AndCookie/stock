@@ -28,9 +28,9 @@ const Balance = () => {
 
   return (
     <div className={styles.container}>
-      <p className={styles.balance}>보유 잔고 {data.balance}</p>
-      <h2 className={styles.totalValue}>{data.totalValue}</h2>
+      <div className={styles.totalValue}>{data.totalValue}</div>
       <p className={styles.totalChange}>{data.totalChange}</p>
+      <p className={styles.balance}>보유 잔고 {data.balance}</p>
       
       <div className={styles.sorting}>
         <div className={styles.dropdown}>
@@ -47,13 +47,13 @@ const Balance = () => {
         
         <div className={styles.sortOptions}>
           <button
-            className={`${styles.sortButton} ${activeSort === '현재가' ? styles.activeSortButton : ''}`}
+            className={`${styles.sortButtonOne} ${activeSort === '현재가' ? styles.activeSortButton : ''}`}
             onClick={() => setActiveSort('현재가')}
           >
             현재가
           </button>
           <button
-            className={`${styles.sortButton} ${activeSort === '평가금' ? styles.activeSortButton : ''}`}
+            className={`${styles.sortButtonTwo} ${activeSort === '평가금' ? styles.activeSortButton : ''}`}
             onClick={() => setActiveSort('평가금')}
           >
             평가금

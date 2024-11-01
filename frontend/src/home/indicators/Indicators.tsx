@@ -15,11 +15,11 @@ const sliderSettings = {
   swipeToSlide: true,
   arrows: false,
   centerMode: true,
-  centerPadding: "100px",
+  centerPadding: "50px",
   responsive: [
     {
       breakpoint: 1024,
-      settings: { slidesToShow: 2, centerPadding: "50px" },
+      settings: { slidesToShow: 1.5, centerPadding: "50px" },
     },
   ],
 };

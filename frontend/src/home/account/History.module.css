@@ -1,0 +1,170 @@
+.container {
+  margin: 10px 20px 20px 5px;
+}
+
+.tabs {
+  display: flex;
+  font-size: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #3D3D47;
+}
+
+.tabOne {
+  cursor: pointer;
+  color: #3D3D47;
+  width: 50px;
+  background: none;
+  color: #bbb;
+  border: none;
+  padding: 8px 8px 12px 8px;
+  cursor: pointer;
+  font-weight: bolder;
+  position: relative;
+}
+
+.tabTwo {
+  cursor: pointer;
+  color: #3D3D47;
+  width: 80px;
+  background: none;
+  color: #bbb;
+  border: none;
+  padding: 8px 8px 12px 8px;
+  cursor: pointer;
+  font-weight: bolder;
+  position: relative;
+}
+
+.activeTabButton {
+  color: #E5E5E6;
+}
+
+.activeTabButton::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  height: 2px;
+  width: 100%;
+  background-color: #E5E5E6;
+  border-radius: 1px;
+}
+
+/* 날짜 선택 */
+.dateDropdown {
+  position: relative;
+}
+
+.filterButton {
+  background: #333;
+  color: #bbb;
+  border: none;
+  width: 110px;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.arrow {
+  margin-left: 4px;
+}
+
+.dropdownContent {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #333;
+  color: #bbb;
+  padding: 8px 3px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  font-size: 0.8rem;
+}
+
+.dropdownContent div {
+  width: 100%;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.dropdownContent div:hover {
+  background-color: #555;
+  color: #fff;
+}
+
+/* 주문 내역 */
+.section {
+  margin-top: 20px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.order {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* background-color: #1c1c1e; */
+  padding: 16px 5px;
+  margin-bottom: 10px;
+  border-top: 1px solid #333;
+}
+
+.date {
+  font-size: 0.8rem;
+  color: #bbb;
+  width: 40px;
+}
+
+.orderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100px;
+}
+
+.name {
+  font-weight: bold;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+
+.status {
+  color: #FF4F4F;
+  font-size: 12px;
+}
+
+.status-sell {
+  color: #4881FF;
+}
+
+.shares {
+  color: #888;
+  font-size: 12px;
+}
+
+.price {
+  font-weight: bold;
+  font-size: 13px;
+  width: 75px;
+  text-align: right;
+}
+
+.emptyMessage {
+  color: #bbb;
+  font-size: 12px;
+  text-align: center;
+  margin: 30px 0 60px 0;
+}
