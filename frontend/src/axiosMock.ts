@@ -237,4 +237,113 @@ const generateVolumeData = () => {
 mock.onGet(BASEURL + "stockDetail").reply(200, generateStockData());
 mock.onGet(BASEURL + "volumeDetail").reply(200, generateVolumeData());
 
+const fakeDailyData = () => {
+  const data = [];
+  const today = new Date();
+
+  for (let i = 0; i < 30; i++) {
+    // 일자: 오늘부터 i일 전
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+
+    // 가짜 데이터 생성
+    const fakeData = {
+      date: date.toISOString().split("T")[0], // YYYY-MM-DD 형식으로 변환
+      price: Math.round(1000 + Math.random() * 500), // 주가: 1000 ~ 1500 사이 랜덤값
+      change: Math.round(-10 + Math.random() * 20), // 대비: -10 ~ 10 사이 랜덤값
+      rate: parseFloat((Math.random() * 2 - 1).toFixed(2)), // 등락률: -1.00 ~ 1.00 사이 랜덤값
+      volume: Math.floor(10000 + Math.random() * 5000), // 거래량: 10000 ~ 15000 사이 랜덤값
+    };
+
+    data.push(fakeData);
+  }
+
+  return data;
+};
+// dashboard-tradingTrend-daily
+mock.onGet(BASEURL + "trend/1/daily").reply(200, fakeDailyData());
+
+// dashboad-tradingTrend-trader
+mock.onGet(BASEURL + "trend/1/trader").reply(200, {
+  sell: [
+    {
+      company: "미래에셋",
+      amount: 4384406,
+      diff: 34364,
+    },
+    {
+      company: "키움증권",
+      amount: 3283549,
+      diff: 80707,
+    },
+    {
+      company: "LS증권",
+      amount: 2218356,
+      diff: 2550,
+    },
+    {
+      company: "BNK증권",
+      amount: 2142288,
+      diff: 224,
+    },
+    {
+      company: "KB증권",
+      amount: 2114131,
+      diff: 50359,
+    },
+  ],
+  buy: [
+    {
+      company: "미래에셋",
+      amount: 5133436,
+      diff: 224364,
+    },
+    {
+      company: "LS증권",
+      amount: 3351748,
+      diff: 1865,
+    },
+    {
+      company: "BNK증권",
+      amount: 2171911,
+      diff: 25647,
+    },
+    {
+      company: "한국증권",
+      amount: 1932250,
+      diff: 52928,
+    },
+    {
+      company: "신한증권",
+      amount: 1840511,
+      diff: 1840511,
+    },
+  ],
+});
+
+const fakeInvestorData = () => {
+  const data = [];
+  const today = new Date();
+
+  for (let i = 0; i < 30; i++) {
+    // 일자: 오늘부터 i일 전
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+
+    // 가짜 데이터 생성
+    const fakeData = {
+      date: date.toISOString().split("T")[0], // YYYY-MM-DD 형식으로 변환
+      foreigner: Math.round(-10000 + Math.random() * 20000),
+      corporate: Math.round(-10000 + Math.random() * 20000),
+      indiviual: Math.round(-10000 + Math.random() * 20000),
+    };
+
+    data.push(fakeData);
+  }
+
+  return data;
+};
+// dashboard-tradingTrend-investor
+mock.onGet(BASEURL + "trend/1/investor").reply(200, fakeInvestorData());
+
 export default mock;
