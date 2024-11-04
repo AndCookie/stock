@@ -335,12 +335,12 @@ const fakeInvestorData = () => {
       date: date.toISOString().split("T")[0], // YYYY-MM-DD 형식으로 변환
       foreigner: Math.round(-10000 + Math.random() * 20000),
       corporate: Math.round(-10000 + Math.random() * 20000),
-      indiviual: Math.round(-10000 + Math.random() * 20000),
+      individual: Math.round(-10000 + Math.random() * 20000),
     };
 
     data.push(fakeData);
   }
-
+  console.log(data);
   return data;
 };
 // dashboard-tradingTrend-investor
