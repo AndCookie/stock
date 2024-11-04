@@ -42,7 +42,7 @@ const Balance = () => {
               ? COLORS.positive
               : COLORS.negative,
         }}
-      >{(balanceData.currentValue - balanceData.prevValue).toLocaleString()}원
+      >{balanceData.currentValue > balanceData.prevValue ? '+' : ''}{(balanceData.currentValue - balanceData.prevValue).toLocaleString()}원
         ({calculatePercentage(balanceData.prevValue, balanceData.currentValue)}%)
       </p>
       <p className={styles.balance}>보유 잔고 {balanceData.balance.toLocaleString()}원</p>
