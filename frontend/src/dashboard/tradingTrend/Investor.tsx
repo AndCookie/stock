@@ -27,7 +27,7 @@ const Investor = () => {
                 <td>{item.date}</td>
                 <td>{item.foreigner}</td>
                 <td>{item.corporate}</td>
-                <td>{item.indiviual}</td>
+                <td>{item.individual}</td>
               </tr>
             ))}
         </tbody>
