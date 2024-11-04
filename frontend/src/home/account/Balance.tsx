@@ -97,18 +97,18 @@ const Balance = () => {
                       ? item.currentValue > item.prevValue
                         ? COLORS.positive
                         : item.currentValue < item.prevValue
-                        ? COLORS.negative
-                        : COLORS.neutral
+                          ? COLORS.negative
+                          : COLORS.neutral
                       : item.currentEstimatedValue > item.prevEstimatedValue
                         ? COLORS.positive
                         : item.currentEstimatedValue < item.prevEstimatedValue
-                        ? COLORS.negative
-                        : COLORS.neutral
+                          ? COLORS.negative
+                          : COLORS.neutral
                 }}
               >
                 {activeSort === "현재가"
                   ? `${item.currentValue > item.prevValue ? '+' : ''}${(item.currentValue - item.prevValue).toLocaleString()} (${calculatePercentage(item.prevValue, item.currentValue)}%)`
-                  : `${item.currentEstimatedValue > item.prevEstimatedValue ? '+': ''}${(item.currentEstimatedValue - item.prevEstimatedValue).toLocaleString()} (${calculatePercentage(item.prevEstimatedValue, item.currentEstimatedValue)}%)`
+                  : `${item.currentEstimatedValue > item.prevEstimatedValue ? '+' : ''}${(item.currentEstimatedValue - item.prevEstimatedValue).toLocaleString()} (${calculatePercentage(item.prevEstimatedValue, item.currentEstimatedValue)}%)`
                 }
               </span>
             </div>
