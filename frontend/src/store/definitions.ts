@@ -1,3 +1,4 @@
+// type of Index
 export interface IIndexEntry {
   time: string;
   value: number;
