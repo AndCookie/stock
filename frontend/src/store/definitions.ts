@@ -38,3 +38,17 @@ export interface IBalanceState {
   balanceData: IBalanceData | null;
   fetchBalanceData: () => Promise<void>;
 }
+
+// type of History
+export interface IHistoryData {
+  date: string;
+  name: string;
+  status: string;
+  shares: number;
+  price: number;
+}
+
+export interface IHistoryState {
+  historyData: IHistoryData[] | null;
+  fetchHistoryData: () => Promise<void>;
+}

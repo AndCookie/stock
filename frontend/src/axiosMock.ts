@@ -111,6 +111,87 @@ mock.onGet(BASEURL + "account/balance").reply(200, {
   ],
 });
 
+// home-account-history
+mock.onGet(BASEURL + "account/history").reply(200, [
+  {
+    date: "2024-06-16",
+    name: "카카오",
+    status: "구매완료",
+    shares: 1,
+    price: 60000,
+  },
+  {
+    date: "2024-06-16",
+    name: "카카오",
+    status: "판매완료",
+    shares: 1,
+    price: 60000,
+  },
+  {
+    date: "2024-07-01",
+    name: "삼성전자",
+    status: "구매완료",
+    shares: 3,
+    price: 50000,
+  },
+  {
+    date: "2024-07-11",
+    name: "삼성전자",
+    status: "판매완료",
+    shares: 3,
+    price: 50000,
+  },
+  {
+    date: "2024-08-08",
+    name: "피엔티",
+    status: "구매완료",
+    shares: 19,
+    price: 52500,
+  },
+  {
+    date: "2024-08-08",
+    name: "피엔티",
+    status: "판매완료",
+    shares: 19,
+    price: 52500,
+  },
+  {
+    date: "2024-09-09",
+    name: "한진자동차",
+    status: "구매대기",
+    shares: 9,
+    price: 90000,
+  },
+  {
+    date: "2024-10-10",
+    name: "우진전자",
+    status: "판매대기",
+    shares: 10,
+    price: 100000,
+  },
+  {
+    date: "2024-11-11",
+    name: "병주증권",
+    status: "구매완료",
+    shares: 11,
+    price: 100000,
+  },
+  {
+    date: "2024-11-15",
+    name: "광영오버시스리미티드",
+    status: "판매대기",
+    shares: 11,
+    price: 1111111,
+  },
+  {
+    date: "2024-11-24",
+    name: "태완엘레베이터",
+    status: "판매완료",
+    shares: 24,
+    price: 1124124,
+  },
+])
+
 // dashboard-info-overview
 mock.onGet(BASEURL + "info/1").reply(200, {
   market: "KOSPI",
