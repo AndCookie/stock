@@ -30,29 +30,29 @@ const generateIndexData = () => {
 };
 
 const indexData = {
-  '국내': {
-    '코스피': generateIndexData(),
-    '코스닥': generateIndexData(),
+  국내: {
+    코스피: generateIndexData(),
+    코스닥: generateIndexData(),
   },
-  '해외': {
-    '다우존스': generateIndexData(),
-    '나스닥': generateIndexData(),
+  해외: {
+    다우존스: generateIndexData(),
+    나스닥: generateIndexData(),
   },
-  '환율': {
-    '원/달러': generateIndexData(),
-    '엔/달러': generateIndexData(),
+  환율: {
+    "원/달러": generateIndexData(),
+    "엔/달러": generateIndexData(),
   },
-  '원자재': {
-    'WTI': generateIndexData(),
-    '금': generateIndexData(),
-  }
-}
+  원자재: {
+    WTI: generateIndexData(),
+    금: generateIndexData(),
+  },
+};
 
+// TODO : url에는 가급적 소문자 / '-'를 써주세요
 mock.onGet(BASEURL + "indexDetail").reply(200, indexData);
 
-
 // dashboard-info-overview
-mock.onGet(BASEURL + "company/1").reply(200, {
+mock.onGet(BASEURL + "info/1").reply(200, {
   market: "KOSPI",
   industry: "전기전자",
   companyDetailsLink: "기업분석 자세히 보기",
@@ -65,7 +65,7 @@ mock.onGet(BASEURL + "company/1").reply(200, {
 });
 
 // dashboard-info-news
-mock.onGet(BASEURL + "news/1").reply(200, [
+mock.onGet(BASEURL + "info/1/news").reply(200, [
   {
     id: 1,
     title: "외국인, 34거래일만에 삼성전자 샀다... 3%대 강세",
@@ -105,7 +105,7 @@ mock.onGet(BASEURL + "news/1").reply(200, [
 ]);
 
 // dashboard-info-disclosure
-mock.onGet(BASEURL + "disclosure/1").reply(200, [
+mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
   {
     id: 1,
     title: "삼성전자(주) 기업설명회(IR) 개최(안내공시)",
@@ -146,7 +146,7 @@ mock.onGet(BASEURL + "disclosure/1").reply(200, [
 ]);
 
 // home-aiNews
-mock.onGet(BASEURL + "aiNews").reply(200, [
+mock.onGet(BASEURL + "ai-news").reply(200, [
   {
     id: 1,
     title: "뉴스 타이틀",
@@ -184,10 +184,14 @@ const generateStockData = () => {
   let previousClose = 50000;
 
   while (currentDate <= endDate) {
-    const open = parseFloat((previousClose * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2));
+    const open = parseFloat(
+      (previousClose * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
+    );
     const high = parseFloat((open * (1 + Math.random() * 0.02)).toFixed(2));
     const low = parseFloat((open * (1 - Math.random() * 0.02)).toFixed(2));
-    const close = parseFloat((open * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2));
+    const close = parseFloat(
+      (open * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
+    );
 
     stockPriceData.push({
       time: currentDate.toISOString().split("T")[0],
@@ -215,7 +219,9 @@ const generateVolumeData = () => {
   const maxVolume = 5000000;
 
   while (currentDate <= endDate) {
-    const volume = Math.floor(Math.random() * (maxVolume - minVolume) + minVolume);
+    const volume = Math.floor(
+      Math.random() * (maxVolume - minVolume) + minVolume
+    );
 
     volumeData.push({
       time: currentDate.toISOString().split("T")[0],
@@ -232,4 +238,3 @@ mock.onGet(BASEURL + "stockDetail").reply(200, generateStockData());
 mock.onGet(BASEURL + "volumeDetail").reply(200, generateVolumeData());
 
 export default mock;
-

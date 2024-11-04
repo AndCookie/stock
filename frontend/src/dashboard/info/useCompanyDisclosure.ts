@@ -13,7 +13,7 @@ const useCompanyDisclosure = (companyId: number) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASEURL}disclosure/${companyId}`);
+        const res = await axios.get(`${BASEURL}info/${companyId}/disclosure`);
         // console.log(res);
         setData(res.data);
       } catch (error) {
