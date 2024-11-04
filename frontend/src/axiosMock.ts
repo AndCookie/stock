@@ -6,11 +6,11 @@ const mock = new AxiosMockAdapter(axios);
 const BASEURL = "http://localhost:3000/api/v1/";
 
 // home-indicators
-const generateIndexData = () => {
+const fakeIndexData = () => {
   const startDate = new Date("2024-07-01");
   const endDate = new Date("2024-10-30");
 
-  const data = [];
+  const fakeData = [];
 
   const currentDate = new Date(startDate);
   let indexValue = 3000;
@@ -19,37 +19,97 @@ const generateIndexData = () => {
     const dailyChangeRate = (Math.random() - 0.5) * 0.01;
     indexValue = parseFloat((indexValue * (1 + dailyChangeRate)).toFixed(2));
 
-    data.push({
+    fakeData.push({
       time: currentDate.toISOString().split("T")[0],
       value: indexValue,
     });
 
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  return data;
+  return fakeData;
 };
 
 const indexData = {
   국내: {
-    코스피: generateIndexData(),
-    코스닥: generateIndexData(),
+    코스피: fakeIndexData(),
+    코스닥: fakeIndexData(),
   },
   해외: {
-    다우존스: generateIndexData(),
-    나스닥: generateIndexData(),
+    다우존스: fakeIndexData(),
+    나스닥: fakeIndexData(),
   },
   환율: {
-    "원/달러": generateIndexData(),
-    "엔/달러": generateIndexData(),
+    "원/달러": fakeIndexData(),
+    "엔/달러": fakeIndexData(),
   },
   원자재: {
-    WTI: generateIndexData(),
-    금: generateIndexData(),
+    WTI: fakeIndexData(),
+    금: fakeIndexData(),
   },
 };
 
-// TODO : url에는 가급적 소문자 / '-'를 써주세요
-mock.onGet(BASEURL + "indexDetail").reply(200, indexData);
+mock.onGet(BASEURL + "index-detail").reply(200, indexData);
+
+// home-aiNews
+mock.onGet(BASEURL + "ai-news").reply(200, [
+  {
+    id: 1,
+    title: "뉴스 타이틀",
+    image:
+      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
+    author: "기자이름",
+    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
+  },
+  {
+    id: 2,
+    title: "뉴스 타이틀2",
+    image:
+      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
+    author: "기자이름",
+    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
+  },
+  {
+    id: 3,
+    title: "뉴스 타이틀3",
+    image:
+      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
+    author: "기자이름",
+    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
+  },
+]);
+
+// home-account-balance
+mock.onGet(BASEURL + "account/balance").reply(200, {
+  balance: 1400,
+  currentValue: 982859,
+  prevValue: 999496,
+  holdings: [
+    {
+      name: "피엔티",
+      shares: 19,
+      currentValue: 52300,
+      prevValue: 71456,
+      currentEstimatedValue: 978344,
+      prevEstimatedValue: 969617,
+    },
+    {
+      name: "로블록스",
+      shares: 0.01563,
+      currentValue: 60726,
+      prevValue: 59593,
+      currentEstimatedValue: 52901,
+      prevEstimatedValue: 54035,
+    },
+    {
+      name: "메타",
+      shares: 0.004605,
+      currentValue: 791579,
+      prevValue: 817746,
+      currentEstimatedValue: 3614,
+      prevEstimatedValue: 3495,
+    },
+  ],
+});
 
 // dashboard-info-overview
 mock.onGet(BASEURL + "info/1").reply(200, {
@@ -145,37 +205,9 @@ mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
   },
 ]);
 
-// home-aiNews
-mock.onGet(BASEURL + "ai-news").reply(200, [
-  {
-    id: 1,
-    title: "뉴스 타이틀",
-    image:
-      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
-    author: "기자이름",
-    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
-  },
-  {
-    id: 2,
-    title: "뉴스 타이틀2",
-    image:
-      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
-    author: "기자이름",
-    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
-  },
-  {
-    id: 3,
-    title: "뉴스 타이틀3",
-    image:
-      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
-    author: "기자이름",
-    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
-  },
-]);
-
 // dashboard-chart
-const generateStockData = () => {
-  const stockPriceData = [];
+const fakeStockData = () => {
+  const fakeData = [];
 
   const startDate = new Date("2024-07-01");
   const endDate = new Date("2024-10-30");
@@ -193,7 +225,7 @@ const generateStockData = () => {
       (open * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
     );
 
-    stockPriceData.push({
+    fakeData.push({
       time: currentDate.toISOString().split("T")[0],
       open,
       high,
@@ -205,11 +237,11 @@ const generateStockData = () => {
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  return stockPriceData;
+  return fakeData;
 };
 
-const generateVolumeData = () => {
-  const volumeData = [];
+const fakeVolumeData = () => {
+  const fakeData = [];
 
   const startDate = new Date("2024-07-01");
   const endDate = new Date("2024-10-30");
@@ -223,7 +255,7 @@ const generateVolumeData = () => {
       Math.random() * (maxVolume - minVolume) + minVolume
     );
 
-    volumeData.push({
+    fakeData.push({
       time: currentDate.toISOString().split("T")[0],
       value: volume,
     });
@@ -231,11 +263,11 @@ const generateVolumeData = () => {
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  return volumeData;
+  return fakeData;
 };
 
-mock.onGet(BASEURL + "stockDetail").reply(200, generateStockData());
-mock.onGet(BASEURL + "volumeDetail").reply(200, generateVolumeData());
+mock.onGet(BASEURL + "stockDetail").reply(200, fakeStockData());
+mock.onGet(BASEURL + "volumeDetail").reply(200, fakeVolumeData());
 
 const fakeDailyData = () => {
   const data = [];
@@ -342,40 +374,8 @@ const fakeInvestorData = () => {
   }
   return data;
 };
+
 // dashboard-tradingTrend-investor
 mock.onGet(BASEURL + "trend/1/investor").reply(200, fakeInvestorData());
-
-// home-account-balance
-mock.onGet(BASEURL + "account/balance").reply(200, {
-  balance: 1400,
-  currentValue: 982859,
-  prevValue: 999496,
-  holdings: [
-    {
-      name: "피엔티",
-      shares: 19,
-      currentValue: 52300,
-      prevValue: 71456,
-      currentEstimatedValue: 978344,
-      prevEstimatedValue: 969617,
-    },
-    {
-      name: "로블록스",
-      shares: 0.01563,
-      currentValue: 60726,
-      prevValue: 59593,
-      currentEstimatedValue: 52901,
-      prevEstimatedValue: 54035,
-    },
-    {
-      name: "메타",
-      shares: 0.004605,
-      currentValue: 791579,
-      prevValue: 817746,
-      currentEstimatedValue: 3614,
-      prevEstimatedValue: 3495,
-    },
-  ],
-});
 
 export default mock;

@@ -9,7 +9,7 @@ export const useIndexStore = create<IndexState>((set) => ({
 
   fetchIndexData: async () => {
     try {
-      const response = await axios.get(baseURL + "indexDetail");
+      const response = await axios.get(baseURL + "index-detail");
       set(() => ({
         indexData: response.data,
       }));
