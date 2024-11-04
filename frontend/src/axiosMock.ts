@@ -192,6 +192,19 @@ mock.onGet(BASEURL + "account/history").reply(200, [
   },
 ])
 
+// home-account-favorites
+mock.onGet(BASEURL + "account/favorite").reply(200, [
+  { name: "시보드", currentValue: 4108934, prevValue: 4108934},
+  { name: "삼성전자", currentValue: 56100, prevValue: 56600},
+  { name: "카카오", currentValue: 36550, prevValue: 37450},
+  { name: "테슬라", currentValue: 356583, prevValue: 359592},
+  { name: "쿠팡", currentValue: 35354, prevValue: 35354},
+  { name: "메타", currentValue: 784814, prevValue: 783820},
+  { name: "로블록스", currentValue: 57677, prevValue: 57677},
+  { name: "넷플릭스", currentValue: 1039668, prevValue: 1040648},
+  { name: "애플", currentValue: 316962, prevValue: 314941},
+])
+
 // dashboard-info-overview
 mock.onGet(BASEURL + "info/1").reply(200, {
   market: "KOSPI",

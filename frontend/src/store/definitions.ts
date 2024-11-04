@@ -52,3 +52,15 @@ export interface IHistoryState {
   historyData: IHistoryData[] | null;
   fetchHistoryData: () => Promise<void>;
 }
+
+// type of Favorite
+export interface IFavoriteData {
+  name: string;
+  currentValue: number;
+  prevValue: number;
+}
+
+export interface IFavoriteState {
+  favoriteData: IFavoriteData[] | null;
+  fetchFavoriteData: () => Promise<void>;
+}
