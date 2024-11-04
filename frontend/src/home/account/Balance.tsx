@@ -42,7 +42,7 @@ const Balance = () => {
               ? COLORS.positive
               : COLORS.negative,
         }}
-      >{(balanceData.currentValue - balanceData.prevValue).toLocaleString()}원
+      >{balanceData.currentValue > balanceData.prevValue ? '+' : ''}{(balanceData.currentValue - balanceData.prevValue).toLocaleString()}원
         ({calculatePercentage(balanceData.prevValue, balanceData.currentValue)}%)
       </p>
       <p className={styles.balance}>보유 잔고 {balanceData.balance.toLocaleString()}원</p>
@@ -94,17 +94,21 @@ const Balance = () => {
                 style={{
                   color:
                     activeSort === "현재가"
-                      ? item.currentValue - item.prevValue >= 0
+                      ? item.currentValue > item.prevValue
                         ? COLORS.positive
-                        : COLORS.negative
-                      : item.currentEstimatedValue - item.prevEstimatedValue >= 0
+                        : item.currentValue < item.prevValue
+                          ? COLORS.negative
+                          : COLORS.neutral
+                      : item.currentEstimatedValue > item.prevEstimatedValue
                         ? COLORS.positive
-                        : COLORS.negative,
+                        : item.currentEstimatedValue < item.prevEstimatedValue
+                          ? COLORS.negative
+                          : COLORS.neutral
                 }}
               >
                 {activeSort === "현재가"
-                  ? `${(item.currentValue - item.prevValue).toLocaleString()} (${calculatePercentage(item.prevValue, item.currentValue)}%)`
-                  : `${(item.currentEstimatedValue - item.prevEstimatedValue).toLocaleString()} (${calculatePercentage(item.prevEstimatedValue, item.currentEstimatedValue)}%)`
+                  ? `${item.currentValue > item.prevValue ? '+' : ''}${(item.currentValue - item.prevValue).toLocaleString()} (${calculatePercentage(item.prevValue, item.currentValue)}%)`
+                  : `${item.currentEstimatedValue > item.prevEstimatedValue ? '+' : ''}${(item.currentEstimatedValue - item.prevEstimatedValue).toLocaleString()} (${calculatePercentage(item.prevEstimatedValue, item.currentEstimatedValue)}%)`
                 }
               </span>
             </div>
