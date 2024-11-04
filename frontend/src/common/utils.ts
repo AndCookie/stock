@@ -1,8 +1,9 @@
 import { DateTime } from "luxon";
 
 export const COLORS = {
-  positive: "#ef2d21",
-  negative: "#4881ff",
+  positive: "#FF4F4F",
+  negative: "#4881FF",
+  neutral: "#888888",
 };
 
 // ex. 1일 전

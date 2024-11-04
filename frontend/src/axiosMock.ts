@@ -6,11 +6,11 @@ const mock = new AxiosMockAdapter(axios);
 const BASEURL = "http://localhost:3000/api/v1/";
 
 // home-indicators
-const generateIndexData = () => {
+const fakeIndexData = () => {
   const startDate = new Date("2024-07-01");
   const endDate = new Date("2024-10-30");
 
-  const data = [];
+  const fakeData = [];
 
   const currentDate = new Date(startDate);
   let indexValue = 3000;
@@ -19,37 +19,191 @@ const generateIndexData = () => {
     const dailyChangeRate = (Math.random() - 0.5) * 0.01;
     indexValue = parseFloat((indexValue * (1 + dailyChangeRate)).toFixed(2));
 
-    data.push({
+    fakeData.push({
       time: currentDate.toISOString().split("T")[0],
       value: indexValue,
     });
 
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  return data;
+  return fakeData;
 };
 
 const indexData = {
   국내: {
-    코스피: generateIndexData(),
-    코스닥: generateIndexData(),
+    코스피: fakeIndexData(),
+    코스닥: fakeIndexData(),
   },
   해외: {
-    다우존스: generateIndexData(),
-    나스닥: generateIndexData(),
+    다우존스: fakeIndexData(),
+    나스닥: fakeIndexData(),
   },
   환율: {
-    "원/달러": generateIndexData(),
-    "엔/달러": generateIndexData(),
+    "원/달러": fakeIndexData(),
+    "엔/달러": fakeIndexData(),
   },
   원자재: {
-    WTI: generateIndexData(),
-    금: generateIndexData(),
+    WTI: fakeIndexData(),
+    금: fakeIndexData(),
   },
 };
 
-// TODO : url에는 가급적 소문자 / '-'를 써주세요
-mock.onGet(BASEURL + "indexDetail").reply(200, indexData);
+mock.onGet(BASEURL + "index-detail").reply(200, indexData);
+
+// home-aiNews
+mock.onGet(BASEURL + "ai-news").reply(200, [
+  {
+    id: 1,
+    title: "뉴스 타이틀",
+    image:
+      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
+    author: "기자이름",
+    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
+  },
+  {
+    id: 2,
+    title: "뉴스 타이틀2",
+    image:
+      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
+    author: "기자이름",
+    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
+  },
+  {
+    id: 3,
+    title: "뉴스 타이틀3",
+    image:
+      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
+    author: "기자이름",
+    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
+  },
+]);
+
+// home-account-balance
+mock.onGet(BASEURL + "account/balance").reply(200, {
+  balance: 1400,
+  currentValue: 982859,
+  prevValue: 999496,
+  holdings: [
+    {
+      name: "피엔티",
+      shares: 19,
+      currentValue: 52300,
+      prevValue: 71456,
+      currentEstimatedValue: 978344,
+      prevEstimatedValue: 969617,
+    },
+    {
+      name: "로블록스",
+      shares: 0.01563,
+      currentValue: 60726,
+      prevValue: 59593,
+      currentEstimatedValue: 52901,
+      prevEstimatedValue: 54035,
+    },
+    {
+      name: "메타",
+      shares: 0.004605,
+      currentValue: 791579,
+      prevValue: 817746,
+      currentEstimatedValue: 3614,
+      prevEstimatedValue: 3495,
+    },
+  ],
+});
+
+// home-account-history
+mock.onGet(BASEURL + "account/history").reply(200, [
+  {
+    date: "2024-06-16",
+    name: "카카오",
+    status: "구매완료",
+    shares: 1,
+    price: 60000,
+  },
+  {
+    date: "2024-06-16",
+    name: "카카오",
+    status: "판매완료",
+    shares: 1,
+    price: 60000,
+  },
+  {
+    date: "2024-07-01",
+    name: "삼성전자",
+    status: "구매완료",
+    shares: 3,
+    price: 50000,
+  },
+  {
+    date: "2024-07-11",
+    name: "삼성전자",
+    status: "판매완료",
+    shares: 3,
+    price: 50000,
+  },
+  {
+    date: "2024-08-08",
+    name: "피엔티",
+    status: "구매완료",
+    shares: 19,
+    price: 52500,
+  },
+  {
+    date: "2024-08-08",
+    name: "피엔티",
+    status: "판매완료",
+    shares: 19,
+    price: 52500,
+  },
+  {
+    date: "2024-09-09",
+    name: "한진자동차",
+    status: "구매대기",
+    shares: 9,
+    price: 90000,
+  },
+  {
+    date: "2024-10-10",
+    name: "우진전자",
+    status: "판매대기",
+    shares: 10,
+    price: 100000,
+  },
+  {
+    date: "2024-11-11",
+    name: "병주증권",
+    status: "구매완료",
+    shares: 11,
+    price: 100000,
+  },
+  {
+    date: "2024-11-15",
+    name: "광영오버시스리미티드",
+    status: "판매대기",
+    shares: 11,
+    price: 1111111,
+  },
+  {
+    date: "2024-11-24",
+    name: "태완엘레베이터",
+    status: "판매완료",
+    shares: 24,
+    price: 1124124,
+  },
+])
+
+// home-account-favorites
+mock.onGet(BASEURL + "account/favorite").reply(200, [
+  { name: "시보드", currentValue: 4108934, prevValue: 4108934},
+  { name: "삼성전자", currentValue: 56100, prevValue: 56600},
+  { name: "카카오", currentValue: 36550, prevValue: 37450},
+  { name: "테슬라", currentValue: 356583, prevValue: 359592},
+  { name: "쿠팡", currentValue: 35354, prevValue: 35354},
+  { name: "메타", currentValue: 784814, prevValue: 783820},
+  { name: "로블록스", currentValue: 57677, prevValue: 57677},
+  { name: "넷플릭스", currentValue: 1039668, prevValue: 1040648},
+  { name: "애플", currentValue: 316962, prevValue: 314941},
+])
 
 // dashboard-info-overview
 mock.onGet(BASEURL + "info/1").reply(200, {
@@ -145,37 +299,9 @@ mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
   },
 ]);
 
-// home-aiNews
-mock.onGet(BASEURL + "ai-news").reply(200, [
-  {
-    id: 1,
-    title: "뉴스 타이틀",
-    image:
-      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
-    author: "기자이름",
-    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
-  },
-  {
-    id: 2,
-    title: "뉴스 타이틀2",
-    image:
-      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
-    author: "기자이름",
-    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
-  },
-  {
-    id: 3,
-    title: "뉴스 타이틀3",
-    image:
-      "https://img.freepik.com/free-photo/high-angle-kids-holding-hands_23-2149548011.jpg",
-    author: "기자이름",
-    description: "뉴스기사내용입니다.뉴스기사내용입니다.뉴스기사내용입니다.",
-  },
-]);
-
 // dashboard-chart
-const generateStockData = () => {
-  const stockPriceData = [];
+const fakeStockData = () => {
+  const fakeData = [];
 
   const startDate = new Date("2024-07-01");
   const endDate = new Date("2024-10-30");
@@ -193,7 +319,7 @@ const generateStockData = () => {
       (open * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
     );
 
-    stockPriceData.push({
+    fakeData.push({
       time: currentDate.toISOString().split("T")[0],
       open,
       high,
@@ -205,11 +331,11 @@ const generateStockData = () => {
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  return stockPriceData;
+  return fakeData;
 };
 
-const generateVolumeData = () => {
-  const volumeData = [];
+const fakeVolumeData = () => {
+  const fakeData = [];
 
   const startDate = new Date("2024-07-01");
   const endDate = new Date("2024-10-30");
@@ -223,7 +349,7 @@ const generateVolumeData = () => {
       Math.random() * (maxVolume - minVolume) + minVolume
     );
 
-    volumeData.push({
+    fakeData.push({
       time: currentDate.toISOString().split("T")[0],
       value: volume,
     });
@@ -231,11 +357,11 @@ const generateVolumeData = () => {
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  return volumeData;
+  return fakeData;
 };
 
-mock.onGet(BASEURL + "stockDetail").reply(200, generateStockData());
-mock.onGet(BASEURL + "volumeDetail").reply(200, generateVolumeData());
+mock.onGet(BASEURL + "stockDetail").reply(200, fakeStockData());
+mock.onGet(BASEURL + "volumeDetail").reply(200, fakeVolumeData());
 
 const fakeDailyData = () => {
   const data = [];
@@ -340,9 +466,9 @@ const fakeInvestorData = () => {
 
     data.push(fakeData);
   }
-  console.log(data);
   return data;
 };
+
 // dashboard-tradingTrend-investor
 mock.onGet(BASEURL + "trend/1/investor").reply(200, fakeInvestorData());
 
