@@ -1,4 +1,4 @@
-import useCompanyData from "./useComponyData";
+import useCompanyData from "./useCompanyData";
 
 const Overview = () => {
   // TODO: companyId
