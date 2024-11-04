@@ -57,7 +57,7 @@ mock.onGet(BASEURL + "info/1").reply(200, {
   industry: "전기전자",
   companyDetailsLink: "기업분석 자세히 보기",
   ceo: "한종희",
-  marketCap: "337889700000000",
+  marketCap: 3378897,
   description:
     "한국 및 DX부문 해외 9개 지역총괄과 DS부문 해외 5개 지역총괄, SDC, Harman 등 226개의 종속기업으로 구성된 글로벌 전자기업. " +
     "세트사업은 TV를 비롯 모니터, 냉장고, 세탁기, 에어컨, 스마트폰, 네트워크시스템, 컴퓨터 등을 생산하는 DX부문이 있음. " +

@@ -28,7 +28,7 @@ const Overview = () => {
             </div>
             <div>
               <span>시가총액</span>
-              <span>{data.marketCap}원</span>
+              <span>{data.marketCap}억원</span>
             </div>
           </div>
           {/* 설명 */}
