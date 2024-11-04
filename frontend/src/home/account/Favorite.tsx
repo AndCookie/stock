@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import styles from "./Favorites.module.css";
+import styles from "./Favorite.module.css";
 import { useFavoriteStore } from "../../store/useFavoriteStore";
 import { COLORS } from '../../common/utils';
 
