@@ -1,18 +1,18 @@
-export interface IndexEntry {
+export interface IIndexEntry {
   time: string;
   value: number;
 }
 
-export interface IndexCategory {
-  [indexName: string]: IndexEntry[];
+export interface IIndexCategory {
+  [indexName: string]: IIndexEntry[];
 }
 
-interface IndexData {
-  [category: string]: IndexCategory;
+interface IIndexData {
+  [category: string]: IIndexCategory;
 }
 
-export interface IndexState {
-  indexData: IndexData | null;
+export interface IIndexState {
+  indexData: IIndexData | null;
   fetchIndexData: () => Promise<void>;
 }
 

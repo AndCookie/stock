@@ -1,10 +1,10 @@
 // src/store/useIndexStore.ts
 import axios from "axios";
 import { create } from "zustand";
-import { IndexState } from "./definitions";
+import { IIndexState } from "./definitions";
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-export const useIndexStore = create<IndexState>((set) => ({
+export const useIndexStore = create<IIndexState>((set) => ({
   indexData: null,
 
   fetchIndexData: async () => {
