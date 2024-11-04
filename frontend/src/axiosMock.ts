@@ -340,10 +340,42 @@ const fakeInvestorData = () => {
 
     data.push(fakeData);
   }
-  console.log(data);
   return data;
 };
 // dashboard-tradingTrend-investor
 mock.onGet(BASEURL + "trend/1/investor").reply(200, fakeInvestorData());
+
+// home-account-balance
+mock.onGet(BASEURL + "account/balance").reply(200, {
+  balance: 1400,
+  currentValue: 982859,
+  prevValue: 999496,
+  holdings: [
+    {
+      name: "피엔티",
+      shares: 19,
+      currentValue: 52300,
+      prevValue: 71456,
+      currentEstimatedValue: 978344,
+      prevEstimatedValue: 969617,
+    },
+    {
+      name: "로블록스",
+      shares: 0.01563,
+      currentValue: 60726,
+      prevValue: 59593,
+      currentEstimatedValue: 52901,
+      prevEstimatedValue: 54035,
+    },
+    {
+      name: "메타",
+      shares: 0.004605,
+      currentValue: 791579,
+      prevValue: 817746,
+      currentEstimatedValue: 3614,
+      prevEstimatedValue: 3495,
+    },
+  ],
+});
 
 export default mock;
