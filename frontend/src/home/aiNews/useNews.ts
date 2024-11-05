@@ -9,7 +9,7 @@ const useNews = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await axios.get(baseURL + "aiNews");
+        const res = await axios.get(baseURL + "ai-news");
         setNews(res.data);
       } catch (error) {
         console.log(error);

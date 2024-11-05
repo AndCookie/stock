@@ -13,7 +13,7 @@ const useCompanyNews = (companyId: number) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASEURL}news/${companyId}`);
+        const res = await axios.get(`${BASEURL}info/${companyId}/news`);
         // console.log(res);
         setData(res.data);
       } catch (error) {

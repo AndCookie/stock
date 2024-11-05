@@ -1,14 +1,17 @@
 import { useEffect, useRef } from "react";
 import { createChart, ColorType } from "lightweight-charts";
-import { useTotalData } from "./useChartData";
+import useStockData from "./hooks/useStockData";
+import useVolumeData from "./hooks/useVolumeData";
 import { COLORS } from "../../common/utils";
 
 const Chart = () => {
   const chartContainerRef = useRef(null);
-  const totalData = useTotalData();
+  
+  const { stockData } = useStockData();
+  const { volumeData } = useVolumeData();
 
   useEffect(() => {
-    if (!chartContainerRef.current) return;
+    if (!chartContainerRef.current || !stockData || !volumeData) return;
 
     const chartOptions = {
       layout: { textColor: "white", background: { type: ColorType.Solid, color: "black" } },
@@ -34,7 +37,7 @@ const Chart = () => {
       upColor: COLORS.positive, downColor: COLORS.negative, wickUpColor: COLORS.positive, wickDownColor: COLORS.negative,
       borderVisible: false,
     });
-    candlestickSeries.setData(totalData.stockPriceData);
+    candlestickSeries.setData(stockData);
 
     // 거래량 히스토그램 차트
     const histogramSeries = chart.addHistogramSeries({
@@ -47,12 +50,23 @@ const Chart = () => {
       },
     });
 
-    histogramSeries.setData(totalData.volumeData);
+    const volumeDataColored = volumeData.map((data, i) => {
+      if (i === 0) {
+        return { ...data, color: COLORS.positive };
+      }
+
+      const previousVolume = volumeData[i - 1].value;
+      const color = data.value > previousVolume ? COLORS.positive : COLORS.negative;
+
+      return { ...data, color };
+    });
+
+    histogramSeries.setData(volumeDataColored);
 
     chart.timeScale().fitContent();
 
     return () => chart.remove();
-  }, [totalData]);
+  }, [stockData, volumeData]);
 
   return (
     <div ref={chartContainerRef} style={{ width: "1000px", height: "500px" }} />
