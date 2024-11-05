@@ -1,11 +1,14 @@
 // 거래동향
 
-import useDaily from "./useDaily";
+import useFetch from "../../common/useFetch";
+import { IDaily } from "./definitions";
 
 const Daily = () => {
   // TODO: companyId 설정
   const companyId = 1;
-  const { data, loading, error } = useDaily(companyId);
+  const { data, loading, error } = useFetch<IDaily[]>(
+    `trend/${companyId}/daily`
+  );
 
   if (loading) return <p>loading...</p>;
   if (error) return <p>error</p>;

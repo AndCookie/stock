@@ -1,12 +1,15 @@
 // 공시
 
+import useFetch from "../../common/useFetch";
 import Item from "./Item";
-import useCompanyDisclosure from "./useCompanyDisclosure";
+import { ICompanyNewsDisclosure } from "./definitions";
 
 const Disclosure = () => {
   // TODO : companyId
   const companyId = 1;
-  const { data, error, loading } = useCompanyDisclosure(companyId);
+  const { data, loading, error } = useFetch<ICompanyNewsDisclosure[]>(
+    `info/${companyId}/disclosure`
+  );
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading data</p>;

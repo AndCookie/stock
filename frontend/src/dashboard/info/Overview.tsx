@@ -1,9 +1,10 @@
-import useCompanyData from "./useCompanyData";
+import useFetch from "../../common/useFetch";
+import { ICompanyData } from "./definitions";
 
 const Overview = () => {
   // TODO: companyId
   const companyId = 1;
-  const { data, loading, error } = useCompanyData(companyId);
+  const { data, loading, error } = useFetch<ICompanyData>(`info/${companyId}`);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading data.</p>;

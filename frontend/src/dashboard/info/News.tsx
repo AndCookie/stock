@@ -1,11 +1,14 @@
 // 뉴스
 
+import useFetch from "../../common/useFetch";
 import Item from "./Item";
-import useCompanyNews from "./useCompanyNews";
+import { ICompanyNewsDisclosure } from "./definitions";
 
 const News = () => {
   const companyId = 1;
-  const { data, error, loading } = useCompanyNews(companyId);
+  const { data, loading, error } = useFetch<ICompanyNewsDisclosure[]>(
+    `info/${companyId}/news`
+  );
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading data.</p>;
