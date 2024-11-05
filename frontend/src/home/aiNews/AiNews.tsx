@@ -1,9 +1,9 @@
 import { useState } from "react";
-
 import NewsCard from "./NewsCard";
 import NewsModal from "./NewsModal";
 import { INews } from "./definitions";
 import useNews from "./useNews";
+import styles from './AiNews.module.css';
 
 const AiNews = () => {
   const newsList = useNews();
@@ -21,9 +21,11 @@ const AiNews = () => {
   };
 
   return (
-    <section>
-      <div>AI 뉴스</div>
-      <div>
+    <section className={styles.aiNewsContainer}>
+      <div className={styles.categoryTabs}>
+        AI 뉴스
+      </div>
+      <div className={styles.newsList}>
         {newsList &&
           newsList.map((news, idx) => (
             <NewsCard news={news} openModal={() => openModal(news)} key={idx} />
