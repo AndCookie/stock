@@ -2,32 +2,91 @@
 .metrics {
   grid-column: span 12;
   margin: 50px 10px;
-  padding: 0 20px;
+  padding: 0 10px;
   /* border: 1px solid white; */
 }
 
 .slick-list {
-  padding: 0 20px !important;
+  width: 100% !important;
+  display: flex !important;
+  padding: 0 !important; /* 슬라이더 리스트의 여백을 제거 */
+  overflow: hidden !important; /* 스크롤바 제거 */
+}
+
+
+.slick-track {
+  display: flex !important;
+  gap: 20px; /* 슬라이드 간 간격을 설정 */
 }
 
 .slick-slide {
-  padding: 0 20px !important;
-  margin: 0 20px !important;
+  width: 300px !important; /* 슬라이드 고정 너비 */
+  flex: 0 0 auto; /* 슬라이드가 고정된 너비로 정렬되도록 설정 */
+  margin: 0 !important; /* 슬라이드 간 여백을 제거 */
 }
 
 .metricBox {
   background-color: #2b2b2b;
-  padding: 20px;
+  padding: 0px;
   text-align: center;
   border-radius: 8px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 90% !important;
+  flex-direction: row;
+  align-items: space-between;
+  justify-content: space-around;
+  width: 300px !important;
   height: 120px;
-  margin: 0 20px;
+  margin: 0 30px;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border: 2px solid #444;
+}
+
+.textInfo, .imageInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* border: 1px solid burlywood; */
+}
+
+.textInfo {
+  width: 100px;
+  padding: 10px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: normal;
+  margin-bottom: 10px;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* height: 100%; */
+  /* border: 1px solid blue; */
+}
+
+.flagIcon {
+  height: 18px;
+  margin-right: 5px;
+  vertical-align: middle;
+  padding: 3px 0;
+  /* border: 1px solid blue; */
+}
+
+.value {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.percentage {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.imageInfo {
+  width: 150px;
+  padding-right: 20px;
 }
