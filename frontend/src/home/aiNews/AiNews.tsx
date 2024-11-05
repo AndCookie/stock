@@ -2,13 +2,17 @@ import { useState } from "react";
 import NewsCard from "./NewsCard";
 import NewsModal from "./NewsModal";
 import { INews } from "./definitions";
-import useNews from "./useNews";
+import useFetch from "../../common/useFetch";
 import styles from './AiNews.module.css';
 
+
 const AiNews = () => {
-  const newsList = useNews();
+  const { data, loading, error } = useFetch<INews[]>(`ai-news`);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedNews, setSelectedNews] = useState<INews | null>(null);
+
+  if (loading) return <p>loading...</p>;
+  if (error) return <p>error</p>;
 
   const openModal = (article: INews) => {
     setSelectedNews(article);
@@ -26,8 +30,8 @@ const AiNews = () => {
         AI 뉴스
       </div>
       <div className={styles.newsList}>
-        {newsList &&
-          newsList.map((news, idx) => (
+        {data &&
+          data.map((news, idx) => (
             <NewsCard news={news} openModal={() => openModal(news)} key={idx} />
           ))}
       </div>
