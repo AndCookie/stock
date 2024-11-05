@@ -1,9 +1,10 @@
 import { useState } from "react";
-
 import NewsCard from "./NewsCard";
 import NewsModal from "./NewsModal";
 import { INews } from "./definitions";
 import useFetch from "../../common/useFetch";
+import styles from './AiNews.module.css';
+
 
 const AiNews = () => {
   const { data, loading, error } = useFetch<INews[]>(`ai-news`);
@@ -24,9 +25,11 @@ const AiNews = () => {
   };
 
   return (
-    <section>
-      <div>AI 뉴스</div>
-      <div>
+    <section className={styles.aiNewsContainer}>
+      <div className={styles.categoryTabs}>
+        AI 뉴스
+      </div>
+      <div className={styles.newsList}>
         {data &&
           data.map((news, idx) => (
             <NewsCard news={news} openModal={() => openModal(news)} key={idx} />

@@ -1,5 +1,62 @@
 .container {
-  background-color: #2b2b2b;
+  background-color: #141414;
   padding: 20px;
   border-radius: 8px;
+  min-width: 290px;
 }
+
+.categoryTabs {
+  font-size: 15px;
+  position: relative;
+  font-weight: bold;
+  /* cursor: pointer; */
+  padding: 0px 6px 0px 6px;
+  margin-bottom: 10px;
+  min-width: 80px;
+  z-index: 1;
+}
+
+.categoryTabs::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 160px;
+  height: 3px;
+  background-color: #7B00F7;
+  border-radius: 50px;
+}
+
+.categoryTabs::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: #8000ff; /* 보라색 */
+  border-radius: 50%;
+  position: absolute;
+  left: -1px; /* 위치를 적절히 조절합니다 */
+  top: -3px; /* 텍스트와 맞추기 위해 위치 조정 */
+  z-index: -1;
+}
+
+.content {
+  max-height: 200px;
+  margin: 30px auto 0px auto;
+  overflow-y: scroll;
+  font-size: 12px;
+}
+
+.content::-webkit-scrollbar {
+  width: 3px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background-color: #888; /* 회색 스크롤바 */
+  border-radius: 50px; /* 둥근 모서리 */
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent; /* 스크롤 트랙 배경을 투명하게 설정 */
+}
+

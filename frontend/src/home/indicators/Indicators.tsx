@@ -45,7 +45,7 @@ const Indicators: React.FC = () => {
 
   useEffect(() => {
     fetchIndexData()
-  }, [])
+  }, [fetchIndexData]);
 
   // const indices = ['코스피', '코스닥', '나스닥', 'S&P 500', '다우존스', '원/달러', '금', 'WTI'];
   const indices = ['코스피', '코스닥', '다우존스', '나스닥', '원/달러', '엔/달러', '금', 'WTI'];

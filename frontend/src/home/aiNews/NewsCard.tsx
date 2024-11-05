@@ -1,5 +1,6 @@
 import { INews } from "./definitions";
 import { stringToRelativeDate } from "../../common/utils";
+import styles from './NewsCard.module.css';
 
 const NewsCard = ({
   news,
@@ -12,18 +13,13 @@ const NewsCard = ({
   const relativeDate = stringToRelativeDate(created_at);
 
   return (
-    <div onClick={openModal}>
-      <div>
-        {/* TODO: 임시 CSS 입니다. */}
-        <img
-          style={{ width: "100px", height: "100px" }}
-          src={image}
-          alt="news image"
-        />
-      </div>
-      <div>{title}</div>
-      <div>
-        {relativeDate} · {author}
+    <div className={styles.newsCard} onClick={openModal}>
+      <img className={styles.image} src={image} alt="news" />
+      <div className={styles.content}>
+        <h3 className={styles.title}>{title}</h3>
+        <div className={styles.meta}>
+          {relativeDate} · {author}
+        </div>
       </div>
     </div>
   );
