@@ -200,10 +200,25 @@ return (
             >
               <div
                 style={{
-                  backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '300px',
+                  backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '300px', position: 'relative',
                 }}
                 onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지
               >
+                <button
+                  onClick={toggleModal}
+                  style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    zIndex: 10000,
+                    border: 'none',
+                    width: '20px',
+                    height: '20px',
+                    color: 'black',
+                  }}
+                >
+                  X
+                </button>
                 <h3 style={{ color: 'black', }}>위젯 추가/숨김</h3>
                 <ul>
                   {/* 위젯 리스트: 각 위젯의 가시성 여부에 따라 추가 또는 숨김 버튼 표시 */}
@@ -232,12 +247,12 @@ return (
                     </li>
                   ))}
                 </ul>
-                <button
+                {/* <button
                   onClick={toggleModal}
                   style={{ color: 'black', }}
                 >
                   닫기
-                </button>
+                </button> */}
               </div>
             </div>
           )}
