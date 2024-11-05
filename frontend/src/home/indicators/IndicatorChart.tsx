@@ -1,49 +1,44 @@
-import { useEffect, useRef } from "react";
-import { createChart, ColorType } from "lightweight-charts";
+// import { useEffect, useRef } from "react";
+import { Line } from "react-chartjs-2";
 import { IIndicatorCardProps } from "./definitions";
 import { useIndexStore } from "../../store/useIndexStore";
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from "chart.js";
+
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
 const IndicatorChart = ({ indexTypeId, index, color }: IIndicatorCardProps) => {
-  const chartContainerRef = useRef(null);
-
   const { indexData } = useIndexStore();
-  const indexTypes = ['국내', '해외', '환율', '원자재'];
+
+  const indexTypes = ["국내", "해외", "환율", "원자재"];
   const indexList = indexData![indexTypes[indexTypeId]][index];
+  const indexValues = indexList.map(item => item.value);
 
-  useEffect(() => {
-    if (!chartContainerRef.current) return;
-
-    const chartOptions = {
-      layout: { textColor: "white", background: { type: ColorType.Solid, color: "black" } },
-      grid: {
-        vertLines: { visible: false },
-        horzLines: { visible: false },
+  const data = {
+    labels: indexValues.map((_, i) => i),
+    datasets: [
+      {
+        data: indexValues,
+        borderColor: color,
+        backgroundColor: "#2b2b2b",
+        borderWidth: 1,
+        pointRadius: 0,
       },
-      crosshair: {
-        mode: 2,
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    scales: {
+      x: {
+        display: false,
       },
-      timeScale: {
-        visible: false,
+      y: {
+        display: false,
       },
-      priceScale: {
-        visible: false,
-      },
-    };
+    },
+  };
 
-    const chart = createChart(chartContainerRef.current, chartOptions);
-
-    const lineSeries = chart.addLineSeries({ color: color });
-    lineSeries.setData(indexList);
-    chart.timeScale().fitContent();
-
-    return () => chart.remove();
-  }, []);
-
-  return (
-    <>
-      <div ref={chartContainerRef} style={{ width: "250px", height: "250px" }} />
-    </>
-  );
+  return <Line data={data} options={options} />;
 };
 
 export default IndicatorChart;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Balance from "./Balance";
 import History from "./History";
-import Favorites from "./Favorites";
+import Favorites from "./Favorite";
 import styles from "./Account.module.css";
 
 const Account = () => {

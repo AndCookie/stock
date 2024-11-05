@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
 import styles from "./History.module.css";
-
-type Order = {
-  date: string;
-  name: string;
-  status: string;
-  shares: string;
-  price: string;
-};
+import { useHistoryStore } from "../../store/useHistoryStore";
+import { IHistoryData } from "../../store/definitions";
 
 const History = () => {
+  const { historyData, fetchHistoryData } = useHistoryStore();
+
   const [activeTab, setActiveTab] = useState("전체");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
+    fetchHistoryData();
+
     const today = new Date();
     setSelectedDate(`${today.getFullYear()}년 ${today.getMonth() + 1}월`);
   }, []);
@@ -31,89 +29,9 @@ const History = () => {
     return `${parseInt(month)}.${parseInt(day)}`;
   };
 
-  const orders = [
-    {
-      date: "2024-06-16",
-      name: "카카오",
-      status: "구매완료",
-      shares: "1주",
-      price: "60,000원",
-    },
-    {
-      date: "2024-06-16",
-      name: "카카오",
-      status: "판매완료",
-      shares: "1주",
-      price: "60,000원",
-    },
-    {
-      date: "2024-07-01",
-      name: "삼성전자",
-      status: "구매완료",
-      shares: "3주",
-      price: "50,000원",
-    },
-    {
-      date: "2024-07-11",
-      name: "삼성전자",
-      status: "판매완료",
-      shares: "3주",
-      price: "50,000원",
-    },
-    {
-      date: "2024-08-08",
-      name: "피엔티",
-      status: "구매완료",
-      shares: "19주",
-      price: "52,500원",
-    },
-    {
-      date: "2024-08-08",
-      name: "피엔티",
-      status: "판매완료",
-      shares: "19주",
-      price: "52,500원",
-    },
-    {
-      date: "2024-09-09",
-      name: "한진자동차",
-      status: "구매대기",
-      shares: "9주",
-      price: "90,000원",
-    },
-    {
-      date: "2024-10-10",
-      name: "우진전자",
-      status: "판매대기",
-      shares: "10주",
-      price: "100,000원",
-    },
-    {
-      date: "2024-11-11",
-      name: "병주증권",
-      status: "구매완료",
-      shares: "11주",
-      price: "100,000원",
-    },
-    {
-      date: "2024-11-15",
-      name: "광영오버시스리미티드",
-      status: "판매대기",
-      shares: "11주",
-      price: "1,111,111원",
-    },
-    {
-      date: "2024-11-24",
-      name: "태완엘레베이터",
-      status: "판매완료",
-      shares: "24주",
-      price: "1,124,124원",
-    },
-  ];
-
   const uniqueMonths = Array.from(
     new Set(
-      orders.map((order) => {
+      (historyData || []).map((order) => {
         const [year, month] = order.date.split("-");
         return `${year}년 ${parseInt(month)}월`;
       })
@@ -130,7 +48,7 @@ const History = () => {
 
   const { year: selectedYear, month: selectedMonth } =
     getSelectedYearAndMonth();
-  const filteredOrders = orders.filter(({ date }) => {
+  const filteredOrders = (historyData || []).filter(({ date }) => {
     const [orderYear, orderMonth] = date.split("-");
     return (
       orderYear === selectedYear &&
@@ -145,48 +63,45 @@ const History = () => {
     order.status.includes("대기")
   );
 
-  const renderOrderList = (orders: Order[], emptyMessage: string) =>
-    orders.length > 0 ? (
-      orders.map((order, index) => (
+  const renderOrderList = (historyData: IHistoryData[], emptyMessage: string) =>
+    historyData.length > 0 ? (
+      historyData.map((order, index) => (
         <div key={index} className={styles.order}>
           <span className={styles.date}>{formatDate(order.date)}</span>
           <div className={styles.orderInfo}>
             <div className={styles.name}>{order.name}</div>
             <div className={styles.orderDetail}>
               <span
-                className={`${styles.status} ${
-                  order.status.includes("구매")
-                    ? styles["status-buy"]
-                    : styles["status-sell"]
-                }`}
+                className={`${styles.status} ${order.status.includes("구매")
+                  ? styles["status-buy"]
+                  : styles["status-sell"]
+                  }`}
               >
                 {order.status}
               </span>{" "}
-              · <span className={styles.shares}>{order.shares}</span>
+              · <span className={styles.shares}>{order.shares}주</span>
             </div>
           </div>
-          <span className={styles.price}>{order.price}</span>
+          <span className={styles.price}>{order.price.toLocaleString()}원</span>
         </div>
       ))
     ) : (
       <p className={styles.emptyMessage}>{emptyMessage}</p>
     );
 
+  if (!historyData) return <div></div>;
+
   return (
     <div className={styles.container}>
       <div className={styles.tabs}>
         <button
-          className={`${styles.tabOne} ${
-            activeTab === "전체" ? styles.activeTabButton : ""
-          }`}
+          className={`${styles.tabOne} ${activeTab === "전체" ? styles.activeTabButton : ""}`}
           onClick={() => setActiveTab("전체")}
         >
           전체
         </button>
         <button
-          className={`${styles.tabTwo} ${
-            activeTab === "조건주문" ? styles.activeTabButton : ""
-          }`}
+          className={`${styles.tabTwo} ${activeTab === "조건주문" ? styles.activeTabButton : ""}`}
           onClick={() => setActiveTab("조건주문")}
         >
           조건주문

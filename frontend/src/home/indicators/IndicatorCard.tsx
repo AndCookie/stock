@@ -23,17 +23,15 @@ const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
   };
 
   return (
-    <>
-      <div className={styles.metricBox} onClick={cardClick}>
-        <div>{index}</div>
-        <div>{current.value}</div>
-        <div style={{ color: changeValue >= 0 ? COLORS.positive : COLORS.negative }}>
-          {changeValue >= 0 ? `+${changeValue.toFixed(2)}` : changeValue.toFixed(2)}
-          ({changeRate.toFixed(1)}%)
-        </div>
+    <div className={styles.metricBox} onClick={cardClick}>
+      <div>{index}</div>
+      <div>{current.value}</div>
+      <div style={{ color: changeValue >= 0 ? COLORS.positive : COLORS.negative }}>
+        {changeValue >= 0 ? `+${changeValue.toFixed(2)}` : changeValue.toFixed(2)}
+        ({changeRate.toFixed(1)}%)
       </div>
-        <IndicatorChart indexTypeId={indexTypeId} index={index} color={changeValue >= 0 ? COLORS.positive : COLORS.negative} />
-    </>
+      <IndicatorChart indexTypeId={indexTypeId} index={index} color={changeValue >= 0 ? COLORS.positive : COLORS.negative} />
+    </div>
   );
 };
 
