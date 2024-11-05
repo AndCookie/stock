@@ -4,10 +4,7 @@ import { useState } from "react";
 import Overview from "./Overview";
 import News from "./News";
 import Disclosure from "./Disclosure";
-
-type InfoProps = {
-  setIsDraggable: (value: boolean) => void; // 드래그 활성화 제어 함수
-};
+import { IWidgetComponentProps } from "../../common/definitions";
 
 const TABS = [
   { label: "기업 정보", component: <Overview /> },
@@ -15,7 +12,7 @@ const TABS = [
   { label: "공시", component: <Disclosure /> },
 ];
 
-const Info = ({ setIsDraggable }: InfoProps) => {
+const Info = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (

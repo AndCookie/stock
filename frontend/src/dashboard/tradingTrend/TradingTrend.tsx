@@ -4,10 +4,7 @@ import { useState } from "react";
 import Daily from "./Daily";
 import Trader from "./Trader";
 import Investor from "./Investor";
-
-type TradingTrendProps = {
-  setIsDraggable: (value: boolean) => void; // 드래그 활성화 제어 함수
-};
+import { IWidgetComponentProps } from "../../common/definitions";
 
 const TABS = [
   { label: "거래동향", component: <Daily /> },
@@ -15,7 +12,7 @@ const TABS = [
   { label: "투자자", component: <Investor /> },
 ];
 
-const TradingTrend = ({ setIsDraggable }: TradingTrendProps) => {
+const TradingTrend = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (

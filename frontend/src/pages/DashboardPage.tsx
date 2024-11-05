@@ -3,6 +3,7 @@
 // 해당 버튼에 onMouseDown 이벤트나 onClick 이벤트 발생 시
 // stopPropagation이랑 setIsDraggable 설정해주세요.
 // setIsDraggable은 props로 받으시면 됩니다.
+// 위젯 prop 인터페이스는 common에 있습니다.
 
 // To. 광영
 // dashboard 페이지에서 Ctrl+스크롤로 화면 축소해서 50까지 줄여보면
@@ -32,18 +33,16 @@ import TradingVolume from "../dashboard/tradingVolume/TradingVolume";
 // 훅 임포트
 import useWindowSize from './hooks/useWindowSize';
 
+// 인터페이스 임포트
+import { IWidgetComponentProps } from '../common/definitions';
+
 // 디자인
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 // import styles from './DashboardPage.module.css';
 
-// 컴포넌트 타입 정의
-type WidgetComponentProps = {
-  setIsDraggable: (value: boolean) => void;
-};
-
 // 위젯 컴포넌트를 동적으로 매핑하기 위한 객체
-const widgetComponents: { [key: string]: React.ComponentType<WidgetComponentProps> } = {
+const widgetComponents: { [key: string]: React.ComponentType<IWidgetComponentProps> } = {
   chartWidget: Chart,
   infoWidget: Info,
   orderBookWidget: OrderBook,
