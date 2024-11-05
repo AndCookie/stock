@@ -1,11 +1,14 @@
 // 투자자
 
-import useInvestor from "./useInvestor";
+import useFetch from "../../common/useFetch";
+import { IInvestor } from "./definitions";
 
 const Investor = () => {
   // TODO: companyId
   const companyId = 1;
-  const { data, loading, error } = useInvestor(companyId);
+  const { data, loading, error } = useFetch<IInvestor[]>(
+    `trend/${companyId}/investor`
+  );
 
   if (loading) return <p>loading...</p>;
   if (error) return <p>error</p>;

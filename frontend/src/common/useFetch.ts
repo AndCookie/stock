@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { IDaily } from "./definitions";
 
 const BASEURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-const useDaily = (companyId: number) => {
-  const [data, setData] = useState<null | IDaily[]>(null);
+const useFetch = <T>(url: string) => {
+  const [data, setData] = useState<null | T>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | Error>(null);
 
@@ -13,7 +12,7 @@ const useDaily = (companyId: number) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${BASEURL}trend/${companyId}/daily`);
+        const res = await axios.get(BASEURL + url);
         setData(res.data);
       } catch (error) {
         setError(error as Error);
@@ -23,12 +22,10 @@ const useDaily = (companyId: number) => {
       }
     };
 
-    if (companyId !== undefined) {
-      fetchData();
-    }
-  }, [companyId]);
+    fetchData();
+  }, [url]);
 
   return { data, loading, error };
 };
 
-export default useDaily;
+export default useFetch;
