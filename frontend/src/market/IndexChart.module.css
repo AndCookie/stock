@@ -9,7 +9,18 @@
 
 .graph{
   width: 525px;
+.container {
+  display: flex;
+  width: 100%;
+  margin-left: 20px;
+  padding: 15px 0px;
+  gap: 50px;
   /* border: 1px solid red; */
+}
+
+.graph{
+  width: 70%;
+  /* border: 1px solid green; */
 }
 
 .graphTitle {
@@ -36,4 +47,5 @@
 
 .graphContent {
   margin-top: 10px;
+  width: 100%;
 }
