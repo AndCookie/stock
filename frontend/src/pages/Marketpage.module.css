@@ -3,13 +3,12 @@
 /* 화면 중앙 배치를 위한 상위 래퍼 컨테이너 */
 .wrapper {
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 108%;
-  height: 80vh;
-  margin: auto;
-  margin-top: 10px;
-  padding: 30px;
+  align-items: flex-start;
+  width: 88vw;
+  height: 600px;
+  margin: 10px 0 10px 80px;
+  padding: 60px 70px;
   /* border: 1px solid blue; */
 }
 
@@ -18,17 +17,15 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  border-radius: 8px;
   margin: 0;
   /* border: 2px solid grey; */
 }
 
 .title {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
-  margin-bottom: 10px;
   width: 100%;
-  margin: 0 0 20px 10px;
+  margin: 0 0 40px 10px;
   /* border: 1px solid green; */
 }
 
@@ -36,10 +33,8 @@
   display: flex;
   gap: 20px;
   border-bottom: 1px solid #3D3D47;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   width: 100%;
-  font-size: 18px;
-  /* border: 1px solid green; */
 }
 
 .tab {
@@ -50,6 +45,7 @@
   background: none;
   font-weight: bolder;
   position: relative;
+  font-size: 16px;
 }
 
 .activeTab {
@@ -71,10 +67,11 @@
 .chartContainer {
   width: 100%;
   display: flex;
-  gap: 0px;
-  justify-content: space-around;
+  gap: 20px;
+  justify-content: space-between;
   /* border: 1px solid blue; */
 }
+
 /* 
 .indexBox {
   flex: 1;

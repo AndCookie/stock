@@ -49,7 +49,7 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
       {Object.keys(indexData![indexType]).map((key, i) => (
         <div className={styles.graph} key={key}>
           <div className={styles.graphTitle}>{key}</div>
-          <div className={styles.graphContent} ref={(el) => (chartContainerRefs.current[i] = el)} style={{ width: "500px", height: "250px"}} />
+          <div className={styles.graphContent} ref={(el) => (chartContainerRefs.current[i] = el)} style={{ width: "500px", height: "300px"}} />
         </div>
       ))}
     </>
