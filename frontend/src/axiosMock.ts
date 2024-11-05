@@ -476,4 +476,8 @@ mock
   .onPost(BASEURL + "chatbot/message")
   .reply(200, { message: "지피티의 답변~~" });
 
+mock.onGet(BASEURL + "search").reply(200, {
+  companyId: 12345,
+});
+
 export default mock;
