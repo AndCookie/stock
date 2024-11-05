@@ -1,10 +1,13 @@
 // 거래원
-import useTrader from "./useTrader";
+import useFetch from "../../common/useFetch";
+import { ITrader } from "./definitions";
 
 const Trader = () => {
   // TODO: companyId
   const companyId = 1;
-  const { data, loading, error } = useTrader(companyId);
+  const { data, loading, error } = useFetch<ITrader>(
+    `trend/${companyId}/trader`
+  );
 
   if (loading) return <p>loading...</p>;
   if (error) return <p>error</p>;
