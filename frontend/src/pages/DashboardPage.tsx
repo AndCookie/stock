@@ -39,18 +39,19 @@ import { IWidgetComponentProps } from '../common/definitions';
 // 디자인
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-// import styles from './DashboardPage.module.css';
+import styles from './DashboardPage.module.css';
+import { AiOutlineClose, AiOutlineCheck } from "react-icons/ai"; // X / 체크 아이콘
 
-// 위젯 컴포넌트를 동적으로 매핑하기 위한 객체
-const widgetComponents: { [key: string]: React.ComponentType<IWidgetComponentProps> } = {
-  chartWidget: Chart,
-  infoWidget: Info,
-  orderBookWidget: OrderBook,
-  symbolWidget: Symbol,
-  tradingWidget: Trading,
-  tradingTrendWidget: TradingTrend,
-  tradingVolumeWidget: TradingVolume,
-};
+// 위젯 구성 객체 (이름, 컴포넌트, 순서 정보 포함)
+const widgetConfig: { id: string; name: string; component: React.ComponentType<IWidgetComponentProps> }[] = [
+  { id: 'symbolWidget', name: '개요', component: Symbol },
+  { id: 'chartWidget', name: '차트', component: Chart },
+  { id: 'orderBookWidget', name: '호가', component: OrderBook },
+  { id: 'tradingVolumeWidget', name: '거래량', component: TradingVolume },
+  { id: 'tradingWidget', name: '주문', component: Trading },
+  { id: 'infoWidget', name: '기업정보/뉴스/공시', component: Info },
+  { id: 'tradingTrendWidget', name: '거래동향/거래원/투자자', component: TradingTrend },
+];
 
 const DashboardPage = () => {
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
@@ -76,7 +77,14 @@ const DashboardPage = () => {
     tradingWidget: true,
     tradingTrendWidget: true,
     tradingVolumeWidget: true,
-  }); // 각 위젯의 가시성 상태
+  });
+
+  // const [selectedWidgets, setSelectedWidgets] = useState<{ [key: string]: boolean }>(
+  //   Object.keys(widgetComponents).reduce((acc, key) => ({ ...acc, [key]: true }), {})
+  // );
+
+  
+  // 각 위젯의 가시성 상태
   const [showModal, setShowModal] = useState(false); // 모달 창 표시 여부
   const [isDraggable, setIsDraggable] = useState(true); // 드래그 가능 여부를 상태로 관리
 
@@ -170,79 +178,57 @@ const DashboardPage = () => {
     setLayout(prev => prev.filter(item => item.i !== widgetId));
   };
 
+  const toggleWidgetVisibility = (widgetId: string) => {
+    // setSelectedWidgets((prev) => ({
+    //   ...prev,
+    //   [widgetId]: !prev[widgetId]
+    // }));
+
+    if (isWidgetVisible[widgetId]) {
+      handleRemoveWidget(widgetId);
+    } else {
+      handleAddWidget(widgetId);
+    }
+  };
+
 return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '50px' }}>
-        {/* 우측 상단에 추가하기 버튼 */}
-        <button
-          onClick={toggleModal}
-          style={{
-            color: 'black',
-          }}
-        >
-          추가하기
+    <div className={styles.container}>
+      <div className={styles.addButton}>
+        <button onClick={toggleModal} className={styles.addBtn}>
+          화면 편집
+          <span style={{ fontSize: "10px", marginLeft: "5px" }}>▼</span>
         </button>
       </div>
 
-      <div style={{ backgroundColor: 'black', height: '100vh', width: '100vw', position: 'relative', userSelect: 'none' }}>
+      <div className={styles.main}>
         <div>
           {/* 모달 창 */}
           {showModal && (
-            <div
-              style={{
-                position: 'fixed',
-                top: 0, left: 0, right: 0, bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 101
-              }}
-              onClick={toggleModal} // 바깥 영역 클릭 시 모달 닫힘
-            >
+            <div className={styles.modalOverlay} onClick={toggleModal}>
               <div
-                style={{
-                  backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '300px', position: 'relative',
-                }}
-                onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 방지
+                className={styles.modalContent}
+                onClick={(e) => e.stopPropagation()}
               >
-                <button
-                  onClick={toggleModal}
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    zIndex: 10000,
-                    border: 'none',
-                    width: '20px',
-                    height: '20px',
-                    color: 'black',
-                  }}
-                >
-                  X
+                <button className="closeButton" onClick={toggleModal}>
+                  <AiOutlineClose size={20} style={{ fill: 'black' }} />
                 </button>
-                <h3 style={{ color: 'black', }}>위젯 추가/숨김</h3>
-                <ul>
-                  {/* 위젯 리스트: 각 위젯의 가시성 여부에 따라 추가 또는 숨김 버튼 표시 */}
-                  {Object.keys(isWidgetVisible).map(widgetId => (
-                    <li key={widgetId} style={{ color: 'black', }}>
-                      {widgetId.toUpperCase()} - {isWidgetVisible[widgetId] ? "보임" : "숨김"}
-                      {isWidgetVisible[widgetId] ? (
-                        <button
-                          onClick={() => handleRemoveWidget(widgetId)}
-                          style={{
-                            color: 'black',
-                          }}
-                        >
-                          숨김
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleAddWidget(widgetId)}
-                          style={{
-                            color: 'black',
-                          }}
-                        >
-                          추가
-                        </button>
-                      )}
+                {/* <h3 className={styles.modalTitle}>위젯 추가/숨김</h3> */}
+                {/* 위젯 리스트: 각 위젯의 가시성 여부에 따라 추가 또는 숨김 버튼 표시 */}
+                <ul className={styles.widgetList}>
+                  {widgetConfig.map(({ id, name }) => (
+                    <li
+                      key={id}
+                      className={`${styles.widgetItem} ${
+                        isWidgetVisible[id] ? styles.widgetItemSelected : styles.widgetItemUnselected
+                      }`}
+                      onClick={() => toggleWidgetVisibility(id)}
+                    >
+                      <AiOutlineCheck
+                        className={styles.checkIcon}
+                        size={20}
+                        style={{ fill: isWidgetVisible[id] ? '#7B00F7' : 'grey' }}
+                      />
+                      {name}
                     </li>
                   ))}
                 </ul>
@@ -276,35 +262,27 @@ return (
             onResizeStop={handleLayoutChange} // 크기 조정 완료 시 커스텀 로직 적용
           >
             {/* 가시성 상태에 따라 위젯을 조건부로 렌더링 */}
-            {Object.keys(isWidgetVisible).map(widgetId => (
-              isWidgetVisible[widgetId] && (
-                <div key={widgetId} className="drag-handle" style={{ overflow: 'hidden', position: 'relative', backgroundColor: 'grey', }}>
-                  <div>
-                    {/* 위젯을 숨기기 위한 X 버튼 */}
-                    <button
-                      onMouseDown={(event) => {
-                        event.stopPropagation(); // 부모 요소로의 이벤트 전파를 막아, 드래그보다 클릭이 우선
-                        setIsDraggable(false); // X 버튼 클릭 시 드래그 비활성화
-                      }}
-                      onClick={(event) => {
-                        event.stopPropagation(); // 부모 요소로의 이벤트 전파를 막아, 드래그가 작동하지 않도록
-                        handleRemoveWidget(widgetId); // 해당 위젯을 제거하는 함수 호출
-                        setIsDraggable(true); // 클릭 후 드래그 다시 활성화
-                      }}
-                      style={{
-                        position: 'absolute', top: 0, right: 0, zIndex: 10000, border: 'none', width: '20px', height: '20px', color: 'black',
-                      }}
-                    >
-                      X
-                    </button>
-                  </div>
-                  <div>
-                    {/* 동적으로 위젯 컴포넌트를 생성 & setIsDraggable 전달 */}
-                    {React.createElement(widgetComponents[widgetId], { setIsDraggable })}
-                  </div>
+            {widgetConfig.map(({ id, component: Component }) => 
+              isWidgetVisible[id] && (
+                <div key={id} className={styles.widget}>
+                  {/* X 버튼 및 동적 위젯 컴포넌트 렌더링 */}
+                  <button className="closeButton" 
+                    onMouseDown={(event) => {
+                      event.stopPropagation();
+                      setIsDraggable(false);
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleRemoveWidget(id);
+                      setIsDraggable(true);
+                    }}
+                  >
+                    <AiOutlineClose size={15} style={{ fill: 'grey' }} />
+                  </button>
+                  <Component setIsDraggable={setIsDraggable} />
                 </div>
               )
-            ))}
+            )}
           </GridLayout>
         </div>
       </div>
