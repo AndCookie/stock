@@ -19,6 +19,7 @@
   font-weight: normal;
   min-width: 150px;
   cursor: pointer;
+  cursor: pointer;
   /* border: 1px solid white; */
 }
 
@@ -72,6 +73,7 @@
   padding-bottom: 7px;
   width: 100%;
   min-width: 200px;
+  cursor: pointer;
   width: 100%;
   min-width: 200px;
   cursor: pointer;
