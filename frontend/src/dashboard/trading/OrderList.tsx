@@ -1,4 +1,4 @@
-// 주문하기 / 주문내역
+// 주문내역
 
 const OrderList = () => {
   return(
