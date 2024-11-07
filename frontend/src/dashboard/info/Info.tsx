@@ -5,6 +5,7 @@ import Overview from "./Overview";
 import News from "./News";
 import Disclosure from "./Disclosure";
 import { IWidgetComponentProps } from "../../common/definitions";
+import styles from "./Info.module.css";
 
 const TABS = [
   { label: "기업 정보", component: <Overview /> },
@@ -16,12 +17,14 @@ const Info = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
-    <div>
+    <div className={styles.container}>
       {/* 탭 */}
-      <div>
+      <div className="categoryTabs">
         {TABS.map((tab, index) => (
           <button
             key={index}
+            className={`tabButton ${styles.tabButton}
+              ${selectedTab === index ? "activeTab" : ""}`}
             onMouseDown={(event) => {
               event.stopPropagation(); // 클릭 시 드래그 방지
               setIsDraggable(false); // 버튼 클릭 시 드래그 비활성화
@@ -36,7 +39,9 @@ const Info = ({ setIsDraggable }: IWidgetComponentProps) => {
         ))}
       </div>
       {/* 선택된 탭의 컴포넌트 렌더링 */}
-      <div>{TABS[selectedTab].component}</div>
+      <div className={`content ${styles.content}`}>
+        {TABS[selectedTab].component}
+      </div>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import Daily from "./Daily";
 import Trader from "./Trader";
 import Investor from "./Investor";
 import { IWidgetComponentProps } from "../../common/definitions";
+import styles from "./TradingTrend.module.css";
 
 const TABS = [
   { label: "거래동향", component: <Daily /> },
@@ -16,12 +17,14 @@ const TradingTrend = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
-    <div>
+    <div className={styles.container}>
       {/* 탭 */}
-      <div>
+      <div className="categoryTabs">
         {TABS.map((tab, index) => (
           <button
             key={index}
+            className={`tabButton ${styles.tabButton}
+              ${selectedTab === index ? "activeTab" : ""}`}
             onMouseDown={(event) => {
               event.stopPropagation(); // 클릭 시 드래그 방지
               setIsDraggable(false); // 버튼 클릭 시 드래그 비활성화
@@ -36,7 +39,9 @@ const TradingTrend = ({ setIsDraggable }: IWidgetComponentProps) => {
         ))}
       </div>
       {/* 선택된 탭의 컴포넌트 렌더링 */}
-      <div>{TABS[selectedTab].component}</div>
+      <div className={`content ${styles.content}`}>
+        {TABS[selectedTab].component}
+      </div>
     </div>
   );
 };

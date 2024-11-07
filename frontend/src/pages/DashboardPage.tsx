@@ -260,6 +260,7 @@ return (
             onLayoutChange={(layout) => console.log(layout)}
             onDragStop={handleLayoutChange} // 드래그 종료 시 커스텀 로직 적용
             onResizeStop={handleLayoutChange} // 크기 조정 완료 시 커스텀 로직 적용
+            useCSSTransforms = {true}
           >
             {/* 가시성 상태에 따라 위젯을 조건부로 렌더링 */}
             {widgetConfig.map(({ id, component: Component }) => 
