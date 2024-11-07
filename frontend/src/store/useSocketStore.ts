@@ -58,9 +58,9 @@ interface ITradingData {
 
 interface ISocketStore {
   orderBookData: IOrderBookData | null;
-  tradingData: ITradingData | null;
+  tradingData: ITradingData[] | null;
   setOrderBookData: (data: IOrderBookData) => void;
-  setTradingData: (data: ITradingData) => void;
+  setTradingData: (data: ITradingData[]) => void;
 }
 
 const SOCKET_URL = "https://k11a204.p.ssafy.io/api";
@@ -113,17 +113,35 @@ const useSocketStore = create<ISocketStore>((set) => ({
     TOTAL_ASKP_RSQN: 55,
     TOTAL_BIDP_RSQN: 55,
   },
-  tradingData: {
-    STCK_CNTG_HOUR: 142251,
-    STCK_PRPR: 1900,
-    CNTG_VOL: 10,
-    ACML_VOL: 123,
-    CTTR: 73.5,
-    CCLD_DVSN: 1,
-  },
+  tradingData: [
+    {
+      STCK_CNTG_HOUR: 111858,
+      STCK_PRPR: 2000,
+      CNTG_VOL: 10,
+      ACML_VOL: 123,
+      CTTR: 73.3,
+      CCLD_DVSN: 1,
+    },
+    {
+      STCK_CNTG_HOUR: 130105,
+      STCK_PRPR: 1900,
+      CNTG_VOL: 30,
+      ACML_VOL: 153,
+      CTTR: 69.84,
+      CCLD_DVSN: 5,
+    },
+    {
+      STCK_CNTG_HOUR: 142251,
+      STCK_PRPR: 2000,
+      CNTG_VOL: 20,
+      ACML_VOL: 173,
+      CTTR: 71.48,
+      CCLD_DVSN: 1,
+    },
+  ],
 
   setOrderBookData: (data: IOrderBookData) => set({ orderBookData: data }),
-  setTradingData: (data: ITradingData) => set({ tradingData: data }),
+  setTradingData: (data: ITradingData[]) => set({ tradingData: data }),
 }));
 
 // 소켓에서 데이터를 수신하여 Zustand 스토어 업데이트
