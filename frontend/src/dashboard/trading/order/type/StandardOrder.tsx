@@ -1,16 +1,16 @@
-// 주문하기 - 구매
+// 일반 주문
 
 import React, { useState } from "react";
-import StandardOrder from "./type/StandardOrder";
-import ScheduledOrder from "./type/ScheduledOrder";
-import styles from "./Buy.module.css";
+import MarketOrder from "./standardOrder/MarketOrder";
+import LimitOrder from "./standardOrder/LimitOrder";
+import styles from "./StandardOrder.module.css";
 
 const TABS = [
-  { label: "일반 주문", component: <StandardOrder/> },
-  { label: "조건 주문", component: <ScheduledOrder/>}
-]
+  { label: "지정가 주문", component: <LimitOrder/> },
+  { label: "시장가 주문", component: <MarketOrder/> },
+];
 
-const Buy: React.FC = () => {
+const StandardOrder: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
@@ -38,4 +38,4 @@ const Buy: React.FC = () => {
   );
 };
 
-export default Buy;
+export default StandardOrder
