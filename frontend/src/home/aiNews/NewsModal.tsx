@@ -17,7 +17,7 @@ const NewsModal = ({
   return (
     <div className={styles.modalOverlay} onClick={closeModal}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.closeButton} onClick={closeModal}>
+        <button className="closeButton" onClick={closeModal}>
           <AiOutlineClose size={20} color="#888" />
         </button>
         <div className={styles.title}>{title}</div>

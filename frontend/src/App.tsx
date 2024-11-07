@@ -6,6 +6,7 @@ import Nav from "./common/nav/Nav";
 import HomePage from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
 import MarketPage from "./pages/MarketPage";
+import './index.css';
 
 // 백엔드 구현 전 axios MOCK !!! 배포 시에는 제거하세요
 import "./axiosMock";

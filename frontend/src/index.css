@@ -33,3 +33,16 @@ html, body {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+
+.closeButton {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 10000 !important;
+  border: none !important;
+  background: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
