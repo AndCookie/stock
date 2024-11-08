@@ -1,11 +1,11 @@
-.title {
-  margin: 0 20px;
+.header {
+  font-size: 18px;
+  margin-bottom: 15px;
   text-align: center;
-  /* border: 1px solid blue; */
 }
 
 .content {
-  margin: -20px 0 0 0;
+  margin: -30px 0 0 0;
   width: 100%;
   /* border: 1px solid red;  */
 }
