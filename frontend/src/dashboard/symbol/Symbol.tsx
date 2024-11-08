@@ -1,8 +1,8 @@
 // 종목개요
 // 삼성전자 #IT 가격 등락률
-
 import { useState } from "react";
 import { IWidgetComponentProps } from "../../common/definitions";
+import styles from './Symbol.module.css'
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   // TODO: 실제 data를 넣어주세요
@@ -30,16 +30,22 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     // TODO: post 요청을 통해 서버 상태 업데이트
     setIsFavorite((prev) => !prev);
   };
+
+  console.log("Change:", change);
+  console.log("Rate:", rate);
+  console.log('Styles:', styles);
+  
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      {/* 왼쪽과 오른쪽으로 나눠놨습니다 (임시 CSS)*/}
-      <div>
-        <div>
-          <span>{name}</span>
+    <div className={styles.container}>
+      {/* 왼쪽 영역 */}
+      <div className={styles.leftSection}>
+        <div className={styles.nameSection}>
+          <span className={styles.name}>{name}</span>
           <span
+            className={isFavorite ? styles.heartActive : styles.heartInactive}
             onMouseDown={(event) => {
-              event.stopPropagation(); // 클릭 시 드래그 방지
-              setIsDraggable(false); // 버튼 클릭 시 드래그 비활성화
+              event.stopPropagation();
+              setIsDraggable(false);
             }}
             onClick={() => {
               toggleFavorite();
@@ -49,18 +55,30 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
             {isFavorite ? "♥" : "♡"}
           </span>
         </div>
-        <div>
-          #{industry}#{companyDetail}
+        <div className={styles.details}>
+          #{industry} #{companyDetail}
         </div>
       </div>
-      <div>
-        <div>{currentPrice}</div>
-        <div>
-          <span>{change}</span>
-          <span>{rate}%</span>
+
+      {/* 오른쪽 영역 */}
+      <div className={styles.rightSection}>
+        <div className={styles.price}>{currentPrice.toLocaleString()}원</div>
+        <div
+          className={`${styles.change}`}
+          style={{ color: change >= 0 ? '#FF4F4F' : '#4881FF' }}
+        >
+          <span>
+            {change >= 0 ? `+${change}` : change}원
+          </span>
+          <span>
+            ({rate >= 0 ? `+${rate}` : rate}%)
+          </span>
         </div>
+
+
       </div>
     </div>
+
   );
 };
 
