@@ -1,15 +1,18 @@
-from rest_framework.decorators import api_view
+import requests
+import json
+import redis
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from stocks.utils import *
-import requests
-import json
 from datetime import datetime, timedelta, date
-import redis
 from django.conf import settings
 from .models import StockData
+from .serializers import StockDataSerializer
+from django.db.models import Sum, F, ExpressionWrapper, FloatField
 
-# KIS API와 Redis 설정
+
 REAL_KIS_API_BASE_URL = "https://openapi.koreainvestment.com:9443"
 PAPER_KIS_API_BASE_URL = "https://openapivts.koreainvestment.com:29443"
 
@@ -351,49 +354,124 @@ def rankings(rank_type):
         headers = get_real_headers('FHPST01700000', 'P')
     return requests.get(url, headers=headers, params=params)
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def order(request):
-    stock_code = request.data.get('stock_code')
-    trade_type = request.data.get('trade_type')
-    count = request.data.get('count')
-    order_type = request.data.get('order_type')
-    try:
-        price = request.data.get('price')
-    except:
-        price = "0"
+    if request.method == 'GET':
+        user = request.user
+        orders = StockData.objects.filter(user=user).order_by('-execution_time')  # 최신 순으로 정렬
+        serializer = StockDataSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'POST':
+        user = request.user
+        stock_code = request.data.get('stock_code')
+        trade_type = request.data.get('trade_type')
+        amount = request.data.get('amount')
+        order_type = request.data.get('order_type')
+        try:
+            price = request.data.get('price')
+        except:
+            price = "0"
 
-    url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/order-cash"
+        url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/order-cash"
 
-    payload = {    
-        "CANO": settings.PAPER_ACCOUNT,
-        "ACNT_PRDT_CD": "01",
-        "PDNO": stock_code,
-        "ORD_DVSN": "00",  # 00: 지정가, 01: 시장가
-        "ORD_QTY": count,  # 주문 주식 수
-        "ORD_UNPR": price  # 지정가인 경우 가격 담고, 시장가인 경우는 0으로
+        payload = {    
+            "CANO": settings.PAPER_ACCOUNT,
+            "ACNT_PRDT_CD": "01",
+            "PDNO": stock_code,
+            "ORD_DVSN": "00",  # 00: 지정가, 01: 시장가
+            "ORD_QTY": amount,  # 주문 주식 수
+            "ORD_UNPR": price  # 지정가인 경우 가격 담고, 시장가인 경우는 0으로
+        }
+        
+        if order_type == "market":
+            payload['ORD_DVSN'] = "01"
+        
+        if trade_type == 'buy':
+            headers = get_paper_headers('VTTC0802U')  # 매수 주문
+        elif trade_type == 'sell':
+            headers = get_paper_headers('VTTC0801U')  # 매도 주문
+        else:
+            print(f"trade_type을 확인해주세요. 현재 trade_type은 {trade_type}입니다.")
+
+        response =  requests.post(url, headers=headers, data=json.dumps(payload))
+        
+        if response.status_code == 200:
+            response = response.json()
+            if response.get('rt_cd') == "0": # 성공
+                serializer = StockDataSerializer()
+                execution_date = datetime.now().strftime("%Y%m%d")
+
+                if trade_type == 'sell':
+                    amount *= -1
+                stock_data_serializer = serializer(data={
+                    "user": user,
+                    "stock_code": stock_code,
+                    "amount": amount, 
+                    "price": price, 
+                    "execution_date": execution_date, 
+                    "execution_time": response['output']['ORD_TMD'], 
+                    }
+                )
+                if stock_data_serializer.is_valid():
+                    stock_data_serializer.save()
+                    return Response(response, status=status.HTTP_200_OK)
+                else:
+                    return Response(stock_data_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:  # 실패
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print(response.json())
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def holdings(request):
+    user = request.user
+
+    holdings = (
+        StockData.objects.filter(user=user)
+        .values('stock_code')
+        .annotate(
+            total_amount=Sum('amount'),  # 보유 수량의 합계
+            total_value=Sum(F('price') * F('amount'))  # 가격 * 수량의 합
+        )
+        .annotate(
+            average_price=ExpressionWrapper(F('total_value') / F('total_amount'), output_field=FloatField())  # 평균 가격 계산
+        )
+        .filter(total_amount__gt=0)  # 보유 수량이 0보다 큰 종목만 반환
+    )
+
+    response_data = [
+        {
+            "stock_code": holding["stock_code"],
+            "total_amount": holding["total_amount"],
+            "average_price": holding["average_price"],
+        }
+        for holding in holdings
+    ]
+    
+    # 주식 현재가 가져와서 비교해야함
+    for holding in holdings:
+        stock_code = holding['stock_code']
+        current_price = current_price(stock_code)
+        pass
+
+    return Response(response_data, status=status.HTTP_200_OK)
+
+# 주식 현재가 시세
+def current_price(stock_code):
+    # 이거 비동기로 만들어야 주식을 빠르게 가져올 수 있을 것 같아..
+    # 그렇지 않은 거랑 아닌거랑 확인해보쟝
+    params = {
+        "FID_COND_MRKT_DIV_CODE": "J", 
+        "FID_INPUT_ISCD": stock_code,
     }
     
-    if order_type == "market":
-        payload['ORD_DVSN'] = "01"
+    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-price"
+    headers = get_paper_headers('FHKST01010100')
     
-    if trade_type == 'buy':
-        headers = get_paper_headers('VTTC0802U')  # 매수 주문
-    elif trade_type == 'sell':
-        headers = get_paper_headers('VTTC0801U')  # 매도 주문
-    else:
-        print(f"trade_type을 확인해주세요. 현재 trade_type은 {trade_type}입니다.")
-
-    response =  requests.post(url, headers=headers, data=json.dumps(payload))
-    
-    if response.status_code == 200:
-        response = response.json()
-        if response.get('rt_cd') == "0": # 성공
-            return Response(response, status=status.HTTP_200_OK)
-        else:  # 실패
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        print(response)
-        return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+    return requests.get(url, headers=headers, params=params)
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):
