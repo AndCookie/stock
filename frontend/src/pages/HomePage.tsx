@@ -2,7 +2,7 @@ import styles from './HomePage.module.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Indicators from '../home/indicators/Indicators';
-import Account from '../home/account/Account';
+import Account from '../home/account/HomeAccount';
 import UserRanking from '../home/userRanking/UserRanking';
 import StockRanking from '../home/stockRanking/StockRanking';
 import Advice from '../home/advice/Advice';

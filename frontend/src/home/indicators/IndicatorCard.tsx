@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Indicators.module.css';
 import { IIndicatorCardProps } from './definitions';
@@ -27,6 +28,7 @@ const flagMap: Record<string, string> = {
 const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
   const { indexData } = useIndexStore();
   const navigate = useNavigate();
+  const [isDragging, setIsDragging] = useState(false);
 
   const indexTypes = ['국내', '해외', '환율', '원자재'];
 
@@ -46,12 +48,27 @@ const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
   const changeValue = current.value - previous.value;
   const changeRate = (changeValue / previous.value) * 100;
 
-  const cardClick = () => {
-    navigate(`/market/${indexTypeId}`);
+  const handleMouseDown = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = () => {
+    setIsDragging(true);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) {
+      navigate(`/market/${indexTypeId}`);
+    }
   };
 
   return (
-    <div className={styles.metricBox} onClick={cardClick}>
+    <div
+      className={styles.metricBox}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    >
       <div className={styles.textInfo}>
         <div className={styles.title}>
           {flagSrc && <img src={flagSrc} alt="flag" className={styles.flagIcon} />}
