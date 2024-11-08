@@ -25,12 +25,12 @@ const Account: React.FC<AccountProps> = ({ contentStyle }) => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.categoryTabs}>
+      <div className="categoryTabs">
         {categories.map((category) => (
           <button
             key={category}
-            className={`${styles.tabButton} ${
-              selectedCategory === category ? styles.activeTab : ""
+            className={`${"tabButton"} ${
+              selectedCategory === category ? "activeTab" : ""
             }`}
             onClick={() => setSelectedCategory(category)}
           >
