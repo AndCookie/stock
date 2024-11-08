@@ -21,12 +21,12 @@ const Account = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.categoryTabs}>
+      <div className="categoryTabs">
         {categories.map((category) => (
           <button
             key={category}
-            className={`${styles.tabButton} ${
-              selectedCategory === category ? styles.activeTab : ""
+            className={`${"tabButton"} ${
+              selectedCategory === category ? "activeTab" : ""
             }`}
             onClick={() => setSelectedCategory(category)}
           >
@@ -34,7 +34,9 @@ const Account = () => {
           </button>
         ))}
       </div>
-      <div className={styles.content}>{renderContent()}</div>
+      <div className={`content ${styles.content}`}>
+        {renderContent()}
+      </div>
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import useFetch from "../../common/useFetch";
 import { ICompanyData } from "./definitions";
+import styles from "./Info.module.css";
+
 
 const Overview = () => {
   // TODO: companyId
@@ -10,30 +12,31 @@ const Overview = () => {
   if (error) return <p>Error loading data.</p>;
 
   return (
-    <div>
+    <div className={styles.subContent}>
       {data ? (
-        <div>
-          {/* KOSPI | 전기전자 ... 기업분석자세히보기> */}
-          <div>
-            {/* space-between 쓰실까봐 분리해뒀어요 */}
-            <span>
+        <div className={styles.overviewContainer}>
+          {/* 상단 정보: KOSPI | 전기전자 ... 기업분석 자세히 보기 */}
+          <div className={styles.headerSection}>
+            <span className={styles.marketInfo}>
               {data.market} | {data.industry}
             </span>
-            <span>{data.companyDetailsLink}</span>
+            <span className={styles.detailsLink}>{data.companyDetailsLink}</span>
           </div>
-          {/* 대표이사, 시가총액 */}
-          <div>
-            <div>
-              <span>대표이사</span>
-              <span>{data.ceo}</span>
+          
+          {/* 중간 정보: 대표이사, 시가총액 */}
+          <div className={styles.infoBox}>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>대표이사</span>
+              <span className={styles.infoValue}>{data.ceo}</span>
             </div>
-            <div>
-              <span>시가총액</span>
-              <span>{data.marketCap}억원</span>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>시가총액</span>
+              <span className={styles.infoValue}>{data.marketCap.toLocaleString()}억원</span>
             </div>
           </div>
+
           {/* 설명 */}
-          <div>{data.description}</div>
+          <div className={styles.description}>{data.description}</div>
         </div>
       ) : (
         <p>No data available</p>
