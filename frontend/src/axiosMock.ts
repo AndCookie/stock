@@ -263,14 +263,14 @@ mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
   {
     id: 1,
     title: "삼성전자(주) 기업설명회(IR) 개최(안내공시)",
-    created_at: "24/10/08 08:55",
+    created_at: "2024-10-08 08:55:00",
     author: "거래소 공시",
     url: "https://www.google.com", // 실제 URL로 변경 가능
   },
   {
     id: 2,
     title: "삼성전자(주) 연결재무제표기준영업(잠정)실적(공정공시)",
-    created_at: "24/10/08 08:45",
+    created_at: "2024-10-08 08:45",
     author: "거래소 공시",
     url: "https://www.google.com",
   },
@@ -278,7 +278,7 @@ mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
     id: 3,
     title:
       "삼성전자(주) 주식선물 - 주식옵션 3단계 가격제한폭 확대요건 도달(하락)",
-    created_at: "24/08/05 14:52",
+    created_at: "2024-08-05 14:52",
     author: "거래소 공시",
     url: "https://www.google.com",
   },
@@ -286,14 +286,14 @@ mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
     id: 4,
     title:
       "삼성전자(주) 주식선물 - 주식옵션 2단계 가격제한폭 확대요건 도달(하락)",
-    created_at: "24/08/05 14:47",
+    created_at: "2024-08-05 14:47",
     author: "거래소 공시",
     url: "https://www.google.com",
   },
   {
     id: 5,
     title: "삼성전자(주) 기타 경영사항(자율공시)",
-    created_at: "24/07/31 17:08",
+    created_at: "2024-07-31 17:08",
     author: "거래소 공시",
     url: "https://www.google.com",
   },
@@ -444,6 +444,12 @@ mock.onGet(BASEURL + "trend/1/trader").reply(200, {
       amount: 1840511,
       diff: 1840511,
     },
+  ],
+  foreignVolume: [
+    {
+      sell: 405832,
+      buy: 161328,
+    }
   ],
 });
 

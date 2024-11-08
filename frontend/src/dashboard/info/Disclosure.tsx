@@ -3,6 +3,7 @@
 import useFetch from "../../common/useFetch";
 import Item from "./Item";
 import { ICompanyNewsDisclosure } from "./definitions";
+import styles from "./Info.module.css";
 
 const Disclosure = () => {
   // TODO : companyId
@@ -15,22 +16,25 @@ const Disclosure = () => {
   if (error) return <p>Error loading data</p>;
 
   return (
-    <div>
-      <div>
-        {data ? (
-          data.map((news, idx) => (
-            <Item
-              main={news.title}
-              date={news.created_at}
-              sub={news.author}
-              url={news.url}
-              key={idx}
-            />
-          ))
-        ) : (
-          <p>no data available</p>
-        )}
-      </div>
+    <div className={styles.subContent}>
+      {data ? (
+        <div className={styles.newsContainer}>
+          {data.map((news, idx) => (
+            <div className={styles.newsItem} key={idx}>
+              <Item
+                main={news.title}
+                date={news.created_at}
+                sub={news.author}
+                url={news.url}
+                key={idx}
+                isNews={false} // 공시이므로 false 설정
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p>No data available</p>
+      )}
     </div>
   );
 };
