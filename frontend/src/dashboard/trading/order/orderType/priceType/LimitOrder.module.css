@@ -1,0 +1,54 @@
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.inputContainer label {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #aaa;
+}
+
+.inputBox {
+  display: flex;
+  align-items: center;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 8px;
+  background-color: #2c2f36;
+}
+
+.inputBox input {
+  flex: 1; /* 남은 공간을 차지하게 설정 */
+  min-width: 0; /* 크기 조정 시 내용이 넘치지 않도록 설정 */
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+}
+
+.inputBox span {
+  color: #fff;
+}
+
+.inputBox button {
+  flex-shrink: 0; /* 버튼이 크기에 맞춰 줄어들지 않도록 설정 */
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 8px;
+}
+
+.inputBox button:disabled {
+  color: #555;
+  cursor: not-allowed;
+}
+
+.inputBox button:hover {
+  filter: brightness(1.2); /* 버튼이 밝아지는 효과 */
+}

@@ -1,0 +1,29 @@
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  background-color: #2c2f36; /* 네비게이션 바 배경색 */
+  border-radius: 12px;
+  padding: 2px;
+  margin: 8px;
+}
+
+.navItem {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  font-weight: bold;
+  color: #aaa; /* 비활성화된 텍스트 색상 */
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 8px;
+}
+
+.navItem:hover {
+  filter: brightness(1.2); /* 명도를 20% 밝게 */
+  font-weight: bold; /* 글씨 굵게 */
+}
+
+.active {
+  background-color: #4c4d55; /* 활성화된 탭의 배경색 */
+  color: #ffffff; /* 활성화된 탭의 텍스트 색상 */
+}

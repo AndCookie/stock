@@ -1,17 +1,17 @@
-// 주문하기 - 구매
+// 일반 주문
 
 import React, { useState } from "react";
-import StandardOrder from "./orderType/StandardOrder";
-import ScheduledOrder from "./orderType/ScheduledOrder";
-import styles from "./Sell.module.css";
-import { IPriceProps } from "../definitions";
+import MarketOrder from "./priceType/MarketOrder";
+import LimitOrder from "./priceType/LimitOrder";
+import styles from "./StandardOrder.module.css";
+import { IOrderProps } from "../../definitions";
 
-const Sell: React.FC<IPriceProps> = ({ initialMarketPrice }) => {
+const StandardOrder: React.FC<IOrderProps> = ({ initialMarketPrice, mode }) => {
   const TABS = [
-    { label: "일반 주문", component: <StandardOrder initialMarketPrice={initialMarketPrice} mode={"Sell"} /> },
-    { label: "조건 주문", component: <ScheduledOrder initialMarketPrice={initialMarketPrice} mode={"Sell"} /> },
+    { label: "지정가 주문", component: <LimitOrder initialMarketPrice={initialMarketPrice} mode={mode} type={"STANDARD"} trackedPrice={0} /> },
+    { label: "시장가 주문", component: <MarketOrder mode={mode} type={"STANDARD"} trackedPrice={0} /> },
   ];
-
+  
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
@@ -39,4 +39,4 @@ const Sell: React.FC<IPriceProps> = ({ initialMarketPrice }) => {
   );
 };
 
-export default Sell;
+export default StandardOrder
