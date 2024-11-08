@@ -1,8 +1,8 @@
 // 일반 주문
 
 import React, { useState } from "react";
-import MarketOrder from "./standardOrder/MarketOrder";
-import LimitOrder from "./standardOrder/LimitOrder";
+import MarketOrder from "./priceType/MarketOrder";
+import LimitOrder from "./priceType/LimitOrder";
 import styles from "./StandardOrder.module.css";
 
 const TABS = [

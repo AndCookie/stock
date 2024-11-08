@@ -1,8 +1,8 @@
 // 주문하기 - 구매
 
 import React, { useState } from "react";
-import StandardOrder from "./type/StandardOrder";
-import ScheduledOrder from "./type/ScheduledOrder";
+import StandardOrder from "./orderType/StandardOrder";
+import ScheduledOrder from "./orderType/ScheduledOrder";
 import styles from "./Buy.module.css";
 
 const TABS = [
