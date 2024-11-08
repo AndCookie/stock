@@ -12,6 +12,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from tqdm import tqdm
 from websocket import WebSocketApp
+import websocket
 
 
 def get_redis_client():
