@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./History.module.css";
-import { useHistoryStore } from "../../store/useHistoryStore";
-import { IHistoryData } from "../../store/definitions";
+import { useHistoryStore } from "../../../store/useHistoryStore";
+import { IHistoryData } from "../../../store/definitions";
 
 const History = () => {
   const { historyData, fetchHistoryData } = useHistoryStore();
