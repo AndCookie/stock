@@ -1,0 +1,52 @@
+.rolling {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  color: #fff;
+  display: flex;
+  padding: 7px 0;
+  z-index: 1000;
+  background-color: black;
+}
+
+.inner {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  animation: scrollLeft 60s linear infinite;
+}
+
+.indexItem {
+  margin-right: 50px;
+  border-radius: 5px;
+  font-size: 11px;
+  width: 155px;
+  display: flex;
+  justify-content: space-between;
+  /* border: 1px solid green; */
+}
+
+.subKey {
+  font-weight: 300;
+}
+
+.value {
+  font-weight: 600;
+}
+
+.positive {
+  color: #FF4F4F;
+}
+
+.negative {
+  color: #4881FF;
+}
+
+@keyframes scrollLeft {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%); /* 절반 길이로 움직임 */
+  }
+}
