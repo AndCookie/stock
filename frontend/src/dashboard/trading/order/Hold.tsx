@@ -5,7 +5,7 @@ const Hold = () => {
     <div>
       Hold
     </div>
-  )
-}
+  );
+};
 
 export default Hold

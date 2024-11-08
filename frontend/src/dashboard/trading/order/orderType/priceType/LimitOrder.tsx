@@ -1,20 +1,11 @@
 // 지정가 주문
 
 import React, { useState } from "react";
-import useSocketStore from "../../../../../store/useSocketStore";
 import styles from "./LimitOrder.module.css"
+import { IOrderTypeProps } from "../../../definitions";
+import OrderButton from "../../OrderButton";
 
-const LimitOrder: React.FC = () => {
-  // Zustand 스토어에서 tradingData 배열 가져오기
-  const tradingData = useSocketStore((state) => state.tradingData);
-
-  // 접속 시점의 가장 최신 STCK_PRPR 값을 한 번만 설정
-  const [initialMarketPrice] = useState(() =>
-    tradingData && tradingData.length > 0
-      ? tradingData[tradingData.length - 1].STCK_PRPR
-      : 0
-  );
-
+const LimitOrder: React.FC<IOrderTypeProps> = ({ initialMarketPrice, mode, type, trackedPrice }) => {
   // 구매 가격과 수량 상태 관리
   const [price, setPrice] = useState(initialMarketPrice);
   const [quantity, setQuantity] = useState<string | number>("");
@@ -98,6 +89,9 @@ const LimitOrder: React.FC = () => {
           <button onClick={increaseQuantity}>+</button>
         </div>
       </div>
+
+      {/* OrderButton 컴포넌트에 props 전달 */}
+      <OrderButton mode={mode} type={type} trackedPrice={trackedPrice} price={price} quantity={quantity} />
     </div>
   );
 };

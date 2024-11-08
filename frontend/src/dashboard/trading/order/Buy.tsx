@@ -4,13 +4,14 @@ import React, { useState } from "react";
 import StandardOrder from "./orderType/StandardOrder";
 import ScheduledOrder from "./orderType/ScheduledOrder";
 import styles from "./Buy.module.css";
+import { IPriceProps } from "../definitions";
 
-const TABS = [
-  { label: "일반 주문", component: <StandardOrder/> },
-  { label: "조건 주문", component: <ScheduledOrder/>}
-]
+const Buy: React.FC<IPriceProps> = ({ initialMarketPrice }) => {
+  const TABS = [
+    { label: "일반 주문", component: <StandardOrder initialMarketPrice={initialMarketPrice} mode={"BUY"} /> },
+    { label: "조건 주문", component: <ScheduledOrder initialMarketPrice={initialMarketPrice} mode={"BUY"} /> },
+  ];
 
-const Buy: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (

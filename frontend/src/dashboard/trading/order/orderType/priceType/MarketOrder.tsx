@@ -2,8 +2,10 @@
 
 import React, { useState } from "react";
 import styles from "./MarketOrder.module.css"
+import { IOrderTypeProps } from "../../../definitions";
+import OrderButton from "../../OrderButton";
 
-const MarketOrder: React.FC = () => {
+const MarketOrder: React.FC<Omit<IOrderTypeProps, 'initialMarketPrice'>> = ({ mode, type, trackedPrice }) => {
   // 구매 가격과 수량 상태 관리
   const [quantity, setQuantity] = useState<string | number>("");
 
@@ -57,6 +59,10 @@ const MarketOrder: React.FC = () => {
           <button onClick={increaseQuantity}>+</button>
         </div>
       </div>
+
+      {/* OrderButton 컴포넌트에 props 전달 */}
+      {/* 시장가 주문은 price를 0으로 POST 요청 보냄 */}
+      <OrderButton mode={mode} type={type} trackedPrice={trackedPrice} price={0} quantity={quantity} />
     </div>
   );
 };
