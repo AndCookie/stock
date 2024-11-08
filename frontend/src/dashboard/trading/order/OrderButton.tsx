@@ -17,16 +17,17 @@ const OrderButton: React.FC<IOrderButtonProps> = ({ mode, type, trackedPrice, pr
       >
         {mode === "BUY" ? "구매하기" : "판매하기"}
       </button>
+
+      <div>
+        <span>기능 구현 중 아래는 임시용</span>
+        <div>총 금액</div>
+        <div>{mode === "BUY" ? "구매하기" : "판매하기"}</div>
+        <div>{type === "STANDARD" ? "일반 주문" : "조건 주문"}</div>
+        <div>{trackedPrice}원 감시 중</div>
+        <div>{price}원</div>
+        <div>{quantity}주</div>
+      </div>
     </div>
-    // <div>
-    //   <div>총 금액</div>
-    //   <div>{mode === "BUY" ? "구매하기" : "판매하기"}</div>
-    //   <div>{mode === "BUY" ? "구매하기" : "판매하기"}</div>
-    //   <div>{type === "STANDARD" ? "일반 주문" : "조건 주문"}</div>
-    //   <div>{trackedPrice}원 감시 중</div>
-    //   <div>{price}원</div>
-    //   <div>{quantity}주</div>
-    // </div>
   );
 };
 
