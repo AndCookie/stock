@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import styles from "./Favorite.module.css";
-import { useFavoriteStore } from "../../store/useFavoriteStore";
-import { COLORS } from '../../common/utils';
+import { useFavoriteStore } from "../../../store/useFavoriteStore";
+import { COLORS } from '../../../common/utils';
 
 const Favorites = () => {
   const { favoriteData, fetchFavoriteData } = useFavoriteStore();

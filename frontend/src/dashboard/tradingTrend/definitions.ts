@@ -15,7 +15,10 @@ export interface IItem {
 export interface ITrader {
   buy: IItem[];
   sell: IItem[];
-  // TODO: 외국계 추정 거래량
+  foreignVolume: Array<{
+    sell: number;
+    buy: number;
+  }>;
 }
 
 export interface IInvestor {

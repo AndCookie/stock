@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styles from "./Balance.module.css";
-import { useBalanceStore } from "../../store/useBalanceStore";
-import { COLORS } from '../../common/utils';
+import { useBalanceStore } from "../../../store/useBalanceStore";
+import { COLORS } from '../../../common/utils';
 
 const Balance = () => {
   const { balanceData, fetchBalanceData } = useBalanceStore();
