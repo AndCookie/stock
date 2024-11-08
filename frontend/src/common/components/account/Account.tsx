@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, CSSProperties } from "react";
 import Balance from "./Balance";
 import History from "./History";
 import Favorites from "./Favorite";
 import styles from "./Account.module.css";
 
-const Account = () => {
+interface AccountProps {
+  contentStyle?: CSSProperties;
+}
+
+const Account: React.FC<AccountProps> = ({ contentStyle }) => {
   const [selectedCategory, setSelectedCategory] = useState("보유 종목");
 
   const categories = ["보유 종목", "주문 내역", "관심 종목"];
@@ -34,7 +38,9 @@ const Account = () => {
           </button>
         ))}
       </div>
-      <div className={styles.content}>{renderContent()}</div>
+      <div className={styles.content} style={contentStyle}>
+        {renderContent()}
+      </div>
     </div>
   );
 };
