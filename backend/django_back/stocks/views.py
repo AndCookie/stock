@@ -1,6 +1,8 @@
 import requests
 import json
 import redis
+import asyncio
+import httpx
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,6 +10,7 @@ from rest_framework import status
 from stocks.utils import *
 from datetime import datetime, timedelta, date
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from .models import StockData
 from .serializers import StockDataSerializer
 from django.db.models import Sum, F, ExpressionWrapper, FloatField
@@ -17,6 +20,7 @@ REAL_KIS_API_BASE_URL = "https://openapi.koreainvestment.com:9443"
 PAPER_KIS_API_BASE_URL = "https://openapivts.koreainvestment.com:29443"
 
 redis_client = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
+User = get_user_model()
 
 @api_view(["GET"])
 def kospi(request):
@@ -372,7 +376,10 @@ def order(request):
             price = request.data.get('price')
         except:
             price = "0"
-
+        # 내 잔고와 비교했을때 더 높은 금액을 주문하면 막아야함
+        # 그럴러면 현재 시장가를 가져와서 가격 알아야하는디
+        # 매도해도 잔고에 추가해줘야함
+        # 이 부분은 일단 보류
         url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/order-cash"
 
         payload = {    
@@ -433,45 +440,86 @@ def holdings(request):
         StockData.objects.filter(user=user)
         .values('stock_code')
         .annotate(
-            total_amount=Sum('amount'),  # 보유 수량의 합계
-            total_value=Sum(F('price') * F('amount'))  # 가격 * 수량의 합
+            total_amount=Sum('amount'),  # 보유 수량 합계
+            total_value=Sum(F('price') * F('amount'))  # 총 가치
         )
         .annotate(
-            average_price=ExpressionWrapper(F('total_value') / F('total_amount'), output_field=FloatField())  # 평균 가격 계산
+            average_price=ExpressionWrapper(F('total_value') / F('total_amount'), output_field=FloatField())
         )
-        .filter(total_amount__gt=0)  # 보유 수량이 0보다 큰 종목만 반환
+        .filter(total_amount__gt=0)  # 보유 수량이 0 이상인 종목만 반환
     )
+
+    stock_codes = [holding["stock_code"] for holding in holdings]
+
+    current_prices = asyncio.run(fetch_current_prices(stock_codes))
 
     response_data = [
         {
             "stock_code": holding["stock_code"],
             "total_amount": holding["total_amount"],
             "average_price": holding["average_price"],
+            "current_price": current_prices.get(holding["stock_code"]),
         }
         for holding in holdings
     ]
-    
-    # 주식 현재가 가져와서 비교해야함
-    for holding in holdings:
-        stock_code = holding['stock_code']
-        current_price = current_price(stock_code)
-        pass
 
     return Response(response_data, status=status.HTTP_200_OK)
 
-# 주식 현재가 시세
-def current_price(stock_code):
-    # 이거 비동기로 만들어야 주식을 빠르게 가져올 수 있을 것 같아..
-    # 그렇지 않은 거랑 아닌거랑 확인해보쟝
-    params = {
-        "FID_COND_MRKT_DIV_CODE": "J", 
-        "FID_INPUT_ISCD": stock_code,
-    }
+# Fetch 주식 현재가 비동기 요청
+async def fetch_current_prices(stock_codes):
+    semaphore = asyncio.Semaphore(10)  # 최대 동시 요청 제한
+    async with httpx.AsyncClient() as client:
+        tasks = [get_stock_price(client, stock_code, semaphore) for stock_code in stock_codes]
+        responses = await asyncio.gather(*tasks)
+        return {stock_code: price for stock_code, price in responses if price is not None}
+
+async def get_stock_price(client, stock_code, semaphore):
+    async with semaphore:  # 세마포어로 요청 동시성 제어
+        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-price"
+        headers = get_paper_headers('FHKST01010100')
+        params = {
+            "FID_COND_MRKT_DIV_CODE": "J",
+            "FID_INPUT_ISCD": stock_code,
+        }
+
+        try:
+            response = await client.get(url, headers=headers, params=params)
+            if response.status_code == 200:
+                data = response.json()
+                price = data.get('output', {}).get('stck_prpr')  # 현재가
+                return stock_code, price
+            else:
+                print(f"Failed to fetch price for {stock_code}: {response.status_code}")
+        except Exception as e:
+            print(f"Error fetching price for {stock_code}: {e}")
+        return stock_code, None
+
+@api_view(['GET'])
+def all_time_rankings(request):
+    top_users = User.objects.order_by('-balance')[:3]
+    response_data = [
+            {
+                "username": user.username,
+                "return_rate": round(user.balance / 5000000, 2)
+            }
+            for user in top_users
+        ]
     
-    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-price"
-    headers = get_paper_headers('FHKST01010100')
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def all_time_rankings(request):
+    top_users = User.objects.order_by('-balance')[:3]
+    response_data = [
+            {
+                "username": user.username,
+                "return_rate": round(user.balance / 5000000, 2)
+            }
+            for user in top_users
+        ]
     
-    return requests.get(url, headers=headers, params=params)
+    return Response(response_data, status=status.HTTP_200_OK)
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):
