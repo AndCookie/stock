@@ -1,11 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
-
 
 class User(AbstractUser):
     pass
+    
+class Balance(AbstractUser):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    balance = models.IntegerField(default=5000000)
+    created_at = models.DateTimeField(auto_now_add=True)  # balance가 갱신된 날짜, balance가 바뀔때마다 데이터를 집어넣을거임
 
 class FavoriteStock(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -2,7 +2,8 @@ from .serializers import UserSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from .models import FavoriteStock
 import os
 
@@ -47,6 +48,7 @@ def google_signup(request):
 
 
 @api_view(['GET', 'POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def favorite_stock(request):
     if request.method == 'GET':
         user = request.user
