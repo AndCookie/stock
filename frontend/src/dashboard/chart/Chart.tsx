@@ -1,23 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { createChart, ColorType } from "lightweight-charts";
+import { createChart, ISeriesApi, ColorType } from "lightweight-charts";
 import { useStockStore } from "../../store/useStockStore";
 import useVolumeData from "./hooks/useVolumeData";
 import useMinuteData from "./hooks/useMinuteData";
-// import useSocketStore from "../../store/useSocketStore";
+import useSocketStore from "../../store/useSocketStore";
 import { COLORS } from "../../common/utils";
 import { IStockData } from "../../store/definitions";
 
 const Chart = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
   const { stockData } = useStockStore();
   const { volumeData } = useVolumeData();
 
   const { minuteData } = useMinuteData();
-  // const { tradingData } = useSocketStore();
+  const { tradingData } = useSocketStore();
 
   const [updatedStockData, setUpdatedStockData] = useState<IStockData[]>(stockData || []);
 
+  // 차트 데이터 초기화
   useEffect(() => {
     if (!stockData || minuteData.length === 0) return;
     
@@ -53,6 +55,7 @@ const Chart = () => {
       }]);
   }, [stockData, minuteData])
 
+  // 차트 초기화
   useEffect(() => {
     if (!chartContainerRef.current || !updatedStockData || !volumeData) return;
 
@@ -93,8 +96,10 @@ const Chart = () => {
       upColor: COLORS.positive, downColor: COLORS.negative, wickUpColor: COLORS.positive, wickDownColor: COLORS.negative,
       borderVisible: false,
     });
-
     candlestickSeries.setData(updatedStockData);
+
+    // 참조 저장
+    candlestickSeriesRef.current = candlestickSeries;
 
     // 거래량 히스토그램 차트
     const histogramSeries = chart.addHistogramSeries({
@@ -127,6 +132,17 @@ const Chart = () => {
       chart.remove();
     };
   }, [updatedStockData, volumeData]);
+
+  useEffect(() => {
+    if (!tradingData || !candlestickSeriesRef.current) return ;
+
+    const realtimeStockData = updatedStockData[updatedStockData.length - 1];
+    realtimeStockData.close = tradingData.STCK_PRPR;
+    realtimeStockData.high = Math.max(realtimeStockData.high, tradingData.STCK_PRPR);
+    realtimeStockData.low = Math.min(realtimeStockData.low, tradingData.STCK_PRPR);
+
+    candlestickSeriesRef.current.update(realtimeStockData);
+  }, [tradingData])
 
   return (
     <div

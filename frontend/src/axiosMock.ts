@@ -385,7 +385,7 @@ const fakeMinuteData = () => {
 
   const timeSeries = fakeTimeSeries(9, 11);
 
-  const randomStockPrice = () => Math.floor(57000 + Math.random() * 1000);
+  const randomStockPrice = () => parseFloat((50000 * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2));
   const randomVolume = () => Math.floor(Math.random() * 200000);
   const randomTotalPrice = () => Math.floor(Math.random() * 10000000000);
 
