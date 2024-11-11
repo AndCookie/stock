@@ -18,7 +18,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     name: "삼성전자",
     industry: "IT",
     companyDetail: "반도체와반도체장비",
-    currentPrice: 58300,
+    currentPrice: 56300,
     change: -700, // 증감
     rate: -1.1, // 증감률 (%)
     favorite: false, // 좋아요(관심종목) 여부
