@@ -59,9 +59,9 @@ const StockRanking = () => {
   };
   return (
     <div className={styles.container}>
-      StockRanking
+      <div className={styles.title}>StockRanking</div>
       <div className={styles.subTitle}>
-        <h3 className={styles.title}>종목 랭킹</h3>
+        <h3 className={styles.name}>종목 랭킹</h3>
         <div className={styles.time}>오늘 10:50 기준</div>
       </div>
       <div className="categoryTabs">
