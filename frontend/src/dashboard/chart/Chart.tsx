@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { createChart, ColorType } from "lightweight-charts";
-import useStockData from "./hooks/useStockData";
+import useStockData from "../../common/hooks/useStockData";
 import useVolumeData from "./hooks/useVolumeData";
 import { COLORS } from "../../common/utils";
 

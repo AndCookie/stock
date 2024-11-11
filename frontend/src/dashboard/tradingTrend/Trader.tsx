@@ -1,5 +1,5 @@
 // 거래원
-import useFetch from "../../common/useFetch";
+import useFetch from "../../common/hooks/useFetch";
 import { ITrader } from "./definitions";
 import styles from "./TradingTrend.module.css";
 

@@ -5,7 +5,7 @@ import styles from "./LimitOrder.module.css"
 import { IOrderTypeProps } from "../../../definitions";
 import OrderButton from "../../OrderButton";
 
-const LimitOrder: React.FC<IOrderTypeProps> = ({ initialMarketPrice, mode, type, trackedPrice }) => {
+const LimitOrder: React.FC<IOrderTypeProps> = ({ initialMarketPrice, mode, trackedPrice }) => {
   // 구매 가격과 수량 상태 관리
   const [price, setPrice] = useState(initialMarketPrice);
   const [quantity, setQuantity] = useState<string | number>("");
@@ -91,7 +91,7 @@ const LimitOrder: React.FC<IOrderTypeProps> = ({ initialMarketPrice, mode, type,
       </div>
 
       {/* OrderButton 컴포넌트에 props 전달 */}
-      <OrderButton mode={mode} type={type} trackedPrice={trackedPrice} price={price} quantity={quantity} />
+      <OrderButton mode={mode} trackedPrice={trackedPrice} price={price} quantity={quantity} />
     </div>
   );
 };

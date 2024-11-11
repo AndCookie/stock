@@ -1,6 +1,6 @@
 // 뉴스
 
-import useFetch from "../../common/useFetch";
+import useFetch from "../../common/hooks/useFetch";
 import Item from "./Item";
 import { ICompanyNewsDisclosure } from "./definitions";
 import styles from "./Info.module.css";
