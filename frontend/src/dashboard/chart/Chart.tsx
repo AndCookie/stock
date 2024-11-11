@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart, ColorType } from "lightweight-charts";
-import useStockData from "./hooks/useStockData";
+import useStockData from "../../common/hooks/useStockData";
 import useVolumeData from "./hooks/useVolumeData";
 import useMinuteData from "./hooks/useMinuteData";
 // import useSocketStore from "../../store/useSocketStore";

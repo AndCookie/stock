@@ -27,7 +27,7 @@ const Order = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
-    <div>
+    <div className={styles.container}>
       {/* 네비게이션 바 */}
       <div className={styles.navbar}>
         {TABS.map((tab, index) => (
@@ -46,7 +46,9 @@ const Order = () => {
         ))}
       </div>
       {/* 선택된 탭의 컴포넌트 렌더링 */}
-      <div>{TABS[selectedTab].component}</div>
+      <div className={`content ${styles.content}`}>
+        {TABS[selectedTab].component}
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { IStockData } from "../definitions";
+import { IStockData } from "../../dashboard/chart/definitions";
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 

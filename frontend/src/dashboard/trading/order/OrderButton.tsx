@@ -1,32 +1,75 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { IOrderButtonProps } from "../definitions"
 import styles from "./OrderButton.module.css";
+import { useBalanceStore } from "../../../store/useBalanceStore";
+import useStockLimit from "../../../common/hooks/useStockLimit";
+import useOrderButton from "./useOrderButton";
 
-const OrderButton: React.FC<IOrderButtonProps> = ({ mode, type, trackedPrice, price, quantity }) => {
-  // quantity가 string이거나 0이면 주문 안가도록 예외처리하기
-  const isDisabled = quantity === "" || quantity === 0;
-  
+const OrderButton: React.FC<IOrderButtonProps> = ({ mode, trackedPrice, price, quantity }) => {
+  const { placeOrder } = useOrderButton();
+  const { balanceData, fetchBalanceData } = useBalanceStore();
+  const { upperLimit, lowerLimit } = useStockLimit();
+  const finalQuantity = typeof quantity === "number" ? quantity : 0;
+  const totalPrice = price * finalQuantity
+  const totalUpperPrice = upperLimit * finalQuantity
+  const totalLowerPrice = lowerLimit * finalQuantity
+  // TODO 종목 코드 연결
+  const stockCode = "137400";
+
+  useEffect(() => {
+    fetchBalanceData();
+  }, [])
+
+  // 판매 가능 수량 계산
+  // TODO 종목 이름 연결
+  const availableShares = mode === "SELL" && balanceData
+  ? balanceData.holdings.find(holding => holding.name === "피엔티")?.shares || 0
+  : null;
+
+  const isDisabled = 
+    finalQuantity === 0 || // 수량이 0이거나
+    (mode === "BUY" && price !== 0 && balanceData && balanceData.balance < totalPrice) || // BUY 모드 지정가에서 구매 가능 금액이 총 구매 가격보다 적거나
+    (mode === "BUY" && price === 0 && balanceData && balanceData.balance < totalUpperPrice) || // BUY 모드 시장가에서 구매 가능 금액이 최대 구매 가격보다 적거나
+    (mode === "SELL" && availableShares !== null && availableShares < finalQuantity); // SELL 모드에서 판매 가능 수량이 총 판매 수량보다 적은 경우
+
   return(
     <div className={styles.buttonContainer}>
+      {mode === "BUY" && balanceData && (
+        <div>
+          <p>구매 가능 금액</p>
+          <p>{balanceData.balance.toLocaleString()}원</p>
+        </div>
+      )}
+      {mode === "SELL" && (
+        <div>
+          <p>판매 가능 수량</p>
+          <p>{availableShares}주</p>
+        </div>
+      )}
+
+      {/* 구매/판매 & 시장가/지정가 4가지 유형에 따라 출력 문구 설정 */}
+      {price !== 0 ? (
+        <div>
+          <p>총 {mode === "BUY" ? "구매" : "판매"} 가격</p>
+          <p>{totalPrice.toLocaleString()}원</p>
+        </div>
+      ) : (
+        <div>
+          <p>{mode === "BUY" ? "최대 구매" : "최소 판매"} 가격</p>
+          <p>{(mode === "BUY" ? totalUpperPrice : totalLowerPrice).toLocaleString()}원</p>
+        </div>
+      )}
+
       <button
         className={`${styles.orderButton} ${mode === "BUY" ? styles.buy : styles.sell}`}
         disabled={isDisabled}
         onMouseDown={(event) => {
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
+        onClick={() => placeOrder({ stockCode, mode, trackedPrice, price, finalQuantity })}
       >
         {mode === "BUY" ? "구매하기" : "판매하기"}
       </button>
-
-      <div>
-        <span>기능 구현 중 아래는 임시용</span>
-        <div>총 금액</div>
-        <div>{mode === "BUY" ? "구매하기" : "판매하기"}</div>
-        <div>{type === "STANDARD" ? "일반 주문" : "조건 주문"}</div>
-        <div>{trackedPrice}원 감시 중</div>
-        <div>{price}원</div>
-        <div>{quantity}주</div>
-      </div>
     </div>
   );
 };

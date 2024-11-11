@@ -1,63 +1,58 @@
 // 시세
 // Realtime만 보여주기로 해서 그냥 파일 다 날렸습니다 - 우진
+import useSocketStore from '../../store/useSocketStore';
+import styles from './TradingVolume.module.css'
 
-const TradingVolume = () => {
-  // TODO: 데이터 연결
-  // (참고) orderBook 이랑 같은 데이터를 사용합니다
-  const { tradingData } = {
-    tradingData: [
-      {
-        STCK_CNTG_HOUR: 111858, // 시간 => 11시 18분 58초
-        STCK_PRPR: 2000, // 체결가
-        CNTG_VOL: 10, // 체결량
-        ACML_VOL: 123, // 누적 체결량
-        CTTR: 73.3,
-        CCLD_DVSN: 1,
-      },
-      {
-        STCK_CNTG_HOUR: 130105,
-        STCK_PRPR: 1900,
-        CNTG_VOL: 30,
-        ACML_VOL: 153,
-        CTTR: 69.84,
-        CCLD_DVSN: 5,
-      },
-      {
-        STCK_CNTG_HOUR: 142251,
-        STCK_PRPR: 2000,
-        CNTG_VOL: 20,
-        ACML_VOL: 173,
-        CTTR: 71.48,
-        CCLD_DVSN: 1,
-      },
-    ],
-  };
+const TradingVolume: React.FC = () => {
+  const { tradingData } = useSocketStore();
+
+  if (!tradingData) {
+    return <div className={styles.loading}>Loading...</div>;
+  }
+
+  // 내림차순 정렬
+  const sortedTradingData = [...tradingData].sort((a, b) => b.STCK_CNTG_HOUR - a.STCK_CNTG_HOUR);
+
   return (
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <td>체결가</td>
-            <td>체결량</td>
-            <td>거래량</td>
-            <td>시간</td>
-          </tr>
-        </thead>
-        <tbody>
-          {tradingData.map((td, idx) => (
-            <tr key={idx}>
-              <td>{td.STCK_PRPR}</td>
-              <td>{td.CNTG_VOL}</td>
-              <td>{td.ACML_VOL}</td>
-              <td>
-                {td.STCK_CNTG_HOUR.toString().slice(0, 2)}:
-                {td.STCK_CNTG_HOUR.toString().slice(2, 4)}:
-                {td.STCK_CNTG_HOUR.toString().slice(4, 6)}
-              </td>
+    <div className={styles.container}>
+      <div className={styles.categoryTabs}>
+        시세
+      </div>
+
+      <div className={styles.content}>
+        <table className={styles.tradingTable}>
+          <thead>
+            <tr>
+              <td>체결가</td>
+              <td>체결량</td>
+              <td>거래량</td>
+              <td>시간</td>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedTradingData.map((td, idx) => (
+              <tr key={idx}>
+                <td className={styles.tradePrice}>{td.STCK_PRPR.toLocaleString()}</td>
+                <td
+                  className={styles.tradeVolume}
+                  style={{
+                    color: td.CCLD_DVSN === 1 ? '#FF4F4F' : td.CCLD_DVSN === 5 ? '#4881FF' : 'inherit',
+                  }}
+                >
+                  {td.CNTG_VOL.toLocaleString()}
+                </td>
+                <td className={styles.acmlVolume}>{td.ACML_VOL.toLocaleString()}</td>
+                <td className={styles.tradeTime}>
+                  {td.STCK_CNTG_HOUR.toString().slice(0, 2)}:
+                  {td.STCK_CNTG_HOUR.toString().slice(2, 4)}:
+                  {td.STCK_CNTG_HOUR.toString().slice(4, 6)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
     </div>
   );
 };
