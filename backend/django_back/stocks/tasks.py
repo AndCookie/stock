@@ -56,24 +56,24 @@ def fetch_stock_data(stock_code):
     else:
         print(f"Failed to fetch data for {stock_code}: {response.status_code}")
 
-@shared_task
-def collect_minute_data():
-    current_time = datetime.now().time()
+# @shared_task
+# def collect_minute_data():
+#     current_time = datetime.now().time()
     
-    # 9시부터 16시 30분까지만 실행
-    if current_time.hour < 9 or current_time.hour >= 17:
-        return
+#     # 9시부터 16시 30분까지만 실행
+#     if current_time.hour < 9 or current_time.hour >= 17:
+#         return
     
-    json_file_path = os.path.join(os.path.dirname(__file__), "data", "kospi_code_name.json")
-    with open(json_file_path, "r", encoding="utf-8") as f:
-        kospi_data = json.load(f)
+#     json_file_path = os.path.join(os.path.dirname(__file__), "data", "kospi_code_name.json")
+#     with open(json_file_path, "r", encoding="utf-8") as f:
+#         kospi_data = json.load(f)
 
-    stock_codes = kospi_data.keys()
+#     stock_codes = kospi_data.keys()
 
-    # 각 stock_code에 대해 fetch_stock_data 작업을 비동기로 실행
-    for i, stock_code in enumerate(stock_codes):
-        fetch_stock_data.delay(stock_code)  # 비동기로 호출
+#     # 각 stock_code에 대해 fetch_stock_data 작업을 비동기로 실행
+#     for i, stock_code in enumerate(stock_codes):
+#         fetch_stock_data.delay(stock_code)  # 비동기로 호출
 
-        # 매 10번째 요청마다 1초 지연
-        if (i + 1) % 10 == 0:
-            time.sleep(1)
+#         # 매 10번째 요청마다 1초 지연
+#         if (i + 1) % 10 == 0:
+#             time.sleep(1)

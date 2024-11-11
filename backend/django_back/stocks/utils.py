@@ -47,55 +47,27 @@ def get_approval(mode):
         raise Exception("Approval key 요청 실패: " + res.text)
 
 # 다중 종목 데이터 요청 함수
-def get_multiple_stocks():
-    json_file_path = os.path.join(os.path.dirname(__file__), "data", "kospi_code_name_20.json")
-
-    with open(json_file_path, "r", encoding="utf-8") as f:
-        kospi_data = json.load(f)
-
-    stock_codes = kospi_data.keys()
-    
+def get_multiple_stocks():    
     approval_key = settings.PAPER_APPROVAL_KEY
     print("\napproval_key [%s]\n" % (approval_key))
     
-    requests_data = [
-        {
-            "header": {
-                "approval_key": approval_key,
-                "custtype": "P",
-                "tr_type": "1",  # 이게 2가 되면 연결을 끊는다는 뜻
-                "content-type": "utf-8"
-            },
-            "body": {
-                "input": {
-                    "tr_id": tr_id,  # 주식 호가, 주식 체결
-                    "tr_key": stock_code  # 종목번호
-                }
-            }
-        }
-        for stock_code in stock_codes
-        for tr_id in ['H0STASP0', "H0STCNT0"]
-    ]
-    
     ws = WebSocketApp(
         "ws://ops.koreainvestment.com:31000",
-        on_open=lambda ws: on_open(ws, requests_data),
+        on_open=lambda ws: on_open(ws),
         on_message=on_message,
         on_error=on_error,
         on_close=on_close
     )
-    ws.stock_codes = stock_codes
     ws.run_forever()
     
-def on_open(ws, requests_data):
+def on_open(ws):
     print('WebSocket 연결 성공, 요청 데이터 전송 중...')
-    for data in tqdm(requests_data):
-        ws.send(json.dumps(data), websocket.ABNF.OPCODE_TEXT)
-        time.sleep(0.01)
+    # for data in tqdm(requests_data):
+    #     ws.send(json.dumps(data), websocket.ABNF.OPCODE_TEXT)
+    #     time.sleep(0.01)
 
 def on_message(ws, data):
     channel_layer = get_channel_layer()
-    redis_client = get_redis_client()  # Redis 클라이언트를 함수 내에서 호출하여 사용
     if data[0] in ['0', '1']:
         d1 = data.split("|")
         if len(d1) >= 4:
@@ -107,7 +79,6 @@ def on_message(ws, data):
                 "time": result[1],  # 체결 시간
                 "value": result[2]  # 체결가
             }
-            redis_client.lpush(f"stock_code:{result[0]}, type: {tr_id}", json.dumps(result))
             async_to_sync(channel_layer.group_send)(
                 "stock_data_group",
                 {
