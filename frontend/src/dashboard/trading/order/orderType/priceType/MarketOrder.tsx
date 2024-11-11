@@ -29,7 +29,7 @@ const MarketOrder: React.FC<Omit<IOrderTypeProps, 'initialMarketPrice'>> = ({ mo
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
       >
-        <div className={styles.title}>OO 가격</div>
+        <div className={styles.title}>{mode === "BUY" ? "구매 가격" : "판매 가격"}</div>
         <div className={styles.inputBox}>
           <input
             type="text"
