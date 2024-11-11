@@ -3,11 +3,11 @@ import { useIndexStore } from '../../store/useIndexStore';
 import styles from './Rolling.module.css';
 
 const Rolling = () => {
-  const { indexData } = useIndexStore();
+  const { indexData, fetchIndexData } = useIndexStore();
 
   useEffect(() => {
-    console.log('Index Data:', indexData);
-  }, [indexData]);
+    fetchIndexData();
+  }, [fetchIndexData]);
 
 
   if (!indexData) {
