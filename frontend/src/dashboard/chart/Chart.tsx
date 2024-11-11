@@ -85,7 +85,13 @@ const Chart = () => {
   }, [stockData, volumeData]);
 
   return (
-    <div ref={chartContainerRef} style={{ width: "100%", height: "90%", marginTop: "2.5%" }} />
+    <div
+      ref={chartContainerRef}
+      style={{ width: "100%", height: "90%", marginTop: "2.5%" }}
+      onMouseDown={(event) => {
+        event.stopPropagation(); // 클릭 시 드래그 방지
+      }}
+    />
   );
 };
 
