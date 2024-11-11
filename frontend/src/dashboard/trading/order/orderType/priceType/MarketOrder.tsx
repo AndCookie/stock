@@ -35,7 +35,7 @@ const MarketOrder: React.FC<Omit<IOrderTypeProps, 'initialMarketPrice'>> = ({ mo
             type="text"
             value="최대한 빠른 가격"
             disabled
-            style={{fontSize: "13px"}}
+            style={{ color: "grey" }}
           />
           <button disabled>−</button>
           <button disabled>+</button>
