@@ -37,11 +37,10 @@ def get_approval(mode):
     }
     URL = f"{url}/oauth2/Approval"
     res = requests.post(URL, headers=headers, data=json.dumps(body))
-    print("key:", key, " secret:", secret)
     if res.status_code == 200:
         return res.json().get("approval_key")
     else:
-        raise Exception("Approval key 요청 실패: " + res.text)
+        raise Exception("Approval key 요청 실패: " + res.text, "key:", key, "secret:", secret)
 
 # 다중 종목 데이터 요청 함수
 def get_multiple_stocks():    
