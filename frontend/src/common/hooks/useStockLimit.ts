@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import useStockData from "./useStockData";
+import { useStockStore } from "../../store/useStockStore";
 
 // 호가 가격 단위 계산 함수
 const getTickSize = (price: number) => {
@@ -13,11 +13,11 @@ const getTickSize = (price: number) => {
 };
 
 const useStockLimit = () => {
-  const { stockData } = useStockData();
+  const { stockData } = useStockStore();
 
   // stockData의 마지막 데이터에서 전일 종가를 사용하여 상한가와 하한가 계산
   const { upperLimit, lowerLimit } = useMemo(() => {
-    if (stockData.length === 0) {
+    if (!stockData) {
       return { upperLimit: 0, lowerLimit: 0 };
     }
 

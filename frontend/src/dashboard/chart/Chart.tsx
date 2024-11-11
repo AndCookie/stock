@@ -1,24 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart, ColorType } from "lightweight-charts";
-import useStockData from "../../common/hooks/useStockData";
+import { useStockStore } from "../../store/useStockStore";
 import useVolumeData from "./hooks/useVolumeData";
 import useMinuteData from "./hooks/useMinuteData";
 // import useSocketStore from "../../store/useSocketStore";
 import { COLORS } from "../../common/utils";
+import { IStockData } from "../../store/definitions";
 
 const Chart = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
-  const { stockData } = useStockData();
+  const { stockData } = useStockStore();
   const { volumeData } = useVolumeData();
 
   const { minuteData } = useMinuteData();
   // const { tradingData } = useSocketStore();
 
-  const [updatedStockData, setUpdatedStockData] = useState(stockData);
+  const [updatedStockData, setUpdatedStockData] = useState<IStockData[]>(stockData || []);
 
   useEffect(() => {
-    if (stockData.length === 0 || minuteData.length === 0) return;
+    if (!stockData || minuteData.length === 0) return;
     
     const today = new Date();
     const year = today.getFullYear();
