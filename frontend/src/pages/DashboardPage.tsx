@@ -126,7 +126,7 @@ const DashboardPage = () => {
     // 2D 배열 초기화
     const arr: number[][] = Array.from({ length: maxRows }, () => Array(maxCols).fill(0));
     // layout에 따라 arr 채우기
-    for (let item of layout) {
+    for (const item of layout) {
       for (let t = item.y; t < item.y + item.h; t++) {
         for (let i = item.x; i < item.x + item.w; i++) {
           arr[t][i] = 1;

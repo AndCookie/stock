@@ -5,8 +5,8 @@ import useVolumeData from "./hooks/useVolumeData";
 import { COLORS } from "../../common/utils";
 
 const Chart = () => {
-  const chartContainerRef = useRef(null);
-  
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+
   const { stockData } = useStockData();
   const { volumeData } = useVolumeData();
 
@@ -14,7 +14,9 @@ const Chart = () => {
     if (!chartContainerRef.current || !stockData || !volumeData) return;
 
     const chartOptions = {
-      layout: { textColor: "white", background: { type: ColorType.Solid, color: "black" } },
+      width: chartContainerRef.current.clientWidth,
+      height: chartContainerRef.current.clientHeight,
+      layout: { textColor: "white", background: { type: ColorType.Solid, color: "#252525" } },
       grid: {
         vertLines: { color: "rgba(105, 105, 105, 0.5)" },
         horzLines: { color: "rgba(105, 105, 105, 0.5)" },
@@ -31,6 +33,17 @@ const Chart = () => {
     };
 
     const chart = createChart(chartContainerRef.current, chartOptions);
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (chartContainerRef.current) {
+        chart.resize(
+          chartContainerRef.current.clientWidth,
+          chartContainerRef.current.clientHeight
+        );
+      }
+    });
+
+    resizeObserver.observe(chartContainerRef.current);
 
     // 주가 캔들 차트
     const candlestickSeries = chart.addCandlestickSeries({
@@ -65,11 +78,14 @@ const Chart = () => {
 
     chart.timeScale().fitContent();
 
-    return () => chart.remove();
+    return () => {
+      resizeObserver.disconnect();
+      chart.remove();
+    };
   }, [stockData, volumeData]);
 
   return (
-    <div ref={chartContainerRef} style={{ width: "1000px", height: "500px" }} />
+    <div ref={chartContainerRef} style={{ width: "100%", height: "90%", marginTop: "2.5%" }} />
   );
 };
 
