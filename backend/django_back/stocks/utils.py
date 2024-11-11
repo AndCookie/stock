@@ -2,7 +2,6 @@ import redis
 import os
 import json
 import requests
-import time
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import threading
@@ -10,7 +9,6 @@ from base64 import b64decode
 from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from tqdm import tqdm
 from websocket import WebSocketApp
 import websocket
 
@@ -38,9 +36,8 @@ def get_approval(mode):
         "secretkey": secret
     }
     URL = f"{url}/oauth2/Approval"
-    time.sleep(0.05)
     res = requests.post(URL, headers=headers, data=json.dumps(body))
-    
+    print("key:", key, " secret:", secret)
     if res.status_code == 200:
         return res.json().get("approval_key")
     else:
@@ -48,9 +45,6 @@ def get_approval(mode):
 
 # 다중 종목 데이터 요청 함수
 def get_multiple_stocks():    
-    approval_key = settings.PAPER_APPROVAL_KEY
-    print("\napproval_key [%s]\n" % (approval_key))
-    
     ws = WebSocketApp(
         "ws://ops.koreainvestment.com:31000",
         on_open=lambda ws: on_open(ws),
@@ -62,9 +56,6 @@ def get_multiple_stocks():
     
 def on_open(ws):
     print('WebSocket 연결 성공, 요청 데이터 전송 중...')
-    # for data in tqdm(requests_data):
-    #     ws.send(json.dumps(data), websocket.ABNF.OPCODE_TEXT)
-    #     time.sleep(0.01)
 
 def on_message(ws, data):
     channel_layer = get_channel_layer()
