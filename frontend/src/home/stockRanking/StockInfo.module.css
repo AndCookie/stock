@@ -1,3 +1,38 @@
 .stockInfoContainer {
+  display: flex;
+  margin: 10px -5px auto;
+  padding: 10px 20px;
+  justify-content: space-between;
+  align-items: center;
+}
 
+.companyInfo {
+  text-align: left;
+  display: flex;
+}
+
+.priceData {
+  text-align: right;
+}
+
+.dataRank {
+  font-weight: bold;
+  color: gray;
+}
+
+.logo {
+  width: 20%;
+  height: 20%;
+  margin: auto 10px auto 20px;
+}
+
+.previousDayVersusData {
+}
+
+.previousDayVersusPricePlus {
+  color: red;
+}
+
+.previousDayVersusPriceMinus {
+  color: blue;
 }
