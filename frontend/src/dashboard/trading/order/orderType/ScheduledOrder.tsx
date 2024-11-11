@@ -40,8 +40,8 @@ const ScheduledOrder: React.FC<IOrderProps> = ({ initialMarketPrice, mode }) => 
   };
 
   const TABS = [
-    { label: "지정가 주문", component: <LimitOrder initialMarketPrice={initialMarketPrice} mode={mode} type={"SCHEDULED"} trackedPrice={trackedPrice} /> },
-    { label: "시장가 주문", component: <MarketOrder mode={mode} type={"SCHEDULED"} trackedPrice={trackedPrice} /> },
+    { label: "지정가 주문", component: <LimitOrder initialMarketPrice={initialMarketPrice} mode={mode} trackedPrice={trackedPrice} /> },
+    { label: "시장가 주문", component: <MarketOrder mode={mode} trackedPrice={trackedPrice} /> },
   ];
   
   const [selectedTab, setSelectedTab] = useState(0);

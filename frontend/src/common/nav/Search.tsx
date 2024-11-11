@@ -1,5 +1,5 @@
 import { FormEvent } from "react";
-import useInput from "../useInput";
+import useInput from "../hooks/useInput";
 import styles from "./Nav.module.css";
 import { fetchSearch } from "./actions";
 

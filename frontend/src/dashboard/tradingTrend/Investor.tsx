@@ -1,6 +1,6 @@
 // 투자자
 
-import useFetch from "../../common/useFetch";
+import useFetch from "../../common/hooks/useFetch";
 import { IInvestor } from "./definitions";
 import styles from "./TradingTrend.module.css";
 

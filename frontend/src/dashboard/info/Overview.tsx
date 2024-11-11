@@ -1,4 +1,4 @@
-import useFetch from "../../common/useFetch";
+import useFetch from "../../common/hooks/useFetch";
 import { ICompanyData } from "./definitions";
 import styles from "./Info.module.css";
 
