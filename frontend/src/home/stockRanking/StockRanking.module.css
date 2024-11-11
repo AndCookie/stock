@@ -3,3 +3,27 @@
   padding: 20px;
   border-radius: 8px;
 }
+
+.title {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.subTitle {
+  display: flex;
+  margin-top: 5px;
+  align-items: center;
+}
+
+.subTitle > .name {
+  margin-right: 8px;
+}
+
+.subTitle > .time {
+  font-size: 12px;
+  color: gray;
+}
+
+.stockData {
+  background-color: #1f1d24;
+}

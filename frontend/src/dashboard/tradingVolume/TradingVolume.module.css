@@ -51,6 +51,10 @@
   background: transparent; /* 스크롤 트랙 배경을 투명하게 설정 */
 }
 
+/* 테이블 */
+.tradingTable thead tr td {
+  color: #ccc;
+}
 
 tbody tr td {
   text-align: right;
@@ -58,3 +62,14 @@ tbody tr td {
   min-width: 60px;
 }
 
+.tradePrice {
+  color: #aaa;
+}
+
+.acmlVolume {
+  color: #ccc;
+}
+
+.tradeTime {
+  color: #aaa;
+}
