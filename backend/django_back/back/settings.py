@@ -1,7 +1,6 @@
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-from dotenv import load_dotenv
 from stocks.utils import get_approval
 
 load_dotenv()
@@ -22,9 +21,7 @@ PAPER_API_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b2tlb
 ## 싸피 IP 쓰면 이 부분이 안돼
 REAL_APPROVAL_KEY = get_approval('real')
 PAPER_APPROVAL_KEY = get_approval('paper')
-
-load_dotenv()
-
+print(REAL_APPROVAL_KEY)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
