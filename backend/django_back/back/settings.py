@@ -216,7 +216,7 @@ CRONJOBS = [
 ENVIRONMENT = os.getenv('ENVIRONMENT')
 if ENVIRONMENT == 'local':
     REDIS_HOST = '127.0.0.1'
-elif ENVIRONMENT == 'server':
+else:
     REDIS_HOST = '172.18.0.4'
 REDIS_PORT = 6379
 REDIS_DB = 0
