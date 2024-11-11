@@ -57,19 +57,19 @@ services:
     networks:
       - app_network
 
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: coding
-      MYSQL_DATABASE: modumotu
-      MYSQL_USER: back
-      MYSQL_PASSWORD: coding
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - app_network
+  # mysql:
+  #   image: mysql:latest
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: coding
+  #     MYSQL_DATABASE: modumotu
+  #     MYSQL_USER: back
+  #     MYSQL_PASSWORD: coding
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   networks:
+  #     - app_network
 
 networks:
   app_network:
