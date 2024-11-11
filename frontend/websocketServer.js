@@ -11,7 +11,7 @@ const fakeTradingData = () => {
     type: "TRADING",
     payload: {
       STCK_CNTG_HOUR: formatTime(now),
-      STCK_PRPR: Math.floor(10000 + Math.random() * 1000),
+      STCK_PRPR: parseFloat((50000 * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)),
       CNTG_VOL: Math.floor(Math.random() * 1000),
       ACML_VOL: Math.floor(100000 + Math.random() * 5000),
       CTTR: parseFloat((50 + Math.random() * 50).toFixed(2)),

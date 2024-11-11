@@ -58,9 +58,9 @@ interface ITradingData {
 
 interface ISocketStore {
   orderBookData: IOrderBookData | null;
-  tradingData: ITradingData[] | null;
+  tradingData: ITradingData | null;
   setOrderBookData: (data: IOrderBookData) => void;
-  setTradingData: (data: ITradingData[]) => void;
+  setTradingData: (data: ITradingData) => void;
 }
 
 // const SOCKET_URL = "https://k11a204.p.ssafy.io/api";
@@ -74,7 +74,7 @@ const useSocketStore = create<ISocketStore>((set) => ({
   tradingData: null,
 
   setOrderBookData: (data: IOrderBookData) => set({ orderBookData: data }),
-  setTradingData: (data: ITradingData[]) => set({ tradingData: data }),
+  setTradingData: (data: ITradingData) => set({ tradingData: data }),
 }));
 
 // 소켓에서 데이터를 수신하여 Zustand 스토어 업데이트
