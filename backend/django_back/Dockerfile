@@ -15,6 +15,7 @@ WORKDIR /app
 COPY ./requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+ENV PYTHONUNBUFFERED=1
 
 # 소스 코드 복사
 COPY . .
