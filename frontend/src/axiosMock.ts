@@ -363,6 +363,56 @@ const fakeVolumeData = () => {
 mock.onGet(BASEURL + "stockDetail").reply(200, fakeStockData());
 mock.onGet(BASEURL + "volumeDetail").reply(200, fakeVolumeData());
 
+// dashboard-chart
+const fakeMinuteData = () => {
+  const now = new Date();
+
+  const formatDate = (date: Date) => `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}`;
+
+  const today = formatDate(now);
+
+  const fakeTimeSeries = (startHour: number, endHour: number) => {
+    const timeSeries: string[] = [];
+    for (let hour = startHour; hour <= endHour; hour++) {
+      for (let minute = 0; minute < 60; minute++) {
+        if (hour === endHour && minute === 0) break;
+        timeSeries.push(`${hour.toString().padStart(2, "0")}${minute.toString().padStart(2, "0")}00`
+        );
+      }
+    }
+    return timeSeries;
+  };
+
+  const timeSeries = fakeTimeSeries(9, 11);
+
+  const randomStockPrice = () => Math.floor(57000 + Math.random() * 1000);
+  const randomVolume = () => Math.floor(Math.random() * 200000);
+  const randomTotalPrice = () => Math.floor(Math.random() * 10000000000);
+
+  const fakeData = timeSeries.map((time) => {
+    const openPrice = randomStockPrice();
+    const closePrice = randomStockPrice();
+    const highPrice = Math.max(openPrice, closePrice) + randomStockPrice() % 50;
+    const lowPrice = Math.min(openPrice, closePrice) - randomStockPrice() % 50;
+
+    return {
+      stck_bsop_date: today,
+      stck_cntg_hour: time,
+      stck_prpr: closePrice,
+      stck_oprc: openPrice,
+      stck_hgpr: highPrice,
+      stck_lwpr: lowPrice,
+      cntg_vol: randomVolume(),
+      acml_tr_pbmn: randomTotalPrice(),
+    };
+  });
+
+  return fakeData;
+};
+
+mock.onGet(BASEURL + "stocks/minute-price/").reply(200, fakeMinuteData());
+
+// dashboard-tradingTrend-daily
 const fakeDailyData = () => {
   const data = [];
   const today = new Date();
@@ -386,7 +436,7 @@ const fakeDailyData = () => {
 
   return data;
 };
-// dashboard-tradingTrend-daily
+
 mock.onGet(BASEURL + "trend/1/daily").reply(200, fakeDailyData());
 
 // dashboad-tradingTrend-trader

@@ -5,11 +5,6 @@
 // setIsDraggable은 props로 받으시면 됩니다.
 // 위젯 prop 인터페이스는 common에 있습니다.
 
-// To. 광영
-// dashboard 페이지에서 Ctrl+스크롤로 화면 축소해서 50까지 줄여보면
-// 화면 크기에 따라서 위젯 내에 차트가 차지하는 크기 비중이 달라지는데
-// 이 부분 고쳐주세요.
-
 // To. 선재누나
 // 추가하기 버튼 위치 임의로 넣어놨는데 바꿔주세요!
 // alert창 CSS 부탁드립니다.
@@ -257,7 +252,7 @@ return (
             isResizable={true}
             resizeHandles={['se']}
             autoSize={true}
-            onLayoutChange={(layout) => console.log(layout)}
+            // onLayoutChange={(layout) => console.log(layout)}
             onDragStop={handleLayoutChange} // 드래그 종료 시 커스텀 로직 적용
             onResizeStop={handleLayoutChange} // 크기 조정 완료 시 커스텀 로직 적용
             useCSSTransforms = {true}
