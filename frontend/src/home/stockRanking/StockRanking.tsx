@@ -20,7 +20,7 @@ const StockRanking = () => {
       previousDayVersus: '60',
     },
     {
-      dataRank: '1',
+      dataRank: '2',
       stockName: '삼성전자',
       logoLink: samsungLogo,
       stockPrice: '100,000',
@@ -28,7 +28,7 @@ const StockRanking = () => {
       previousDayVersus: '60',
     },
     {
-      dataRank: '1',
+      dataRank: '3',
       stockName: '삼성전자',
       logoLink: samsungLogo,
       stockPrice: '100,000',
@@ -36,7 +36,7 @@ const StockRanking = () => {
       previousDayVersus: '60',
     },
     {
-      dataRank: '1',
+      dataRank: '4',
       stockName: '삼성전자',
       logoLink: samsungLogo,
       stockPrice: '100,000',
@@ -44,7 +44,7 @@ const StockRanking = () => {
       previousDayVersus: '60',
     },
     {
-      dataRank: '1',
+      dataRank: '5',
       stockName: '삼성전자',
       logoLink: samsungLogo,
       stockPrice: '100,000',
@@ -53,15 +53,23 @@ const StockRanking = () => {
     },
   ]);
 
+  const setCategoryAndGetData = (category: string) => {
+    setSelectedCategory(category);
+    // 여기 아래에 category 값에 따라 다른 API를 호출하도록 추후에 코드 추가 작성
+  };
   return (
     <div className={styles.container}>
       StockRanking
+      <div className={styles.subTitle}>
+        <h3 className={styles.title}>종목 랭킹</h3>
+        <div className={styles.time}>오늘 10:50 기준</div>
+      </div>
       <div className="categoryTabs">
         {categories.map((category) => (
           <button
             key={category}
             className={`${'tabButton'} ${selectedCategory === category ? 'activeTab' : ''}`}
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => setCategoryAndGetData(category)}
           >
             {category}
           </button>
