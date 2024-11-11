@@ -1,7 +1,8 @@
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-from stocks.utils import get_approval
+import requests
+import json
 
 load_dotenv()
 
@@ -18,10 +19,35 @@ PAPER_APP_SECRET = os.getenv('PAPER_APP_SECRET')
 PAPER_ACCOUNT = os.getenv('PAPER_ACCOUNT')
 PAPER_API_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0b2tlbiIsImF1ZCI6IjMzYTE5N2I2LWRhZjUtNGIyOC05NDAxLTA1MThhYzQ4NmZiZSIsInByZHRfY2QiOiIiLCJpc3MiOiJ1bm9ndyIsImV4cCI6MTczMTM4Mzk4OCwiaWF0IjoxNzMxMjk3NTg4LCJqdGkiOiJQU3RMazhjTXhjM2xoWXpkT0FiNW1FbUFibDJVTlhzcEhCS0QifQ.gRfl7p5t14YNXSU-KrQxH2S9_KDUCtQgQ_phLN9vysy2IJwJa0xlkumMI_1LjJrROYF6GG_G8LwOJ5Sg7Dg0Qw"
 
+
+def get_approval(mode):
+    if mode == 'real':
+        url = 'https://openapi.koreainvestment.com:9443'  # 실전투자계좌
+        key = REAL_APP_KEY
+        secret = REAL_APP_SECRET
+    elif mode == 'paper':
+        url = 'https://openapivts.koreainvestment.com:29443'  # 모의투자계좌
+        key = PAPER_APP_KEY
+        secret = PAPER_APP_SECRET
+    else:
+        raise ValueError("올바른 모드를 지정해야 합니다: 'real' 또는 'paper'")
+        
+    headers = {"content-type": "application/json"}
+    body = {
+        "grant_type": "client_credentials",
+        "appkey": key,
+        "secretkey": secret
+    }
+    URL = f"{url}/oauth2/Approval"
+    res = requests.post(URL, headers=headers, data=json.dumps(body))
+    if res.status_code == 200:
+        return res.json().get("approval_key")
+    else:
+        raise Exception("Approval key 요청 실패: " + res.text, "key:", key, "secret:", secret)
+
 ## 싸피 IP 쓰면 이 부분이 안돼
 REAL_APPROVAL_KEY = get_approval('real')
 PAPER_APPROVAL_KEY = get_approval('paper')
-print(REAL_APPROVAL_KEY)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
