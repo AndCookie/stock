@@ -13,7 +13,7 @@ WORKDIR /app
 
 # 필요한 패키지 설치
 COPY ./requirements.txt .
-COPY .env /app/.env
+COPY /home/ubuntu/.env /app/.env
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
