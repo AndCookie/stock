@@ -3,7 +3,6 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 import websockets
-from pprint import pprint
 
 
 class KISWebSocketConsumer(AsyncWebsocketConsumer):
@@ -35,8 +34,6 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             # 특정 종목 추적 중단 요청
             if stock_code in KISWebSocketConsumer.tasks[self.channel_name]:
                 KISWebSocketConsumer.tasks[self.channel_name].remove(stock_code)
-                await self.send(json.dumps({"message": f"{stock_code} Tracking stopped"}))
-                print(f"Tracking stopped for {stock_code} by client: {self.channel_name}")
                 payload = {
                     "header": {
                         "approval_key": settings.REAL_APPROVAL_KEY,
@@ -49,6 +46,8 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                     },
                 }
                 await KISWebSocketConsumer.kis_socket.send(json.dumps(payload))
+                await self.send(json.dumps({"message": f"{stock_code} Tracking stopped"}))
+                print(f"Tracking stopped for {stock_code} by client: {self.channel_name}")
             return
 
         if stock_code:
@@ -82,7 +81,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                     data = self.parse_kis_data(message)
                     if not data:
                         continue
-                    pprint("send_data:", data)
+                    print("send_data:", json.dumps(data))
                     # 각 클라이언트의 구독 목록 확인 후 데이터 전송
                     for channel_name, stock_codes in KISWebSocketConsumer.tasks.items():
                         if data.get("stock_code") in stock_codes:
