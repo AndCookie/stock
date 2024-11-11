@@ -39,7 +39,7 @@ pipeline {
                         git reset --hard origin/$BRANCH_NAME || exit 1
 
                         echo 'Linking environment file...'
-                        ln -sf $ENV_FILE_PATH django-back/.env || exit 1
+                        ln -sf $ENV_FILE_PATH django_back/.env || exit 1
 
                         echo 'Starting Docker containers...'
                         docker-compose -p $DOCKER_PROJECT_NAME down --remove-orphans || exit 1
