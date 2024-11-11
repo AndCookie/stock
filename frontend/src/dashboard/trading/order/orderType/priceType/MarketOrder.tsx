@@ -22,19 +22,20 @@ const MarketOrder: React.FC<Omit<IOrderTypeProps, 'initialMarketPrice'>> = ({ mo
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <div
         className={styles.inputContainer}
         onMouseDown={(event) => {
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
       >
-        <label>구매가격</label>
+        <div className={styles.title}>OO 가격</div>
         <div className={styles.inputBox}>
           <input
             type="text"
             value="최대한 빠른 가격"
             disabled
+            style={{fontSize: "13px"}}
           />
           <button disabled>−</button>
           <button disabled>+</button>
@@ -47,7 +48,7 @@ const MarketOrder: React.FC<Omit<IOrderTypeProps, 'initialMarketPrice'>> = ({ mo
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
       >
-        <label>수량</label>
+        <div className={styles.title}>수량</div>
         <div className={styles.inputBox}>
           <input
             type="text"

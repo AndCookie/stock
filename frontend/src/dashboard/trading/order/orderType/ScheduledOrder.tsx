@@ -47,32 +47,35 @@ const ScheduledOrder: React.FC<IOrderProps> = ({ initialMarketPrice, mode }) => 
   const [selectedTab, setSelectedTab] = useState(0);
 
   return (
-    <div>
-      {/* 네비게이션 바 */}
-      <div className={styles.navbar}>
-        {TABS.map((tab, index) => (
-          <div
-            key={index}
-            className={`${styles.navItem} ${selectedTab === index ? styles.active : ""}`}
-            onMouseDown={(event) => {
-              event.stopPropagation(); // 클릭 시 드래그 방지
-            }}
-            onClick={() => {
-              setSelectedTab(index);
-            }}
-          >
-            {tab.label}
-          </div>
-        ))}
-      </div>
+    <div className={styles.container}>
 
+      <div className={styles.subContainer}>
+        <div className={styles.title}>주문 가격</div>
+        {/* 네비게이션 바 */}
+        <div className={styles.navbar}>
+          {TABS.map((tab, index) => (
+            <div
+              key={index}
+              className={`${styles.navItem} ${selectedTab === index ? styles.active : ""}`}
+              onMouseDown={(event) => {
+                event.stopPropagation(); // 클릭 시 드래그 방지
+              }}
+              onClick={() => {
+                setSelectedTab(index);
+              }}
+            >
+              {tab.label}
+            </div>
+          ))}
+        </div>
+      </div>
       <div
         className={styles.inputContainer}
         onMouseDown={(event) => {
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
       >
-        <label>감시가격</label>
+        <div className={styles.title}>감시 가격</div>
         <div className={styles.inputBox}>
           <input
             type="text"

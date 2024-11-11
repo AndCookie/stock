@@ -52,14 +52,14 @@ const LimitOrder: React.FC<IOrderTypeProps> = ({ initialMarketPrice, mode, type,
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <div
         className={styles.inputContainer}
         onMouseDown={(event) => {
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
       >
-        <label>구매가격</label>
+        <div className={styles.title}>OO 가격</div>
         <div className={styles.inputBox}>
           <input
             type="text"
@@ -77,7 +77,7 @@ const LimitOrder: React.FC<IOrderTypeProps> = ({ initialMarketPrice, mode, type,
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
       >
-        <label>수량</label>
+        <div className={styles.title}>수량</div>
         <div className={styles.inputBox}>
           <input
             type="text"
