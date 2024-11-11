@@ -1,13 +1,22 @@
-import Styles from './StockInfo.module.css'
+import Styles from "./StockInfo.module.css";
+import { IStockInfoProps } from "./definitions";
 
-const StockInfo = () => {
+const StockInfo = ({
+  dataRank,
+  stockName,
+  stockPrice,
+  previousDayVersusPrice,
+  previousDayVersus,
+}: IStockInfoProps) => {
   return (
     <div className={Styles.stockInfoContainer}>
-      <div>숫자</div>
+      <div>{dataRank}</div>
       <img src="" alt="기업 로고" />
-      <div>종목명</div>
-      <div>가격</div>
-      <div>등락률</div>
+      <div>{stockName} </div>
+      <div>{stockPrice} </div>
+      <div>
+        {previousDayVersusPrice}원 ({previousDayVersus}%){" "}
+      </div>
     </div>
   );
 };
