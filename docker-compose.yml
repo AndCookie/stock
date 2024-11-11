@@ -30,7 +30,7 @@ services:
       dockerfile: Dockerfile
 
     environment:
-      - DJANGO_SETTINGS_MODULE=your_project.settings # 필요한 경우 설정
+      - DJANGO_SETTINGS_MODULE=back.settings # 필요한 경우 설정
       # - DATABASE_HOST=mysql
       - DATABASE_NAME=modumotu
       - DATABASE_USER=back
