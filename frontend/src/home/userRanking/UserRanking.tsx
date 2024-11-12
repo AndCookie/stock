@@ -17,7 +17,7 @@ const UserRanking = () => {
     {
       dataRank: '3',
       userName: 'andcookie',
-      profit: '55.6',
+      profit: '-12.6',
     },
   ]);
   const [totalRanking] = useState([
