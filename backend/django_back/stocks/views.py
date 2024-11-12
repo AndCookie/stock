@@ -211,77 +211,70 @@ def minute_price(request):
     cache_key = f"stock_min_data:{stock_code}"
     today_str = date.today().strftime("%Y%m%d")
 
-    # 비어있는 시간을 확인하기 위한 목록
-    missing_times = []
-    all_data = []
-
-    # Redis에서 모든 기존 데이터를 한번에 가져오기
+    # Redis에서 모든 기존 데이터를 한 번에 가져오기
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    
-    # Redis 데이터에서 오늘 날짜와 일치하지 않는 항목을 삭제하고, 오늘 날짜 데이터만 필터링하여 저장
+    all_data = []
+    existing_times = set()  # 이미 존재하는 stck_cntg_hour 값을 저장할 set
+
+    # 오늘 날짜 데이터 필터링 및 Redis에서 오래된 데이터 삭제
     for value in indicator_data:
         data = json.loads(value)
         if data.get("stck_bsop_date") != today_str:
-            # 오늘 날짜가 아니면 Redis에서 삭제
-            redis_client.zrem(cache_key, value)
+            redis_client.zrem(cache_key, value)  # 오늘 데이터가 아닌 경우 삭제
         else:
-            # 오늘 날짜에 해당하는 데이터만 수집
-            all_data.append(data)
+            all_data.append(data)  # 오늘 데이터만 유지
+            existing_times.add(data["stck_cntg_hour"])  # 오늘 데이터의 시간 기록
 
-    # 현재 시간부터 09:00:00까지 30분씩 거슬러 올라가면서 확인
+    # 누락된 시간대 확인 및 요청
     current_time = end_time
     while current_time >= start_time:
         time_str = current_time.strftime("%H%M") + "00"
         
-        # 해당 시간의 데이터가 없으면 누락 목록에 추가
-        if not any(item["stck_cntg_hour"] == time_str for item in all_data):
-            missing_times.append(time_str)
+        # 이미 Redis에 해당 시간이 존재하면 건너뜀
+        if time_str not in existing_times:
+            # 누락된 데이터 요청 및 Redis에 저장
+            fetch_and_save_stock_minute_data(stock_code, time_str)
         
         current_time -= timedelta(minutes=30)
 
-    # 누락된 시간대 데이터 요청
-    if missing_times:
-        for time_str in missing_times:
-            response_data = fetch_and_save_stock_minute_data(stock_code, time_str)
-            if response_data:
-                all_data.extend(response_data)  # 가져온 30개 데이터를 추가
-
-    # 'stck_cntg_hour' 기준으로 데이터 오름차순 정렬
+    # Redis에 추가된 데이터를 다시 가져와 정렬
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    all_data = [json.loads(item) for item in indicator_data]
     all_data.sort(key=lambda x: x["stck_cntg_hour"])
 
     return Response(all_data, status=status.HTTP_200_OK)
 
-def fetch_and_save_stock_minute_data(stock_code, start_time_str):
-    """주어진 시작 시간으로부터 30분 동안의 데이터를 가져와 Redis에 저장"""
-    print(f'{stock_code}의 {start_time_str}의 데이터 가져옴')
+
+
+def fetch_and_save_stock_minute_data(stock_code, time_str):
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice"
+
+    # 요청 파라미터 설정
     params = {
-        "FID_ETC_CLS_CODE": "",
-        "FID_COND_MRKT_DIV_CODE": "J",
-        "FID_INPUT_ISCD": stock_code,
-        "FID_INPUT_HOUR_1": start_time_str,
+        "FID_ETC_CLS_CODE": "", 
+        "FID_COND_MRKT_DIV_CODE": "J",  # 시장 구분 코드
+        "fid_input_iscd": stock_code,
+        "FID_INPUT_HOUR_1": time_str,  # 요청할 시간대
         "FID_PW_DATA_INCU_YN": "Y"
     }
-    
     headers = get_real_headers('FHKST03010200')
 
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
-        response_data = response.json()
+        response = response.json()
         cache_key = f"stock_min_data:{stock_code}"
-        
-        pipe = redis_client.pipeline()
 
-        for minute_data in response_data['output2']:
-            redis_time_str = minute_data['stck_cntg_hour']
-            timestamp = int(datetime.combine(date.today(), datetime.strptime(redis_time_str, "%H%M%S").time()).timestamp())
-            pipe.zadd(cache_key, {json.dumps(minute_data): timestamp})
-        
+        # Redis에 데이터 저장
+        pipe = redis_client.pipeline()
+        for minute_data in response['output2']:
+            pipe.zadd(cache_key, {json.dumps(minute_data): minute_data['stck_cntg_hour']})
         pipe.execute()
-        return response_data['output2']
+
+        return response['output2']  # 새로 가져온 데이터를 반환
     else:
-        print(f"Failed to fetch data for {stock_code} at {start_time_str}: {response.status_code}")
+        print(f"Failed to fetch minute data for {stock_code} at {time_str}: {response.status_code}")
         return None
+
     
 @api_view(['GET'])
 def volume_ranking(request):
