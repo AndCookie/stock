@@ -65,7 +65,7 @@ export interface IFavoriteState {
   fetchFavoriteData: () => Promise<void>;
 }
 
-// type of Stock
+// type of Past Stock
 export interface IStockData {
   time: string;
   open: number;
@@ -74,7 +74,24 @@ export interface IStockData {
   close: number;
 }
 
-export interface IStockState {
-  stockData: IStockData[] | null;
-  fetchStockData: () => Promise<void>;
+export interface IPastStockState {
+  pastStockData: IStockData[] | null;
+  fetchPastStockData: () => Promise<void>;
+}
+
+// type of Today Stock
+export interface ITodayStockData {
+  stck_bsop_date: string;
+  stck_cntg_hour: string;
+  stck_prpr: string;
+  stck_oprc: string;
+  stck_hgpr: string;
+  stck_lwpr: string;
+  cntg_vol: string;
+  acml_tr_pbmn: string;
+}
+
+export interface ITodayStockState {
+  minuteStockData: ITodayStockData[] | null;
+  fetchMinuteStockData: () => Promise<void>;
 }

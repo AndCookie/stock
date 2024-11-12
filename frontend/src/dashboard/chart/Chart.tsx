@@ -1,40 +1,42 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart, ISeriesApi, ColorType } from "lightweight-charts";
-import { useStockStore } from "../../store/useStockStore";
-import useVolumeData from "./hooks/useVolumeData";
-import useMinuteData from "./hooks/useMinuteData";
+import { usePastStockStore } from "../../store/usePastStockStore";
+import usePastVolumeData from "./hooks/usePastVolumeData";
+// import useMinuteData from "./hooks/useMinuteData";
 import useSocketStore from "../../store/useSocketStore";
 import { COLORS } from "../../common/utils";
 import { IStockData } from "../../store/definitions";
+import { useTodayStockStore } from "../../store/useTodayStockStore";
 
 const Chart = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
-  const { stockData } = useStockStore();
-  const { volumeData } = useVolumeData();
+  const { pastStockData } = usePastStockStore();
+  const { pastVolumeData } = usePastVolumeData();
 
-  const { minuteData } = useMinuteData();
+  // const { minuteData } = useMinuteData();
+  const { minuteStockData } = useTodayStockStore();
   const { tradingData } = useSocketStore();
 
-  const [updatedStockData, setUpdatedStockData] = useState<IStockData[]>(stockData || []);
+  const [updatedStockData, setUpdatedStockData] = useState<IStockData[]>(pastStockData || []);
 
   // 차트 데이터 초기화
   useEffect(() => {
-    if (!stockData || minuteData.length === 0) return;
+    if (!pastStockData || !minuteStockData) return;
     
     const today = new Date();
     const year = today.getFullYear();
     const month = (today.getMonth() + 1).toString().padStart(2, "0");
     const day = today.getDate().toString().padStart(2, "0");
     
-    const openPrice = minuteData[0].stck_oprc;
-    const closePrice = minuteData[minuteData.length - 1].stck_prpr;
+    const openPrice = minuteStockData[0].stck_oprc;
+    const closePrice = minuteStockData[minuteStockData.length - 1].stck_prpr;
     
-    let highPrice = minuteData[0].stck_hgpr;
-    let lowPrice = minuteData[0].stck_lwpr;
+    let highPrice = minuteStockData[0].stck_hgpr;
+    let lowPrice = minuteStockData[0].stck_lwpr;
     
-    minuteData.forEach((data) => {
+    minuteStockData.forEach((data) => {
       if (data.stck_hgpr > highPrice) {
         highPrice = data.stck_hgpr;
       }
@@ -43,7 +45,7 @@ const Chart = () => {
       }
     });
     
-    setUpdatedStockData(stockData);
+    setUpdatedStockData(pastStockData);
     setUpdatedStockData((prev) =>
       [...prev,
       {
@@ -53,11 +55,11 @@ const Chart = () => {
         low: parseFloat(lowPrice),
         close: parseFloat(closePrice),
       }]);
-  }, [stockData, minuteData])
+  }, [pastStockData, minuteStockData])
 
   // 차트 초기화
   useEffect(() => {
-    if (!chartContainerRef.current || !updatedStockData || !volumeData) return;
+    if (!chartContainerRef.current || !updatedStockData || !pastVolumeData) return;
 
     const chartOptions = {
       width: chartContainerRef.current.clientWidth,
@@ -112,12 +114,12 @@ const Chart = () => {
       },
     });
 
-    const volumeDataColored = volumeData.map((data, i) => {
+    const volumeDataColored = pastVolumeData.map((data, i) => {
       if (i === 0) {
         return { ...data, color: COLORS.positive };
       }
 
-      const previousVolume = volumeData[i - 1].value;
+      const previousVolume = pastVolumeData[i - 1].value;
       const color = data.value > previousVolume ? COLORS.positive : COLORS.negative;
 
       return { ...data, color };
@@ -131,7 +133,7 @@ const Chart = () => {
       resizeObserver.disconnect();
       chart.remove();
     };
-  }, [updatedStockData, volumeData]);
+  }, [updatedStockData, pastVolumeData]);
 
   useEffect(() => {
     if (!tradingData || !candlestickSeriesRef.current) return ;
@@ -142,7 +144,7 @@ const Chart = () => {
     realtimeStockData.low = Math.min(realtimeStockData.low, tradingData.STCK_PRPR);
 
     candlestickSeriesRef.current.update(realtimeStockData);
-  }, [tradingData])
+  }, [tradingData, updatedStockData])
 
   return (
     <div

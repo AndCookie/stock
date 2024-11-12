@@ -1,17 +1,17 @@
 import axios from "axios";
 import { create } from "zustand";
-import { IStockState } from "./definitions";
+import { IPastStockState } from "./definitions";
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-export const useStockStore = create<IStockState>((set) => ({
-  stockData: null,
+export const usePastStockStore = create<IPastStockState>((set) => ({
+  pastStockData: null,
 
-  fetchStockData: async () => {
+  fetchPastStockData: async () => {
     try {
       const response = await axios.get(baseURL + 'stockDetail');
       set(() => ({
-        stockData: response.data,
+        pastStockData: response.data,
       }));
     } catch (error) {
       console.log(error);
