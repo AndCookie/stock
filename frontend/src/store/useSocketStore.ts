@@ -45,6 +45,7 @@ interface IOrderBookData {
   BIDP_RSQN10: number;  // 매수호가 잔량 10
   TOTAL_ASKP_RSQN: number;  // 총 매도호가 잔량
   TOTAL_BIDP_RSQN: number;  // 총 매수호가 잔량
+  [key: string]: number; // 추가하여 동적 키에 대한 타입 허용
 }
 
 interface ITradingData {
