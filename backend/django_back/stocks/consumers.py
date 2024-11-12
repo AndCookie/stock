@@ -80,6 +80,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                 print("Connected to KIS WebSocket")
                 await self.request_to_kis("1", "H0UPCNT0", "0001")  # 코스피 지수 체결 실시간 등록
                 await self.request_to_kis("1", "H0UPCNT0", "1001")  # 코스닥 지수 체결 실시간 등록
+                # await self.request_to_kis("1", "HDFSCNT0", "DNASAAPL")  # 나스닥(?) 지수 체결 실시간 등록
 
                 while True:
                     message = await socket.recv()
