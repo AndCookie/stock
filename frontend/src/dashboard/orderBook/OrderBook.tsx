@@ -3,7 +3,7 @@ import useSocketStore from '../../store/useSocketStore';
 import styles from './OrderBook.module.css';
 
 const OrderBook: React.FC = () => {
-  const { orderBookData } = useSocketStore();  
+  const { orderBookData, tradingData } = useSocketStore();
   const maxAskPrice = 76800; // 상한가
   const minBidPrice = 41400; // 하한가
   const currentPrice = 56300; // 기준 가격
@@ -11,7 +11,9 @@ const OrderBook: React.FC = () => {
   const minPrice = 56600; // 최저가
   const quantity = 31499922; // 거래량
 
-  if (!orderBookData) return <div />;
+  if (!orderBookData || !tradingData) {
+    return <div className={styles.loading}>Loading...</div>;
+  }
 
   return (
     <div className={styles.container}>

@@ -1,6 +1,6 @@
 // 주문하기(구매, 판매, 대기)
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSocketStore from "../../store/useSocketStore";
 import Buy from "./order/Buy";
 import Sell from "./order/Sell";
@@ -11,12 +11,14 @@ const Order = () => {
   // Zustand 스토어에서 tradingData 배열 가져오기
   const tradingData = useSocketStore((state) => state.tradingData);
   
+  const [initialMarketPrice, setInitialMarketPrice] = useState(null);
+
   // 접속 시점의 가장 최신 STCK_PRPR 값을 한 번만 설정
-  const [initialMarketPrice] = useState(() =>
-    tradingData && tradingData.length > 0
-      ? tradingData[tradingData.length - 1].STCK_PRPR
-      : 0
-  );
+  useEffect(() => {
+    if (!tradingData) return;
+
+    setInitialMarketPrice(tradingData.STCK_PRPR);
+  }, [tradingData])
   
   const TABS = [
     { label: "구매", component: <Buy initialMarketPrice={initialMarketPrice} />, styleClass: "activeBuy" },
@@ -25,6 +27,9 @@ const Order = () => {
   ];
 
   const [selectedTab, setSelectedTab] = useState(0);
+
+  if (!initialMarketPrice)
+    return <></>
 
   return (
     <div className={styles.container}>
