@@ -45,7 +45,6 @@
 
 .navItem:hover {
   filter: brightness(1.2); /* 명도를 20% 밝게 */
-  font-weight: bold; /* 글씨 굵게 */
 }
 
 .active {
