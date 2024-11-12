@@ -14,6 +14,7 @@ import wonIcon from '../../assets/images/indicator/won.png';
 
 import styles from './Indicators.module.css';
 import { COLORS } from '../../common/utils';
+import { IIndexEntry } from '../../store/definitions';
 
 // 이미지 매핑 객체
 const flagMap: Record<string, string> = {
@@ -28,32 +29,14 @@ const flagMap: Record<string, string> = {
 };
 
 const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
-  const { kospiData, kosdaqData, nasdaqData, djiData, yendollarData, wondollarData, wtiData, goldData } = useIndexStore();
-
-  const indexData = {
-    "국내": {
-      "코스피": kospiData,
-      "코스닥": kosdaqData,
-    },
-    "해외": {
-      "다우존스": djiData,
-      "나스닥": nasdaqData,
-    },
-    "환율": {
-      "원/달러": wondollarData,
-      "엔/달러": yendollarData,
-    },
-    "원자재": {
-      "WTI": wtiData,
-      "금": goldData,
-    },
-  };
+  const { indexData } = useIndexStore();
 
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
 
-  const indexTypes = ["국내", "해외", "환율", "원자재"];
-  const indexList = indexData[indexTypes[indexTypeId]][index];
+  const indexTypes = ["국내", "해외", "환율", "원자재"] as const;
+
+  const indexList = (indexData![indexTypes[indexTypeId]] as Record<string, IIndexEntry[] | null>)[index]!;
 
   // 이미지 경로 가져오기 함수
   const getFlagSrc = (index: string) => flagMap[index] || "";
@@ -61,8 +44,8 @@ const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
 
   const current = indexList[indexList.length - 1];
   const previous = indexList[indexList.length - 2];
-  const changeValue = current.bstp_nmix_prpr ? current.bstp_nmix_prpr - previous.bstp_nmix_prpr : current.ovrs_nmix_prpr - previous.ovrs_nmix_prpr;
-  const changeRate = previous.bstp_nmix_prpr ? (changeValue / previous.bstp_nmix_prpr) * 100 : (changeValue / previous.ovrs_nmix_prpr) * 100;
+  const changeValue = current.bstp_nmix_prpr ? Number(current.bstp_nmix_prpr) - Number(previous.bstp_nmix_prpr) : Number(current.ovrs_nmix_prpr) - Number(previous.ovrs_nmix_prpr);
+  const changeRate = previous.bstp_nmix_prpr ? (changeValue / Number(previous.bstp_nmix_prpr)) * 100 : (changeValue / Number(previous.ovrs_nmix_prpr)) * 100;
 
   const handleMouseDown = () => {
     setIsDragging(false);
@@ -90,7 +73,7 @@ const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
           {flagSrc && <img src={flagSrc} alt="flag" className={styles.flagIcon} />}
           {index}
         </div>
-        <div className={styles.value}>{current.bstp_nmix_prpr ? parseFloat(current.bstp_nmix_prpr).toFixed(2) : parseFloat(current.ovrs_nmix_prpr).toFixed(2)}</div>
+        <div className={styles.value}>{current.bstp_nmix_prpr ? Number(current.bstp_nmix_prpr).toFixed(2) : Number(current.ovrs_nmix_prpr).toFixed(2)}</div>
         <div className={styles.percentage} style={{ color: changeValue >= 0 ? COLORS.positive : COLORS.negative }}>
           {changeValue >= 0 ? `+${changeValue.toFixed(2)}` : changeValue.toFixed(2)} ({changeRate.toFixed(1)}%)
         </div>

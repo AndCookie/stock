@@ -14,13 +14,13 @@ import 'slick-carousel/slick/slick-theme.css';
 
 const HomePage: React.FC = () => {
 
-  const { kospiData, kosdaqData, nasdaqData, sp500Data, djiData, yendollarData, wondollarData, wtiData, goldData, fetchIndexData } = useIndexStore();
+  const { indexData, fetchIndexData } = useIndexStore();
 
   useEffect(() => {
     fetchIndexData();
   }, [])
 
-  if (!kospiData || !kosdaqData || !nasdaqData || !sp500Data || !djiData || !yendollarData || !wondollarData || ! wtiData || !goldData) return <div />;
+  if (!indexData) return <div />;
 
   return (
     <>

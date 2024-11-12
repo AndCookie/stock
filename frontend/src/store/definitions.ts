@@ -1,27 +1,43 @@
 // type of Index
 export interface IIndexEntry {
   stck_bsop_date: string;
-  bstp_nmix_prpr: string;
-  bstp_nmix_oprc: string;
-  bstp_nmix_hgpr: string;
-  bstp_nmix_lwpr: string;
+  bstp_nmix_prpr?: string;
+  bstp_nmix_oprc?: string;
+  bstp_nmix_hgpr?: string;
+  bstp_nmix_lwpr?: string;
+  ovrs_nmix_prpr?: string;
+  ovrs_nmix_oprc?: string;
+  ovrs_nmix_hgpr?: string;
+  ovrs_nmix_lwpr?: string;
   acml_vol: string;
   acml_tr_pbmn: string;
   mod_yn: string;
 }
 
+export interface IIndexData {
+  "국내": {
+    "코스피": IIndexEntry[] | null;
+    "코스닥": IIndexEntry[] | null;
+  };
+  "해외": {
+    "다우존스": IIndexEntry[] | null;
+    "나스닥": IIndexEntry[] | null;
+  };
+  "환율": {
+    "원/달러": IIndexEntry[] | null;
+    "엔/달러": IIndexEntry[] | null;
+  };
+  "원자재": {
+    "WTI": IIndexEntry[] | null;
+    "금": IIndexEntry[] | null;
+  };
+}
+
 export interface IIndexState {
-  kospiData: IIndexEntry[] | null;
-  kosdaqData: IIndexEntry[] | null;
-  nasdaqData: IIndexEntry[] | null;
-  sp500Data: IIndexEntry[] | null;
-  djiData: IIndexEntry[] | null;
-  yendollarData: IIndexEntry[] | null;
-  wondollarData: IIndexEntry[] | null;
-  wtiData: IIndexEntry[] | null;
-  goldData: IIndexEntry[] | null;
+  indexData: IIndexData | null;
   fetchIndexData: () => Promise<void>;
 }
+
 
 // type of Balance
 export interface IHolding {

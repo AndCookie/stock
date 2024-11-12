@@ -54,7 +54,12 @@ const Indicators: React.FC = () => {
     const dataElements = indices.map((index, i) => (
       <IndicatorCard key={i} indexTypeId={Math.floor(i / 2)} index={index} />
     ));
-    setFormattedData([...dataElements, ...dataElements]);  // 요소를 두 번 복제하여 자연스러운 연결
+    
+    const duplicatedElements = indices.map((index, i) => (
+      <IndicatorCard key={`indicator-${i}`} indexTypeId={Math.floor(i / 2)} index={index} />
+    ));
+  
+    setFormattedData([...dataElements, ...duplicatedElements]);
   }, []);
 
   return (
