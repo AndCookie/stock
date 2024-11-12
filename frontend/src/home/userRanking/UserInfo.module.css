@@ -5,9 +5,14 @@
   align-items: center;
 }
 
+.subTitle {
+  margin: 100px auto;
+}
+
 .userInfo {
   display: flex;
   align-items: center;
+  text-align: left;
 }
 
 .userName {
