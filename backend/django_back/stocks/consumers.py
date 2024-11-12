@@ -3,8 +3,9 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 import websockets
-# from accounts.models import FavoriteStock
-# from django.contrib.auth import get_user_model
+from django.apps import apps
+from django.contrib.auth import get_user_model
+from asgiref.sync import sync_to_async
 
 
 class KISWebSocketConsumer(AsyncWebsocketConsumer):
@@ -15,6 +16,11 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         await self.accept()
         if not KISWebSocketConsumer.kis_socket:
             asyncio.create_task(self.connect_to_kis())
+            
+        KISWebSocketConsumer.tasks[self.channel_name] = {
+            "subscribed_stocks": set(),
+            "favorite_stocks": set(),
+        }
         await self.send(json.dumps({"message": "WebSocket connection established"}))
         print(f"WebSocket connection established: {self.channel_name}")
 
@@ -29,31 +35,40 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         stock_code = data.get("stock_code")
         exit_request = data.get("exit")
         username = data.get('username')
-
-        if not self.channel_name in KISWebSocketConsumer.tasks:
-            KISWebSocketConsumer.tasks[self.channel_name] = set()  # 클라이언트별 종목 목록 초기화
             
-        # if username:
-        #     User = get_user_model()
-        #     user = User.objects.get(username=username)
-        #     favorite_stocks =  FavoriteStock.objects.get(user=user)
-        #     for favorite_stock in favorite_stocks:
-        #         stock_code = favorite_stock.stock_code
-        #         KISWebSocketConsumer.tasks[self.channel_name].add(stock_code)
-        #         await self.request_to_kis("2", "H0STCNT0", stock_code)  # 주식 호가 실시간 해제
+        if username:
+            # 관심 종목 추적 요청
+            User = get_user_model()
+            try:
+                user = await sync_to_async(User.objects.get)(username=username)
+            except User.DoesNotExist:
+                await self.send(json.dumps({"error": f"User '{username}' does not exist"}))
+                return
             
+            FavoriteStock = apps.get_model('accounts', 'FavoriteStock')
+            favorite_stocks = await sync_to_async(list)(FavoriteStock.objects.filter(user=user))
+            KISWebSocketConsumer.tasks[self.channel_name]['favorite_stocks'] = set()
+            for favorite_stock in favorite_stocks:
+                stock_code = favorite_stock.stock_code
+                if stock_code in KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'] or stock_code in KISWebSocketConsumer.tasks[self.channel_name]['favorite_stocks']:
+                    continue
+                KISWebSocketConsumer.tasks[self.channel_name]['favorite_stocks'].add(stock_code)
+                await self.request_to_kis("1", "H0STASP0", stock_code)  # 주식 체결 실시간 등록
+            return
 
         if exit_request:
             # 특정 종목 추적 중단 요청
-            if stock_code in KISWebSocketConsumer.tasks[self.channel_name]:
-                KISWebSocketConsumer.tasks[self.channel_name].remove(stock_code)
+            if stock_code in KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks']:
+                KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'].remove(stock_code)
                 await self.request_to_kis("2", "H0STASP0", stock_code)  # 주식 체결 실시간 해제
                 await self.request_to_kis("2", "H0STCNT0", stock_code)  # 주식 호가 실시간 해제
             return
 
         if stock_code:
             # 새로운 종목 추적 요청
-            KISWebSocketConsumer.tasks[self.channel_name].add(stock_code)
+            KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'].add(stock_code)
+            if stock_code in KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'] or stock_code in KISWebSocketConsumer.tasks[self.channel_name]['favorite_stocks']:
+                return
             if KISWebSocketConsumer.kis_socket:
                 await self.request_to_kis("1", "H0STASP0", stock_code)  # 주식 체결 실시간 등록
                 await self.request_to_kis("1", "H0STCNT0", stock_code)  # 주식 호가 실시간 등록
@@ -63,16 +78,18 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             async with websockets.connect("ws://ops.koreainvestment.com:21000") as socket:
                 KISWebSocketConsumer.kis_socket = socket
                 print("Connected to KIS WebSocket")
+                # await self.request_to_kis("1", "H0UPCNT0", stock_code)  # 지수 체결 실시간 등록
 
                 while True:
                     message = await socket.recv()
-                    data = self.parse_kis_data(message)
+                    data = await self.parse_kis_data(message)
                     if not data:
                         continue
-                    # print("send_data:", json.dumps(data))
+                    stock_code = data.get("stock_code")
+
                     # 각 클라이언트의 구독 목록 확인 후 데이터 전송
-                    for channel_name, stock_codes in KISWebSocketConsumer.tasks.items():
-                        if data.get("stock_code") in stock_codes:
+                    for channel_name, client_data in KISWebSocketConsumer.tasks.items():
+                        if stock_code in client_data["subscribed_stocks"] or stock_code in client_data["favorite_stocks"]:
                             await self.channel_layer.send(
                                 channel_name,
                                 {"type": "send_stock_data", "data": data},
@@ -85,7 +102,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
     async def send_stock_data(self, event):
         await self.send(json.dumps(event["data"]))
 
-    def parse_kis_data(self, message):
+    async def parse_kis_data(self, message):
         try:
             parts = message.split("|")
             if len(parts) >= 4:
@@ -96,12 +113,26 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                 return result
             return {}
         except Exception as e:
+            # JSON 메시지로 간주하고 처리
+            try:
+                recv_dic = json.loads(message)
+                print(recv_dic)
+                tr_id = recv_dic['header']['tr_id']
+
+                if tr_id == 'PINGPONG':
+                    await KISWebSocketConsumer.kis_socket.send(json.dumps({"type": "ping"}))
+                    print("Ping message handled")
+                    return {}  # 핑 메시지 처리 후 반환
+            except json.JSONDecodeError:
+                print(f"JSON Decode Error: {message}")
+
             print(f"Error parsing KIS data: {e}")
             return {}
 
     def stock_purchase(self, data):
         pValue = data.split('^')
         ret = {
+            'stock_code': pValue[0],             # 종목 코드
             'trading': {    
                 'STCK_CNTG_HOUR': pValue[1],     # 주식 체결 시간 (예: HHMMSS)
                 'STCK_PRPR': pValue[2],          # 주식 현재가
@@ -109,14 +140,14 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                 'ACML_VOL': pValue[13],          # 누적 거래량
                 'CTTR': pValue[18],              # 체결 강도 (매수/매도 비율)
                 'CCLD_DVSN': pValue[21],         # 체결 구분 (매수: 1, 매도: 5)
-            }, 
-            'stock_code': pValue[0]              # 종목 코드
+            }
         }
         return ret
     
     def stock_hoka(self, data):
         pValue = data.split('^')
         ret = {
+            'stock_code': pValue[0], 
             'ORDER_BOOK': {    
                 'ASKP1': pValue[3],
                 'ASKP2': pValue[4],
@@ -160,8 +191,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                 'BIDP_RSQN10': pValue[42],
                 'TOTAL_ASKP_RSQN': pValue[43],
                 'TOTAL_BIDP_RSQN': pValue[44],
-            }, 
-            'stock_code': pValue[0]
+            }
         }
         return ret
 
