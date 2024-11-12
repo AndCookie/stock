@@ -74,7 +74,7 @@ export interface IStockData {
   close: number;
 }
 
-export interface IStockState {
-  stockData: IStockData[] | null;
-  fetchStockData: () => Promise<void>;
+export interface IPastStockState {
+  pastStockData: IStockData[] | null;
+  fetchPastStockData: () => Promise<void>;
 }

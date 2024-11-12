@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart, ISeriesApi, ColorType } from "lightweight-charts";
-import { useStockStore } from "../../store/useStockStore";
-import useVolumeData from "./hooks/useVolumeData";
+import { usePastStockStore } from "../../store/usePastStockStore";
+import usePastVolumeData from "./hooks/usePastVolumeData";
 import useMinuteData from "./hooks/useMinuteData";
 import useSocketStore from "../../store/useSocketStore";
 import { COLORS } from "../../common/utils";
@@ -11,17 +11,17 @@ const Chart = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
-  const { stockData } = useStockStore();
-  const { volumeData } = useVolumeData();
+  const { pastStockData } = usePastStockStore();
+  const { pastVolumeData } = usePastVolumeData();
 
   const { minuteData } = useMinuteData();
   const { tradingData } = useSocketStore();
 
-  const [updatedStockData, setUpdatedStockData] = useState<IStockData[]>(stockData || []);
+  const [updatedStockData, setUpdatedStockData] = useState<IStockData[]>(pastStockData || []);
 
   // 차트 데이터 초기화
   useEffect(() => {
-    if (!stockData || minuteData.length === 0) return;
+    if (!pastStockData || minuteData.length === 0) return;
     
     const today = new Date();
     const year = today.getFullYear();
@@ -43,7 +43,7 @@ const Chart = () => {
       }
     });
     
-    setUpdatedStockData(stockData);
+    setUpdatedStockData(pastStockData);
     setUpdatedStockData((prev) =>
       [...prev,
       {
@@ -53,11 +53,11 @@ const Chart = () => {
         low: parseFloat(lowPrice),
         close: parseFloat(closePrice),
       }]);
-  }, [stockData, minuteData])
+  }, [pastStockData, minuteData])
 
   // 차트 초기화
   useEffect(() => {
-    if (!chartContainerRef.current || !updatedStockData || !volumeData) return;
+    if (!chartContainerRef.current || !updatedStockData || !pastVolumeData) return;
 
     const chartOptions = {
       width: chartContainerRef.current.clientWidth,
@@ -112,12 +112,12 @@ const Chart = () => {
       },
     });
 
-    const volumeDataColored = volumeData.map((data, i) => {
+    const volumeDataColored = pastVolumeData.map((data, i) => {
       if (i === 0) {
         return { ...data, color: COLORS.positive };
       }
 
-      const previousVolume = volumeData[i - 1].value;
+      const previousVolume = pastVolumeData[i - 1].value;
       const color = data.value > previousVolume ? COLORS.positive : COLORS.negative;
 
       return { ...data, color };
@@ -131,7 +131,7 @@ const Chart = () => {
       resizeObserver.disconnect();
       chart.remove();
     };
-  }, [updatedStockData, volumeData]);
+  }, [updatedStockData, pastVolumeData]);
 
   useEffect(() => {
     if (!tradingData || !candlestickSeriesRef.current) return ;

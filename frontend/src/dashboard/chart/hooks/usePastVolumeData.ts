@@ -4,23 +4,23 @@ import { IVolumeData } from "../definitions";
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-const useVolumeData = () => {
-  const [volumeData, setVolumeData] = useState<IVolumeData[]>([]);
+const usePastVolumeData = () => {
+  const [pastVolumeData, setPastVolumeData] = useState<IVolumeData[]>([]);
 
   useEffect(() => {
-    const fetchVolumeData = async () => {
+    const fetchPastVolumeData = async () => {
       try {
         const response = await axios.get(baseURL + 'volumeDetail');
-        setVolumeData(response.data);
+        setPastVolumeData(response.data);
       } catch (error) {
         console.log(error);
       }
     };
 
-    fetchVolumeData();
+    fetchPastVolumeData();
   }, []);
 
-  return { volumeData };
+  return { pastVolumeData };
 };
 
-export default useVolumeData;
+export default usePastVolumeData;
