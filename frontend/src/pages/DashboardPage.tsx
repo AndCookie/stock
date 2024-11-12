@@ -63,13 +63,13 @@ const DashboardPage = () => {
 
   // 초기 레이아웃 설정
   const initialLayout: Layout[] = [
-    { i: 'chartWidget', x: 0, y: 2, w: 6, h: 10 },
-    { i: 'infoWidget', x: 0, y: 12, w: 3, h: 4 },
+    { i: 'chartWidget', x: 0, y: 2, w: 6, h: 8 },
+    { i: 'infoWidget', x: 0, y: 10, w: 3, h: 6 },
     { i: 'orderBookWidget', x: 6, y: 0, w: 3, h: 16 },
     { i: 'symbolWidget', x: 0, y: 0, w: 6, h: 2 },
-    { i: 'tradingWidget', x: 9, y: 8, w: 3, h: 8 },
-    { i: 'tradingTrendWidget', x: 3, y: 12, w: 3, h: 4 },
-    { i: 'tradingVolumeWidget', x: 9, y: 0, w: 3, h: 8 },
+    { i: 'tradingWidget', x: 9, y: 5, w: 3, h: 11 },
+    { i: 'tradingTrendWidget', x: 3, y: 10, w: 3, h: 6 },
+    { i: 'tradingVolumeWidget', x: 9, y: 0, w: 3, h: 5 },
   ];
 
   const [layout, setLayout] = useState<Layout[]>(initialLayout); // 위젯 레이아웃 상태
@@ -255,7 +255,7 @@ const DashboardPage = () => {
             layout={layout}
             cols={maxCols}
             maxRows={maxRows}
-            rowHeight={Math.floor(height / 20)}
+            rowHeight={Math.floor(height / 28)}
             width={width - 35}
             isDraggable={isDraggable} // 상태에 따라 드래그 가능 여부 제어
             isResizable={true}
