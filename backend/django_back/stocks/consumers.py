@@ -66,9 +66,9 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
 
         if stock_code:
             # 새로운 종목 추적 요청
-            KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'].add(stock_code)
             if stock_code in KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'] or stock_code in KISWebSocketConsumer.tasks[self.channel_name]['favorite_stocks']:
                 return
+            KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'].add(stock_code)
             if KISWebSocketConsumer.kis_socket:
                 await self.request_to_kis("1", "H0STASP0", stock_code)  # 주식 체결 실시간 등록
                 await self.request_to_kis("1", "H0STCNT0", stock_code)  # 주식 호가 실시간 등록
@@ -78,7 +78,8 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             async with websockets.connect("ws://ops.koreainvestment.com:21000") as socket:
                 KISWebSocketConsumer.kis_socket = socket
                 print("Connected to KIS WebSocket")
-                # await self.request_to_kis("1", "H0UPCNT0", stock_code)  # 지수 체결 실시간 등록
+                await self.request_to_kis("1", "H0UPCNT0", "0001")  # 코스피 지수 체결 실시간 등록
+                await self.request_to_kis("1", "H0UPCNT0", "1001")  # 코스닥 지수 체결 실시간 등록
 
                 while True:
                     message = await socket.recv()
@@ -86,7 +87,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                     if not data:
                         continue
                     stock_code = data.get("stock_code")
-
+                    
                     # 각 클라이언트의 구독 목록 확인 후 데이터 전송
                     for channel_name, client_data in KISWebSocketConsumer.tasks.items():
                         if stock_code in client_data["subscribed_stocks"] or stock_code in client_data["favorite_stocks"]:
@@ -95,6 +96,12 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                                 {"type": "send_stock_data", "data": data},
                             )
                             print(f"Sending data to channel {channel_name}: {data}")
+                        else:
+                            if data.get('indicator'):
+                                await self.channel_layer.send(
+                                   channel_name,
+                                    {"type": "send_stock_data", "data": data},
+                                )
         except Exception as e:
             print(f"KIS WebSocket connection error: {e}")
             KISWebSocketConsumer.kis_socket = None
@@ -110,6 +117,8 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                     result = self.stock_hoka(parts[3])
                 elif parts[1] == "H0STCNT0":
                     result = self.stock_purchase(parts[3])
+                elif parts[1] == "H0UPCNT0":
+                    result = self.indicator(parts[3])
                 return result
             return {}
         except Exception as e:
@@ -194,6 +203,17 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             }
         }
         return ret
+
+    def indicator(self, data):
+        pValue = data.split('^')
+        ret = {
+            'stock_code': pValue[0],             # 종목 코드
+            'indicator': {    
+                'prpr_nmix': pValue[2],          # 현재가 지수
+            }
+        }
+        return ret
+        
 
     def get_payload(self, tr_type, tr_id, stock_code):
         payload = {
