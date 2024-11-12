@@ -1,0 +1,20 @@
+.userInfoContainer {
+  display: flex;
+  margin-top: 5px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+}
+
+.userName {
+  margin-left: 10px;
+}
+
+.medalIcon {
+  width: 30%;
+  height: 30%;
+}

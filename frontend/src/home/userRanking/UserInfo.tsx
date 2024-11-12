@@ -16,9 +16,9 @@ const UserInfo = ({ index = 1 }) => {
 
   return (
     <div className={styles.userInfoContainer}>
-      <div>
+      <div className={styles.userInfo}>
         <img src={selectMedal(index)} alt="" className={styles.medalIcon} />
-        <div>유저명</div>
+        <div className={styles.userName}>유저명</div>
       </div>
       <div>수익률</div>
     </div>
