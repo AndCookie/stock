@@ -21,7 +21,9 @@ const UserInfo = ({ dataRank, userName, profit }: IUserInfoProps) => {
         <img src={selectMedal(dataRank)} alt="" className={styles.medalIcon} />
         <div className={styles.userName}>{userName}</div>
       </div>
-      <div>{profit}%</div>
+      <div className={Number(profit) > 0 ? `${styles.isProfitPlus}` : `${styles.isProfitMinus}`}>
+        {profit}%
+      </div>
     </div>
   );
 };
