@@ -8,8 +8,8 @@ import { IPriceProps } from "../definitions";
 
 const Sell: React.FC<IPriceProps> = ({ initialMarketPrice }) => {
   const TABS = [
-    { label: "일반 주문", component: <StandardOrder initialMarketPrice={initialMarketPrice} mode={"Sell"} /> },
-    { label: "조건 주문", component: <ScheduledOrder initialMarketPrice={initialMarketPrice} mode={"Sell"} /> },
+    { label: "일반 주문", component: <StandardOrder initialMarketPrice={initialMarketPrice} mode={"SELL"} /> },
+    { label: "조건 주문", component: <ScheduledOrder initialMarketPrice={initialMarketPrice} mode={"SELL"} /> },
   ];
 
   const [selectedTab, setSelectedTab] = useState(0);

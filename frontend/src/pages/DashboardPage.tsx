@@ -5,11 +5,6 @@
 // setIsDraggable은 props로 받으시면 됩니다.
 // 위젯 prop 인터페이스는 common에 있습니다.
 
-// To. 광영
-// dashboard 페이지에서 Ctrl+스크롤로 화면 축소해서 50까지 줄여보면
-// 화면 크기에 따라서 위젯 내에 차트가 차지하는 크기 비중이 달라지는데
-// 이 부분 고쳐주세요.
-
 // To. 선재누나
 // 추가하기 버튼 위치 임의로 넣어놨는데 바꿔주세요!
 // alert창 CSS 부탁드립니다.
@@ -18,7 +13,7 @@
 // TO DO
 // Layout 정보 갱신될 때마다 백엔드에 POST 요청 보내서 저장하기, GET 요청 결과가 null이면 initialLayout으로
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 
 // 위젯 임포트
@@ -41,6 +36,7 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import styles from './DashboardPage.module.css';
 import { AiOutlineClose, AiOutlineCheck } from "react-icons/ai"; // X / 체크 아이콘
+import { useStockStore } from '../store/useStockStore';
 
 // 위젯 구성 객체 (이름, 컴포넌트, 순서 정보 포함)
 const widgetConfig: { id: string; name: string; component: React.ComponentType<IWidgetComponentProps> }[] = [
@@ -54,6 +50,12 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 ];
 
 const DashboardPage = () => {
+  const { fetchStockData } = useStockStore();
+
+  useEffect(() => {
+    fetchStockData();
+  }, [])
+
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
 
   // 초기 레이아웃 설정
@@ -66,7 +68,7 @@ const DashboardPage = () => {
     { i: 'tradingTrendWidget', x: 3, y: 12, w: 3, h: 4 },
     { i: 'tradingVolumeWidget', x: 9, y: 0, w: 3, h: 8 },
   ];
-  
+
   const [layout, setLayout] = useState<Layout[]>(initialLayout); // 위젯 레이아웃 상태
   const [forceRerenderKey, setForceRerenderKey] = useState(0); // 강제 리렌더링을 위한 key
   const [isWidgetVisible, setIsWidgetVisible] = useState<{ [key: string]: boolean }>({
@@ -83,7 +85,7 @@ const DashboardPage = () => {
   //   Object.keys(widgetComponents).reduce((acc, key) => ({ ...acc, [key]: true }), {})
   // );
 
-  
+
   // 각 위젯의 가시성 상태
   const [showModal, setShowModal] = useState(false); // 모달 창 표시 여부
   const [isDraggable, setIsDraggable] = useState(true); // 드래그 가능 여부를 상태로 관리
@@ -191,7 +193,7 @@ const DashboardPage = () => {
     }
   };
 
-return (
+  return (
     <div className={styles.container}>
       <div className={styles.addButton}>
         <button onClick={toggleModal} className={styles.addBtn}>
@@ -218,9 +220,8 @@ return (
                   {widgetConfig.map(({ id, name }) => (
                     <li
                       key={id}
-                      className={`${styles.widgetItem} ${
-                        isWidgetVisible[id] ? styles.widgetItemSelected : styles.widgetItemUnselected
-                      }`}
+                      className={`${styles.widgetItem} ${isWidgetVisible[id] ? styles.widgetItemSelected : styles.widgetItemUnselected
+                        }`}
                       onClick={() => toggleWidgetVisibility(id)}
                     >
                       <AiOutlineCheck
@@ -257,17 +258,17 @@ return (
             isResizable={true}
             resizeHandles={['se']}
             autoSize={true}
-            onLayoutChange={(layout) => console.log(layout)}
+            // onLayoutChange={(layout) => console.log(layout)}
             onDragStop={handleLayoutChange} // 드래그 종료 시 커스텀 로직 적용
             onResizeStop={handleLayoutChange} // 크기 조정 완료 시 커스텀 로직 적용
-            useCSSTransforms = {true}
+            useCSSTransforms={true}
           >
             {/* 가시성 상태에 따라 위젯을 조건부로 렌더링 */}
-            {widgetConfig.map(({ id, component: Component }) => 
+            {widgetConfig.map(({ id, component: Component }) =>
               isWidgetVisible[id] && (
                 <div key={id} className={styles.widget}>
                   {/* X 버튼 및 동적 위젯 컴포넌트 렌더링 */}
-                  <button className="closeButton" 
+                  <button className="closeButton"
                     onMouseDown={(event) => {
                       event.stopPropagation();
                       setIsDraggable(false);

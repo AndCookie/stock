@@ -8,8 +8,8 @@ import { IOrderProps } from "../../definitions";
 
 const StandardOrder: React.FC<IOrderProps> = ({ initialMarketPrice, mode }) => {
   const TABS = [
-    { label: "지정가 주문", component: <LimitOrder initialMarketPrice={initialMarketPrice} mode={mode} type={"STANDARD"} trackedPrice={0} /> },
-    { label: "시장가 주문", component: <MarketOrder mode={mode} type={"STANDARD"} trackedPrice={0} /> },
+    { label: "지정가 주문", component: <LimitOrder initialMarketPrice={initialMarketPrice} mode={mode} trackedPrice={0} /> },
+    { label: "시장가 주문", component: <MarketOrder mode={mode} trackedPrice={0} /> },
   ];
   
   const [selectedTab, setSelectedTab] = useState(0);
