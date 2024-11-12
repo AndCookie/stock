@@ -21,7 +21,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />}></Route>
         <Route path="/market/:indexTypeId" element={<MarketPage />}></Route>
       </Routes>
-      {/* <Rolling /> */}
+      <Rolling />
     </div>
   );
 }
