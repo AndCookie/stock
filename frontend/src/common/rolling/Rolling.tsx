@@ -1,16 +1,11 @@
-import { useEffect } from 'react';
-
 import { useIndexStore } from '../../store/useIndexStore';
+
 import { IIndexEntry } from '../../store/definitions';
 
 import styles from './Rolling.module.css';
 
 const Rolling = () => {
-  const { indexData, fetchIndexData } = useIndexStore();
-
-  useEffect(() => {
-    fetchIndexData();
-  }, [fetchIndexData]);
+  const { indexData } = useIndexStore();
 
   if (!indexData) {
     return <div className={styles.rolling} />;

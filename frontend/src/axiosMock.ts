@@ -5,50 +5,40 @@ const mock = new AxiosMockAdapter(axios);
 
 const BASEURL = "http://localhost:3000/api/v1/";
 
-// home-indicators
-const fakeIndexData = () => {
-  const startDate = new Date("2024-07-01");
-  const endDate = new Date("2024-10-30");
+// indicators
+function fakeIndicatorData() {
+  const data = [];
+  const start = new Date("2024-01-01");
+  const end = new Date(new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0]);
 
-  const fakeData = [];
+  let currentDate = start;
+  let previousValue = 1000;
 
-  const currentDate = new Date(startDate);
-  let indexValue = 3000;
+  while (currentDate <= end) {
+    const stck_bsop_date = currentDate.toISOString().split("T")[0].replace(/-/g, "");
 
-  while (currentDate <= endDate) {
-    const dailyChangeRate = (Math.random() - 0.5) * 0.01;
-    indexValue = parseFloat((indexValue * (1 + dailyChangeRate)).toFixed(2));
+    const changeFactor = Math.random() * 0.04 - 0.02; // -2% ~ +2% 변동
+    const bstp_nmix_prpr = (previousValue * (1 + changeFactor)).toFixed(2);
 
-    fakeData.push({
-      time: currentDate.toISOString().split("T")[0],
-      value: indexValue,
+    data.push({
+      stck_bsop_date,
+      bstp_nmix_prpr: parseFloat(bstp_nmix_prpr),
     });
 
+    previousValue = parseFloat(bstp_nmix_prpr);
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  return fakeData;
-};
+  return data;
+}
 
-const indexData = {
-  국내: {
-    코스피: fakeIndexData(),
-    코스닥: fakeIndexData(),
-  },
-  해외: {
-    다우존스: fakeIndexData(),
-    나스닥: fakeIndexData(),
-  },
-  환율: {
-    "원/달러": fakeIndexData(),
-    "엔/달러": fakeIndexData(),
-  },
-  원자재: {
-    WTI: fakeIndexData(),
-    금: fakeIndexData(),
-  },
-};
-
-mock.onGet(BASEURL + "index-detail").reply(200, indexData);
+mock.onGet(BASEURL + "stocks/kospi/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/kosdaq/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/nasdaq/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/dji/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/yen-dollar/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/won-dollar/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/wti/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/gold/").reply(200, fakeIndicatorData());
 
 // home-aiNews
 mock.onGet(BASEURL + "ai-news").reply(200, [
