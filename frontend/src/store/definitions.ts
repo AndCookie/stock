@@ -1,19 +1,25 @@
 // type of Index
 export interface IIndexEntry {
-  time: string;
-  value: number;
-}
-
-export interface IIndexCategory {
-  [indexName: string]: IIndexEntry[];
-}
-
-interface IIndexData {
-  [category: string]: IIndexCategory;
+  stck_bsop_date: string;
+  bstp_nmix_prpr: string;
+  bstp_nmix_oprc: string;
+  bstp_nmix_hgpr: string;
+  bstp_nmix_lwpr: string;
+  acml_vol: string;
+  acml_tr_pbmn: string;
+  mod_yn: string;
 }
 
 export interface IIndexState {
-  indexData: IIndexData | null;
+  kospiData: IIndexEntry[] | null;
+  kosdaqData: IIndexEntry[] | null;
+  nasdaqData: IIndexEntry[] | null;
+  sp500Data: IIndexEntry[] | null;
+  djiData: IIndexEntry[] | null;
+  yendollarData: IIndexEntry[] | null;
+  wondollarData: IIndexEntry[] | null;
+  wtiData: IIndexEntry[] | null;
+  goldData: IIndexEntry[] | null;
   fetchIndexData: () => Promise<void>;
 }
 

@@ -7,11 +7,30 @@ import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
 const IndicatorChart = ({ indexTypeId, index, color }: IIndicatorCardProps) => {
-  const { indexData } = useIndexStore();
+  const { kospiData, kosdaqData, nasdaqData, djiData, yendollarData, wondollarData, wtiData, goldData } = useIndexStore();
+
+  const indexData = {
+    "국내": {
+      "코스피": kospiData,
+      "코스닥": kosdaqData,
+    },
+    "해외": {
+      "다우존스": djiData,
+      "나스닥": nasdaqData,
+    },
+    "환율": {
+      "원/달러": wondollarData,
+      "엔/달러": yendollarData,
+    },
+    "원자재": {
+      "WTI": wtiData,
+      "금": goldData,
+    },
+  };
 
   const indexTypes = ["국내", "해외", "환율", "원자재"];
-  const indexList = indexData![indexTypes[indexTypeId]][index];
-  const indexValues = indexList.map(item => item.value);
+  const indexList = indexData[indexTypes[indexTypeId]][index];
+  const indexValues = indexList.map(item => item.bstp_nmix_prpr ? item.bstp_nmix_prpr : item.ovrs_nmix_prpr);
 
   const data = {
     labels: indexValues.map((_, i) => i),

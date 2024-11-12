@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from 'react';
-// import Slider from 'react-slick';
+import { useEffect, useState, useRef } from 'react';
+
+import IndicatorCard from './IndicatorCard';
+
 import styles from './Indicators.module.css';
+// import Slider from 'react-slick';
 // import 'slick-carousel/slick/slick.css';
 // import 'slick-carousel/slick/slick-theme.css';
-import IndicatorCard from './IndicatorCard';
-import { useIndexStore } from '../../store/useIndexStore';
 
 // 슬라이더 설정
 // const sliderSettings = {
@@ -27,7 +28,7 @@ import { useIndexStore } from '../../store/useIndexStore';
 //         slidesToShow: 3,
 //       },
 //     },
-    
+
 //     {
 //       breakpoint: 992,
 //       settings: {
@@ -45,27 +46,16 @@ import { useIndexStore } from '../../store/useIndexStore';
 // };
 
 const Indicators: React.FC = () => {
-  const { indexData, fetchIndexData } = useIndexStore();
   const [formattedData, setFormattedData] = useState<JSX.Element[]>([]);
   const marqueeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchIndexData();
-  }, [fetchIndexData]);
-
-  useEffect(() => {
-    if (indexData) {
-      const indices = ['코스피', '코스닥', '다우존스', '나스닥', '원/달러', '엔/달러', '금', 'WTI'];
-      const dataElements = indices.map((index, i) => (
-        <IndicatorCard key={i} indexTypeId={Math.floor(i / 2)} index={index} />
-      ));
-      setFormattedData([...dataElements, ...dataElements]); // 요소를 두 번 복제하여 자연스러운 연결
-    }
-  }, [indexData]);
-
-  if (!indexData) {
-    return <div className={styles.loading}>데이터를 불러오는 중입니다...</div>;
-  }
+    const indices = ['코스피', '코스닥', '다우존스', '나스닥', '원/달러', '엔/달러', '금', 'WTI'];
+    const dataElements = indices.map((index, i) => (
+      <IndicatorCard key={i} indexTypeId={Math.floor(i / 2)} index={index} />
+    ));
+    setFormattedData([...dataElements, ...dataElements]);  // 요소를 두 번 복제하여 자연스러운 연결
+  }, []);
 
   return (
     <section className={styles.marqueeContainer}>
