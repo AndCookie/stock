@@ -2,14 +2,15 @@ import styles from './UserInfo.module.css';
 import goldMedal from '../../assets/images/userRanking/🥇.png';
 import silverMedal from '../../assets/images/userRanking/🥈.png';
 import bronzeMedal from '../../assets/images/userRanking/🥉.png';
+import { IUserInfoProps } from './definition';
 
-const UserInfo = ({ index = 1 }) => {
-  const selectMedal = (index: number) => {
-    if (index === 0) {
+const UserInfo = ({ dataRank, userName, profit }: IUserInfoProps) => {
+  const selectMedal = (rank: string) => {
+    if (rank === '1') {
       return goldMedal;
-    } else if (index === 1) {
+    } else if (rank === '2') {
       return silverMedal;
-    } else if (index === 2) {
+    } else if (rank === '3') {
       return bronzeMedal;
     }
   };
@@ -17,10 +18,10 @@ const UserInfo = ({ index = 1 }) => {
   return (
     <div className={styles.userInfoContainer}>
       <div className={styles.userInfo}>
-        <img src={selectMedal(index)} alt="" className={styles.medalIcon} />
-        <div className={styles.userName}>유저명</div>
+        <img src={selectMedal(dataRank)} alt="" className={styles.medalIcon} />
+        <div className={styles.userName}>{userName}</div>
       </div>
-      <div>수익률</div>
+      <div>{profit}%</div>
     </div>
   );
 };
