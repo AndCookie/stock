@@ -2,9 +2,14 @@ import { FormEvent } from 'react';
 import useInput from '../hooks/useInput';
 import styles from './Nav.module.css';
 import { fetchSearch } from './actions';
+import { useState, useEffect } from 'react';
+import { getRelativePosition } from 'chart.js/helpers';
+import { useNavigate } from 'react-router-dom';
 
 const Search = () => {
   const { inputValue, handleChange } = useInput('');
+  const [isFocus, setIsFocus] = useState(false);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await fetchSearch(inputValue);
@@ -13,6 +18,22 @@ const Search = () => {
       console.log(res);
     }
   };
+
+  useEffect(() => {
+    const handleClickSearchBox = (e: MouseEvent) => {
+      const isFocus = (e.target as HTMLElement).closest('form')?.dataset.id;
+      if (isFocus) {
+        setIsFocus(true);
+      } else {
+        setIsFocus(false);
+      }
+    };
+
+    window.addEventListener('click', handleClickSearchBox);
+    return () => {
+      window.removeEventListener('click', handleClickSearchBox);
+    };
+  }, [setIsFocus]);
 
   const kospi200Companies = [
     '삼성전자',
@@ -122,10 +143,57 @@ const Search = () => {
     '신세계',
     '동서',
     '한국앤컴퍼니',
-    '한국앤컴퍼니',
-    '한국앤컴퍼니',
-    '한국앤컴퍼니',
   ];
+
+  const [dropDownList, setDropDownList] = useState(kospi200Companies);
+  const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
+
+  const updateDropDownList = () => {
+    if (inputValue === '') {
+      setDropDownList([]);
+      return;
+    }
+    const getRelatedKeywordArr = kospi200Companies.filter(
+      (textItem) =>
+        textItem.includes(inputValue.toLocaleLowerCase()) ||
+        textItem.includes(inputValue.toUpperCase())
+    );
+
+    setDropDownList(getRelatedKeywordArr);
+    setDropDownItemIndex(-1);
+  };
+
+  useEffect(() => {
+    updateDropDownList();
+  }, [inputValue]);
+
+  const navigate = useNavigate();
+
+  const handleClickDropDownList = (dropDownItem: string) => {
+    // 나중에 검색 결과로 이동할 수 있도록 로직 수정
+    navigate('/');
+  };
+
+  const handleDropDownKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (inputValue.trim() === '' || event.nativeEvent.isComposing) return;
+
+    if (event.code === 'ArrowDown') {
+      dropDownItemIndex === dropDownList.length - 1
+        ? setDropDownItemIndex(-1)
+        : setDropDownItemIndex(dropDownItemIndex + 1);
+    }
+
+    if (event.code === 'ArrowUp') {
+      dropDownItemIndex === -1
+        ? setDropDownItemIndex(dropDownList.length - 1)
+        : setDropDownItemIndex(dropDownItemIndex - 1);
+    }
+    if (event.code === 'Enter') {
+      let keyword = dropDownList[dropDownItemIndex] ? dropDownList[dropDownItemIndex] : inputValue;
+      navigate('/');
+    }
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
