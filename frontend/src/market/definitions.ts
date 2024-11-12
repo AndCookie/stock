@@ -1,5 +1,5 @@
 export interface IIndexChartProps {
-  indexType: keyof IIndexData;
+  indexType: string;
 }
 
 export interface IIndexEntry {

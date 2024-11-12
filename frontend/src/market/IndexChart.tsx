@@ -10,29 +10,7 @@ import { IIndexChartProps, IIndexData } from "./definitions";
 const IndexChart = ({ indexType }: IIndexChartProps) => {
   const chartContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const {
-    kospiData, kosdaqData, nasdaqData, djiData,
-    yendollarData, wondollarData, wtiData, goldData
-  } = useIndexStore();
-
-  const indexData: IIndexData = {
-    국내: {
-      코스피: kospiData,
-      코스닥: kosdaqData,
-    },
-    해외: {
-      다우존스: djiData,
-      나스닥: nasdaqData,
-    },
-    환율: {
-      "원/달러": wondollarData,
-      "엔/달러": yendollarData,
-    },
-    원자재: {
-      WTI: wtiData,
-      금: goldData,
-    },
-  };
+  const { indexData } = useIndexStore();
 
   useEffect(() => {
     const charts: IChartApi[] = [];
@@ -51,7 +29,7 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
       },
     };
 
-    Object.entries(indexData[indexType] || {}).forEach(([_, data], i) => {
+    Object.entries(indexData![indexType as keyof IIndexData] || {}).forEach(([_, data], i) => {
       if (chartContainerRefs.current[i] && data) {
         const chartData = data.map(item => ({
           value: item.bstp_nmix_prpr ? parseFloat(item.bstp_nmix_prpr) : item.ovrs_nmix_prpr ? parseFloat(item.ovrs_nmix_prpr) : 0,
@@ -84,7 +62,7 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
 
   return (
     <div className={styles.container}>
-      {Object.keys(indexData[indexType] || {}).map((key, i) => (
+      {Object.keys(indexData![indexType as keyof IIndexData] || {}).map((key, i) => (
         <div className={styles.graph} key={key}>
           <div className={styles.graphTitle}>{key}</div>
           <div

@@ -14,7 +14,6 @@ export const useIndexStore = create<IIndexState>((set) => ({
         axios.get(baseURL + "stocks/kospi/"),
         axios.get(baseURL + "stocks/kosdaq/"),
         axios.get(baseURL + "stocks/nasdaq/"),
-        axios.get(baseURL + "stocks/sp500/"),
         axios.get(baseURL + "stocks/dji/"),
         axios.get(baseURL + "stocks/yen-dollar/"),
         axios.get(baseURL + "stocks/won-dollar/"),

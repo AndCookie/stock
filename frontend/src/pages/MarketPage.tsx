@@ -6,8 +6,7 @@ import styles from "./MarketPage.module.css";
 import { useIndexStore } from "../store/useIndexStore";
 
 const MarketPage = () => {
-
-  const { kospiData, kosdaqData, nasdaqData, sp500Data, djiData, yendollarData, wondollarData, wtiData, goldData, fetchIndexData } = useIndexStore();
+  const { indexData, fetchIndexData } = useIndexStore();
 
   useEffect(() => {
     fetchIndexData();
@@ -19,7 +18,7 @@ const MarketPage = () => {
 
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 
-  if (!kospiData || !kosdaqData || !nasdaqData || !sp500Data || !djiData || !yendollarData || !wondollarData || !wtiData || !goldData) return <div />;
+  if (!indexData) return <div />;
 
   return (
     <div className={styles.wrapper}>
