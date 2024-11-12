@@ -13,7 +13,7 @@ const Rolling = () => {
   }, [fetchIndexData]);
 
   if (!indexData) {
-    return <div className={styles.rolling}>데이터를 불러오는 중입니다...</div>;
+    return <div className={styles.rolling} />;
   }
 
   const formattedData = Object.entries(indexData).flatMap(([key, indices]) => {
@@ -42,7 +42,8 @@ const Rolling = () => {
     <div className={styles.rolling}>
       <div className={styles.inner}>
         {formattedData}
-        {formattedData} {/* 두 번 렌더링하여 반복 효과 */}
+        {formattedData}
+        {formattedData}
       </div>
     </div>
   );
