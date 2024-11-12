@@ -272,6 +272,7 @@ def fetch_and_save_stock_minute_data(stock_code, time_str):
 
         return response['output2']  # 새로 가져온 데이터를 반환
     else:
+        print(response.json())
         print(f"Failed to fetch minute data for {stock_code} at {time_str}: {response.status_code}")
         return None
 
