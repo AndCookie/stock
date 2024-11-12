@@ -64,12 +64,6 @@ interface ISocketStore {
   setTradingData: (data: ITradingData) => void;
 }
 
-// const SOCKET_URL = "https://k11a204.p.ssafy.io/api";
-// const socket = io(`${SOCKET_URL}/ws/`);
-
-const SOCKET_URL = "ws://localhost:8080";
-const socket = new WebSocket(SOCKET_URL);
-
 const useSocketStore = create<ISocketStore>((set) => ({
   orderBookData: null,
   tradingData: null,
@@ -78,7 +72,21 @@ const useSocketStore = create<ISocketStore>((set) => ({
   setTradingData: (data: ITradingData) => set({ tradingData: data }),
 }));
 
-// 소켓에서 데이터를 수신하여 Zustand 스토어 업데이트
+// const SOCKET_URL = "https://k11a204.p.ssafy.io/api";
+// const socket = io(`${SOCKET_URL}/ws/`);
+
+// OrderBook(호가창) 데이터
+// socket.on("ORDER_BOOK", (data) => {
+//   useSocketStore.getState().setOrderBookData(data.ORDER_BOOK);
+// });
+// Trading(체결창) 데이터
+// socket.on("TRADING", (data) => {
+//   useSocketStore.getState().setTradingData(data.TRADING);
+// });
+
+const SOCKET_URL = "ws://localhost:8080";
+const socket = new WebSocket(SOCKET_URL);
+
 socket.onopen = () => {
   console.log("Connect WebSocket");
 };
@@ -102,14 +110,5 @@ socket.onclose = () => {
 socket.onerror = (error) => {
   console.error(error);
 };
-
-// OrderBook(호가창) 데이터
-// socket.on("ORDER_BOOK", (data) => {
-//   useSocketStore.getState().setOrderBookData(data.ORDER_BOOK);
-// });
-// Trading(체결창) 데이터
-// socket.on("TRADING", (data) => {
-//   useSocketStore.getState().setTradingData(data.TRADING);
-// });
 
 export default useSocketStore;

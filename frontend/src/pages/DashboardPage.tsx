@@ -37,6 +37,7 @@ import 'react-resizable/css/styles.css';
 import styles from './DashboardPage.module.css';
 import { AiOutlineClose, AiOutlineCheck } from "react-icons/ai"; // X / 체크 아이콘
 import { usePastStockStore } from '../store/usePastStockStore';
+import { useTodayStockStore } from '../store/useTodayStockStore';
 
 // 위젯 구성 객체 (이름, 컴포넌트, 순서 정보 포함)
 const widgetConfig: { id: string; name: string; component: React.ComponentType<IWidgetComponentProps> }[] = [
@@ -51,9 +52,11 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 
 const DashboardPage = () => {
   const { fetchPastStockData } = usePastStockStore();
+  const { fetchMinuteStockData } = useTodayStockStore();
 
   useEffect(() => {
     fetchPastStockData();
+    fetchMinuteStockData();
   }, [])
 
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
