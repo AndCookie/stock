@@ -40,17 +40,17 @@ const UserRanking = () => {
 
   return (
     <div className={styles.container}>
-      <div>UserRanking</div>
+      <div className={styles.title}>UserRanking</div>
       <div className="">
-        <button className={`${'tabButton'} ${'activeTab'}`}>모의투자 랭킹</button>
+        <button className={`${styles.subTitle} ${'tabButton'} ${'activeTab'}`}>모의투자 랭킹</button>
       </div>
-      <div className={styles.subTitle}>주간 수익률</div>
+      <div className={styles.name}>주간 수익률</div>
       <div>
         {weeklyRanking.map((user, index) => (
           <UserInfo key={index} {...user} />
         ))}
       </div>
-      <div className={styles.subTitle}>전체 수익률</div>
+      <div className={styles.name}>전체 수익률</div>
       <div>
         {totalRanking.map((user, index) => (
           <UserInfo key={index} {...user} />

@@ -3,3 +3,17 @@
   padding: 20px;
   border-radius: 8px;
 }
+
+.title {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.subTitle {
+  font-size: 18px;
+}
+
+.name {
+  font-weight: bold;
+  margin: 20px auto;
+}

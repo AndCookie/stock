@@ -1,12 +1,8 @@
 .userInfoContainer {
   display: flex;
-  margin-top: 5px;
+  margin: 10px auto;
   justify-content: space-between;
   align-items: center;
-}
-
-.subTitle {
-  margin: 100px auto;
 }
 
 .userInfo {
@@ -20,6 +16,14 @@
 }
 
 .medalIcon {
-  width: 30%;
-  height: 30%;
+  width: 40px;
+  height: 41px;
+}
+
+.isProfitPlus {
+  color: red;
+}
+
+.isProfitMinus {
+  color: blue;
 }
