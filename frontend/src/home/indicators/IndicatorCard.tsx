@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { IIndicatorCardProps } from './definitions';
@@ -90,7 +90,7 @@ const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
           {flagSrc && <img src={flagSrc} alt="flag" className={styles.flagIcon} />}
           {index}
         </div>
-        <div className={styles.value}>{current.value}</div>
+        <div className={styles.value}>{current.bstp_nmix_prpr ? parseFloat(current.bstp_nmix_prpr).toFixed(2) : parseFloat(current.ovrs_nmix_prpr).toFixed(2)}</div>
         <div className={styles.percentage} style={{ color: changeValue >= 0 ? COLORS.positive : COLORS.negative }}>
           {changeValue >= 0 ? `+${changeValue.toFixed(2)}` : changeValue.toFixed(2)} ({changeRate.toFixed(1)}%)
         </div>

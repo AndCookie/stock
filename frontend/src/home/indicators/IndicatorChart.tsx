@@ -1,4 +1,3 @@
-// import { useEffect, useRef } from "react";
 import { Line } from "react-chartjs-2";
 import { IIndicatorCardProps } from "./definitions";
 import { useIndexStore } from "../../store/useIndexStore";
@@ -29,7 +28,7 @@ const IndicatorChart = ({ indexTypeId, index, color }: IIndicatorCardProps) => {
   };
 
   const indexTypes = ["국내", "해외", "환율", "원자재"];
-  const indexList = indexData[indexTypes[indexTypeId]][index];
+  const indexList = indexData[indexTypes[indexTypeId]][index].slice(0, 100);
   const indexValues = indexList.map(item => item.bstp_nmix_prpr ? item.bstp_nmix_prpr : item.ovrs_nmix_prpr);
 
   const data = {

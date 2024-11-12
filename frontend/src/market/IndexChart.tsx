@@ -1,13 +1,38 @@
 import { useEffect, useRef } from "react";
-import { createChart, ColorType, IChartApi } from "lightweight-charts";
-import { IIndexChartProps } from "./definitions";
-import { COLORS } from "../common/utils";
+
 import { useIndexStore } from "../store/useIndexStore";
+import { createChart, ColorType, IChartApi } from "lightweight-charts";
+
 import styles from './IndexChart.module.css';
+import { COLORS } from "../common/utils";
+import { IIndexChartProps, IIndexData } from "./definitions";
 
 const IndexChart = ({ indexType }: IIndexChartProps) => {
   const chartContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const { indexData } = useIndexStore();
+
+  const {
+    kospiData, kosdaqData, nasdaqData, djiData,
+    yendollarData, wondollarData, wtiData, goldData
+  } = useIndexStore();
+
+  const indexData: IIndexData = {
+    국내: {
+      코스피: kospiData,
+      코스닥: kosdaqData,
+    },
+    해외: {
+      다우존스: djiData,
+      나스닥: nasdaqData,
+    },
+    환율: {
+      "원/달러": wondollarData,
+      "엔/달러": yendollarData,
+    },
+    원자재: {
+      WTI: wtiData,
+      금: goldData,
+    },
+  };
 
   useEffect(() => {
     const charts: IChartApi[] = [];
@@ -26,32 +51,40 @@ const IndexChart = ({ indexType }: IIndexChartProps) => {
       },
     };
 
-    Object.entries(indexData![indexType]).forEach((data, i) => {
-      if (chartContainerRefs.current[i]) {
-        const chart = createChart(chartContainerRefs.current[i], chartOptions);
+    Object.entries(indexData[indexType] || {}).forEach(([_, data], i) => {
+      if (chartContainerRefs.current[i] && data) {
+        const chartData = data.map(item => ({
+          value: item.bstp_nmix_prpr ? parseFloat(item.bstp_nmix_prpr) : item.ovrs_nmix_prpr ? parseFloat(item.ovrs_nmix_prpr) : 0,
+          time: `${item.stck_bsop_date.slice(0, 4)}-${item.stck_bsop_date.slice(4, 6)}-${item.stck_bsop_date.slice(6, 8)}`
+        }));
 
-        const current = data[1][data[1].length - 1];
-        const previous = data[1][data[1].length - 2];
-        const changeValue = current.value - previous.value;
+        const chart = createChart(chartContainerRefs.current[i] as HTMLDivElement, chartOptions);
 
-        const lineSeries = chart.addLineSeries({
-          color: changeValue >= 0 ? COLORS.positive : COLORS.negative
-        });
-        lineSeries.setData(data[1]);
-        chart.timeScale().fitContent();
+        if (chartData.length > 1) {
+          const current = chartData[chartData.length - 1];
+          const previous = chartData[chartData.length - 2];
+          const changeValue = current.value - previous.value;
 
-        charts.push(chart);
+          const lineSeries = chart.addLineSeries({
+            color: changeValue >= 0 ? COLORS.positive : COLORS.negative
+          });
+
+          lineSeries.setData(chartData);
+          chart.timeScale().fitContent();
+
+          charts.push(chart);
+        }
       }
     });
 
     return () => {
       charts.forEach((chart) => chart.remove());
     };
-  }, [indexData, indexType]);
+  }, [indexType]);
 
   return (
     <div className={styles.container}>
-      {Object.keys(indexData![indexType]).map((key, i) => (
+      {Object.keys(indexData[indexType] || {}).map((key, i) => (
         <div className={styles.graph} key={key}>
           <div className={styles.graphTitle}>{key}</div>
           <div
