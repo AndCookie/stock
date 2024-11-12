@@ -1,22 +1,36 @@
-.inputContainer {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
+.container {
+  height: 100%;
+  width: 100%;
+  color: #fff;
+  /* border: 1px solid red; */
 }
 
-.inputContainer label {
-  font-weight: bold;
-  margin-bottom: 4px;
+.inputContainer {
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0px 0px 0px;
+}
+
+.title {
+  min-width: 60px;
   color: #aaa;
+  font-weight: bold;
+  font-size: 10px;
 }
 
 .inputBox {
+  height: 35px;
   display: flex;
-  align-items: center;
-  border: 1px solid #444;
+  flex-direction: row;
+  justify-content: space-around;
+  background-color: #2c2f36; /* 네비게이션 바 배경색 */
   border-radius: 8px;
-  padding: 8px;
-  background-color: #2c2f36;
+  padding: 2px;
+  width: 100%;
+  font-size: 10.5px;
+  border: 2px solid #444;
 }
 
 .inputBox input {
@@ -27,12 +41,7 @@
   background: transparent;
   color: #fff;
   text-align: center;
-  font-size: 16px;
-}
-
-.inputBox input:disabled {
-  color: #555; /* disabled 버튼과 같은 색상 */
-  cursor: not-allowed; /* disabled 버튼과 같은 마우스 포인터 */
+  font-size: 14px;
 }
 
 .inputBox span {

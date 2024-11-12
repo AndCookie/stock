@@ -64,3 +64,17 @@ export interface IFavoriteState {
   favoriteData: IFavoriteData[] | null;
   fetchFavoriteData: () => Promise<void>;
 }
+
+// type of Stock
+export interface IStockData {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+}
+
+export interface IStockState {
+  stockData: IStockData[] | null;
+  fetchStockData: () => Promise<void>;
+}
