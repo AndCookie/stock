@@ -89,16 +89,24 @@ export interface IFavoriteState {
 
 // type of Past Stock
 export interface IStockData {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
+  stck_bsop_date: string;
+  stck_clpr: string;
+  stck_oprc: string;
+  stck_hgpr: string;
+  stck_lwpr: string;
+  cntg_vol: string;
+  acml_tr_pbmn: string;
+  flng_cls_code: string;
+  prtt_rate: string;
+  mod_yn: string;
+  prdy_vrss_sign: string;
+  prdy_vrss: string;
+  revl_issu_reas: string;
 }
 
 export interface IPastStockState {
   pastStockData: IStockData[] | null;
-  fetchPastStockData: () => Promise<void>;
+  fetchPastStockData: (arg0: string, arg1: string) => Promise<void>;
 }
 
 // type of Today Stock
