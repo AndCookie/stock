@@ -7,12 +7,12 @@ const UserRanking = () => {
     {
       dataRank: '1',
       userName: 'oodeng98',
-      profit: '65.8',
+      profit: '+65.8',
     },
     {
       dataRank: '2',
       userName: 'ssafyyong4',
-      profit: '56.3',
+      profit: '+56.3',
     },
     {
       dataRank: '3',
@@ -24,17 +24,17 @@ const UserRanking = () => {
     {
       dataRank: '1',
       userName: 'sso756',
-      profit: '396.4',
+      profit: '+396.4',
     },
     {
       dataRank: '2',
       userName: 'kokoz22',
-      profit: '312.2',
+      profit: '+312.2',
     },
     {
       dataRank: '3',
       userName: 'woojeanie',
-      profit: '251.2',
+      profit: '+251.2',
     },
   ]);
 
