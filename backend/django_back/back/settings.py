@@ -123,10 +123,20 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True  # 모든 도메인 허용 (개발 중)
+
 CORS_ALLOWED_ORIGINS =[
     'http://127.0.0.1:5173',
     'http://localhost:5173',
+    'http://k11a204.p.ssafy.io', 
     'https://k11a204.p.ssafy.io', 
+]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-csrftoken',
 ]
 
 ROOT_URLCONF = 'back.urls'
@@ -235,6 +245,8 @@ CACHES = {
 CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
 CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5173',  # 프론트엔드 URL
-    'http://127.0.0.1/',    # 실제 도메인
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "http://k11a204.p.ssafy.io",
+    "https://k11a204.p.ssafy.io",
 ]
