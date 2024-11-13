@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 export const COLORS = {
-  positive: "#FF4F4F",
+  positive: "#CF5055",
   negative: "#4881FF",
   neutral: "#888888",
 };

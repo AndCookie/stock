@@ -1,17 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import IndexChart from "../market/IndexChart";
+
 import styles from "./MarketPage.module.css";
+import { useIndexStore } from "../store/useIndexStore";
 
 const MarketPage = () => {
+  const { indexData, fetchIndexData } = useIndexStore();
+
+  useEffect(() => {
+    fetchIndexData();
+  }, [])
+
   const { indexTypeId } = useParams();
   const indexTypes = ["국내", "해외", "환율", "원자재"];
-  const initialIndex =
-    indexTypeId && indexTypes[parseInt(indexTypeId, 10)]
-      ? indexTypes[parseInt(indexTypeId, 10)]
-      : "국내";
+  const initialIndex = indexTypeId && indexTypes[parseInt(indexTypeId, 10)] ? indexTypes[parseInt(indexTypeId, 10)] : "국내";
 
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
+
+  if (!indexData) return <div />;
 
   return (
     <div className={styles.wrapper}>
@@ -21,9 +28,8 @@ const MarketPage = () => {
           {indexTypes.map((type) => (
             <button
               key={type}
-              className={`${styles.tab} ${
-                selectedIndex === type ? styles.activeTab : ""
-              }`}
+              className={`${styles.tab} ${selectedIndex === type ? styles.activeTab : ""
+                }`}
               onClick={() => setSelectedIndex(type)}
             >
               {type}
