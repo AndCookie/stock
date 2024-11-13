@@ -1,35 +1,32 @@
-import { useEffect } from 'react';
 import { useIndexStore } from '../../store/useIndexStore';
+
+import { IIndexEntry } from '../../store/definitions';
+
 import styles from './Rolling.module.css';
 
 const Rolling = () => {
-  const { indexData, fetchIndexData } = useIndexStore();
-
-  useEffect(() => {
-    fetchIndexData();
-  }, [fetchIndexData]);
-
+  const { indexData } = useIndexStore();
 
   if (!indexData) {
-    return <div className={styles.rolling}>데이터를 불러오는 중입니다...</div>;
+    return <div className={styles.rolling} />;
   }
 
   const formattedData = Object.entries(indexData).flatMap(([key, indices]) => {
-    return Object.entries(indices).map(([subKey, data]) => {
+    return Object.entries(indices as Record<string, IIndexEntry[]>).map(([subKey, data]) => {
       const latestData = data[data.length - 1]; // 가장 최근의 데이터 가져오기
 
       if (!latestData) return null;
 
       // 증가 또는 감소에 따라 색상을 결정
-      const change = data.length > 1 ? latestData.value - data[data.length - 2].value : 0;
+      const change = data.length > 1 ? Number(latestData.bstp_nmix_prpr ? latestData.bstp_nmix_prpr : latestData.ovrs_nmix_prpr) - Number(data[data.length - 2].bstp_nmix_prpr ? data[data.length - 2].bstp_nmix_prpr : data[data.length - 2].ovrs_nmix_prpr) : 0;
       const changeClass = change >= 0 ? styles.positive : styles.negative;
 
       return (
         <div key={`${key}-${subKey}`} className={styles.indexItem}>
           <span className={styles.subKey}>{subKey}</span>
-          <span className={styles.value}>{latestData.value.toLocaleString()}</span>
+          <span className={styles.value}>{Number(latestData.bstp_nmix_prpr ? latestData.bstp_nmix_prpr : latestData.ovrs_nmix_prpr)}</span>
           <span className={changeClass}>
-            {change >= 0 ? ` +${change.toFixed(2)} (${((change / data[data.length - 2].value) * 100).toFixed(1)}%)` : ` ${change.toFixed(2)} (${((change / data[data.length - 2].value) * 100).toFixed(1)}%)`}
+            {change >= 0 ? ` +${change.toFixed(2)} (${((change / Number(data[data.length - 2].bstp_nmix_prpr ? data[data.length - 2].bstp_nmix_prpr : data[data.length - 2].ovrs_nmix_prpr)) * 100).toFixed(2)}%)` : ` ${change.toFixed(2)} (${((change / Number(data[data.length - 2].bstp_nmix_prpr ? data[data.length - 2].bstp_nmix_prpr : data[data.length - 2].ovrs_nmix_prpr)) * 100).toFixed(2)}%)`}
           </span>
         </div>
       );
@@ -40,7 +37,8 @@ const Rolling = () => {
     <div className={styles.rolling}>
       <div className={styles.inner}>
         {formattedData}
-        {formattedData} {/* 두 번 렌더링하여 반복 효과 */}
+        {formattedData}
+        {formattedData}
       </div>
     </div>
   );

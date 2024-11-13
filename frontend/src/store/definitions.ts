@@ -1,21 +1,43 @@
 // type of Index
 export interface IIndexEntry {
-  time: string;
-  value: number;
+  stck_bsop_date: string;
+  bstp_nmix_prpr?: string;
+  bstp_nmix_oprc?: string;
+  bstp_nmix_hgpr?: string;
+  bstp_nmix_lwpr?: string;
+  ovrs_nmix_prpr?: string;
+  ovrs_nmix_oprc?: string;
+  ovrs_nmix_hgpr?: string;
+  ovrs_nmix_lwpr?: string;
+  acml_vol: string;
+  acml_tr_pbmn: string;
+  mod_yn: string;
 }
 
-export interface IIndexCategory {
-  [indexName: string]: IIndexEntry[];
-}
-
-interface IIndexData {
-  [category: string]: IIndexCategory;
+export interface IIndexData {
+  "국내": {
+    "코스피": IIndexEntry[] | null;
+    "코스닥": IIndexEntry[] | null;
+  };
+  "해외": {
+    "다우존스": IIndexEntry[] | null;
+    "나스닥": IIndexEntry[] | null;
+  };
+  "환율": {
+    "원/달러": IIndexEntry[] | null;
+    "엔/달러": IIndexEntry[] | null;
+  };
+  "원자재": {
+    "WTI": IIndexEntry[] | null;
+    "금": IIndexEntry[] | null;
+  };
 }
 
 export interface IIndexState {
   indexData: IIndexData | null;
   fetchIndexData: () => Promise<void>;
 }
+
 
 // type of Balance
 export interface IHolding {
@@ -67,16 +89,24 @@ export interface IFavoriteState {
 
 // type of Past Stock
 export interface IStockData {
-  time: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
+  stck_bsop_date: string;
+  stck_clpr: string;
+  stck_oprc: string;
+  stck_hgpr: string;
+  stck_lwpr: string;
+  acml_vol: string;
+  acml_tr_pbmn: string;
+  flng_cls_code: string;
+  prtt_rate: string;
+  mod_yn: string;
+  prdy_vrss_sign: string;
+  prdy_vrss: string;
+  revl_issu_reas: string;
 }
 
 export interface IPastStockState {
   pastStockData: IStockData[] | null;
-  fetchPastStockData: () => Promise<void>;
+  fetchPastStockData: (arg0: string, arg1: string) => Promise<void>;
 }
 
 // type of Today Stock
