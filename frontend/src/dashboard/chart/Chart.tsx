@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart, ISeriesApi, ColorType } from "lightweight-charts";
+import styles from './Chart.module.css';
 
 import { usePastStockStore } from "../../store/usePastStockStore";
 // import useSocketStore from "../../store/useSocketStore";
@@ -151,11 +152,15 @@ const Chart = () => {
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
       >
-        {["D", "M", "Y"].map((period) => (
-          <button key={period} onClick={() => setSelectedPeriodCode(period)}>
-            {period}
-          </button>
-        ))}
+        <div className={styles.buttonContainer}>
+          {["D", "M", "Y"].map((period) => (
+            <button key={period} onClick={() => setSelectedPeriodCode(period)}
+              className={`${selectedPeriodCode === period ? styles.active : ''}`}>
+              {period}
+            </button>
+          ))}
+
+        </div>
       </div>
     </>
   );
