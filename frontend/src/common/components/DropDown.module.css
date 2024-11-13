@@ -1,0 +1,15 @@
+.DropDownBox {
+  margin: -10px auto;
+  padding-top: 10px;
+  background-color: black;
+  height: 100px;
+}
+
+.DropDownItem {
+  padding: 0 16px;
+
+  &.selected {
+    cursor: pointer;
+    background-color: gray;
+  }
+}
