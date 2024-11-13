@@ -3,7 +3,7 @@ import useInput from '../hooks/useInput';
 import styles from './Nav.module.css';
 import { fetchSearch } from './actions';
 import useDropdown from '../hooks/useDropdown';
-import Dropdown from '../components/DropDown/DropDown';
+import Dropdown from '../components/dropDown/DropDown';
 import { FaSearch } from 'react-icons/fa';
 
 const Search = () => {

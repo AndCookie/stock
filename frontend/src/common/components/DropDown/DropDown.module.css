@@ -1,8 +1,9 @@
 .DropDownBox {
   margin: -10px auto;
   padding-top: 10px;
+  padding-bottom: 10px;
   background-color: black;
-  height: 100px;
+  max-height: 150px;
 }
 
 .DropDownItem {
