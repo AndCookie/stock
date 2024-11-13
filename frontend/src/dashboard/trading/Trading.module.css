@@ -8,8 +8,9 @@
 }
 
 .content {
-  height: 80%;
+  height: 88%;
   font-size: 11px;
+  overflow-y: scroll;
   /* border: 1px solid green; */
 }
 
