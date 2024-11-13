@@ -13,9 +13,9 @@ const Dropdown = ({
         <div className={styles.DropDownItem}>해당하는 단어가 없습니다</div>
       )}
 
-      {dropDownList.map((dropDownItem, dropDownIndex) => {
+      {dropDownList.slice(0, 4).map((dropDownItem, dropDownIndex) => {
         return (
-          <ul
+          <div
             key={`${dropDownItem}-${dropDownIndex}`}
             onClick={() => handleClickDropDownList(dropDownItem)}
             onMouseOver={() => setDropDownItemIndex(dropDownIndex)}
@@ -23,8 +23,8 @@ const Dropdown = ({
               dropDownItemIndex === dropDownIndex ? styles.selected : ''
             } `}
           >
-            <li>{dropDownItem}</li>
-          </ul>
+            <div>{dropDownItem}</div>
+          </div>
         );
       })}
     </div>
