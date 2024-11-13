@@ -1,16 +1,12 @@
-export interface IVolumeData {
+export interface IChartStockData {
   time: string;
-  value: number;
-  color?: string;
+  open: number;
+  close: number;
+  high: number;
+  low: number;
 }
 
-export interface IMinuteData {
-  stck_bsop_date: string;
-  stck_cntg_hour: string;
-  stck_prpr: string;
-  stck_oprc: string;
-  stck_hgpr: string;
-  stck_lwpr: string;
-  cntg_vol: string;
-  acml_tr_pbmn: string;
+export interface IChartVolumeData {
+  time: string;
+  value: number;
 }
