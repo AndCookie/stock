@@ -21,6 +21,8 @@ const Chart = () => {
   const [selectedPeriodCode, setSelectedPeriodCode] = useState('D');
 
   useEffect(() => {
+    setChartStockData(null);
+    setChartVolumeData(null);
     fetchPastStockData("005930", selectedPeriodCode);
   }, [selectedPeriodCode])
 
@@ -43,7 +45,7 @@ const Chart = () => {
   // chartVolumeData 업데이트
   useEffect(() => {
     if (!pastStockData) return;
-  
+
     const updatedPastVolumeData = pastStockData?.map((item, index) => {
       if (index === 0) {
         return {
@@ -142,18 +144,19 @@ const Chart = () => {
 
   return (
     <>
-      {/* {["W", "D", "M", "Y"].map((period) => (
-        <button key={period} onClick={() => setSelectedPeriodCode(period)}>
-          {period}
-        </button>
-      ))} */}
       <div
         ref={chartContainerRef}
         style={{ width: "100%", height: "90%", marginTop: "3%" }}
         onMouseDown={(event) => {
           event.stopPropagation(); // 클릭 시 드래그 방지
         }}
-      />
+      >
+        {["D", "M", "Y"].map((period) => (
+          <button key={period} onClick={() => setSelectedPeriodCode(period)}>
+            {period}
+          </button>
+        ))}
+      </div>
     </>
   );
 };
