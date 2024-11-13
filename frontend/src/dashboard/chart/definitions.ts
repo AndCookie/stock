@@ -9,4 +9,5 @@ export interface IChartStockData {
 export interface IChartVolumeData {
   time: string;
   value: number;
+  color: string;
 }

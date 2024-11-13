@@ -3,7 +3,7 @@ import { createChart, ISeriesApi, ColorType } from "lightweight-charts";
 import styles from './Chart.module.css';
 
 import { usePastStockStore } from "../../store/usePastStockStore";
-// import useSocketStore from "../../store/useSocketStore";
+import useSocketStore, { sendMessage } from "../../store/useSocketStore";
 
 import { COLORS } from "../../common/utils";
 import { IChartStockData, IChartVolumeData } from "./definitions";
@@ -11,10 +11,10 @@ import { IChartStockData, IChartVolumeData } from "./definitions";
 const Chart = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const histogramSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
   const { pastStockData, fetchPastStockData } = usePastStockStore();
-
-  // const { tradingData } = useSocketStore();
+  const { tradingData } = useSocketStore();
 
   const [chartStockData, setChartStockData] = useState<IChartStockData[] | null>(null);
   const [chartVolumeData, setChartVolumeData] = useState<IChartVolumeData[] | null>(null);
@@ -69,6 +69,9 @@ const Chart = () => {
   useEffect(() => {
     if (!chartContainerRef.current || !chartStockData || !chartVolumeData) return;
 
+    // 웹 소켓 종목코드 전송
+    sendMessage({ stock_code: "005930" });
+
     const chartOptions = {
       width: chartContainerRef.current.clientWidth,
       height: chartContainerRef.current.clientHeight,
@@ -108,9 +111,6 @@ const Chart = () => {
     });
     candlestickSeries.setData(chartStockData);
 
-    // 참조 저장
-    candlestickSeriesRef.current = candlestickSeries;
-
     // 거래량 히스토그램 차트
     const histogramSeries = chart.addHistogramSeries({
       priceScaleId: "volume",
@@ -122,6 +122,10 @@ const Chart = () => {
       },
     });
     histogramSeries.setData(chartVolumeData);
+    
+    // 참조 저장
+    candlestickSeriesRef.current = candlestickSeries;
+    histogramSeriesRef.current = histogramSeries;
 
     chart.timeScale().fitContent();
 
@@ -131,17 +135,22 @@ const Chart = () => {
     };
   }, [chartStockData, chartVolumeData]);
 
-  // 금일 주가 업데이트
-  // useEffect(() => {
-  //   if (!tradingData || !candlestickSeriesRef.current) return ;
+  // tradingData 업데이트
+  useEffect(() => {
+    if (!candlestickSeriesRef.current || !histogramSeriesRef.current || !tradingData || !chartStockData || !chartVolumeData) return ;
 
-  //   const realtimeStockData = chartStockData[chartStockData.length - 1];
-  //   realtimeStockData.close = tradingData.STCK_PRPR;
-  //   realtimeStockData.high = Math.max(realtimeStockData.high, tradingData.STCK_PRPR);
-  //   realtimeStockData.low = Math.min(realtimeStockData.low, tradingData.STCK_PRPR);
+    const realtimeStockData = chartStockData[chartStockData.length - 1];
+    realtimeStockData.close = Number(tradingData.STCK_PRPR);
+    realtimeStockData.high = Math.max(realtimeStockData.high, Number(tradingData.STCK_PRPR));
+    realtimeStockData.low = Math.min(realtimeStockData.low, Number(tradingData.STCK_PRPR));
+    candlestickSeriesRef.current.update(realtimeStockData);
 
-  //   candlestickSeriesRef.current.update(realtimeStockData);
-  // }, [tradingData, chartStockData])
+    const realtimeVolumeData = chartVolumeData[chartVolumeData.length - 1];
+    const prevRealtimeVolumeData = chartVolumeData[chartVolumeData.length - 2];
+    realtimeVolumeData.value = tradingData.ACML_VOL;
+    realtimeVolumeData.color = Number(tradingData.ACML_VOL) >= prevRealtimeVolumeData.value ? COLORS.positive : COLORS.negative
+    histogramSeriesRef.current.update(realtimeVolumeData);
+  }, [tradingData, chartStockData])
 
   return (
     <>

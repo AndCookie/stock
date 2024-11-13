@@ -1,42 +1,60 @@
-import { useIndexStore } from '../../store/useIndexStore';
+import { useState, useEffect } from 'react';
 
+import { useIndexStore } from '../../store/useIndexStore';
+import useSocketStore from '../../store/useSocketStore';
 import { IIndexEntry } from '../../store/definitions';
 
 import styles from './Rolling.module.css';
 
 const Rolling = () => {
   const { indexData } = useIndexStore();
+  const { kospiData, kosdaqData } = useSocketStore();
 
-  if (!indexData) {
+  const [formattedData, setFormattedData] = useState<JSX.Element[] | null>(null);
+
+  useEffect(() => {
+    if (!indexData) return;
+
+    const updatedData = Object.entries(indexData).flatMap(([key, indices]) => {
+      return Object.entries(indices as Record<string, IIndexEntry[]>).map(([subKey, data]) => {
+        const previous = data[data.length - 2];
+        let current;
+        if (kospiData && subKey === "코스피") {
+          current = kospiData;
+        } else if (kosdaqData && subKey === "코스닥") {
+          current = kosdaqData;
+        } else {
+          current = data[data.length - 1];
+        }
+
+        const previousValue = Number(previous.bstp_nmix_prpr ? previous.bstp_nmix_prpr : previous.ovrs_nmix_prpr);
+        const currentValue = Number(typeof current !== "object" ? current : "prpr_nmix" in current ? current.prpr_nmix : current.bstp_nmix_prpr);
+
+        const change = currentValue - previousValue;
+        const changeClass = change >= 0 ? styles.positive : styles.negative;
+
+        return (
+          <div key={`${key}-${subKey}`} className={styles.indexItem}>
+            <span className={styles.subKey}>{subKey}</span>
+            <span className={styles.value}>{currentValue}</span>
+            <span className={changeClass}>
+              {change >= 0 ? ` +${change.toFixed(2)} (${((change / previousValue) * 100).toFixed(2)}%)` : ` ${change.toFixed(2)} (${((change / previousValue) * 100).toFixed(2)}%)`}
+            </span>
+          </div>
+        );
+      });
+    });
+
+    setFormattedData(updatedData);
+  }, [indexData, kospiData, kosdaqData]);
+
+  if (!formattedData) {
     return <div className={styles.rolling} />;
   }
-
-  const formattedData = Object.entries(indexData).flatMap(([key, indices]) => {
-    return Object.entries(indices as Record<string, IIndexEntry[]>).map(([subKey, data]) => {
-      const latestData = data[data.length - 1]; // 가장 최근의 데이터 가져오기
-
-      if (!latestData) return null;
-
-      // 증가 또는 감소에 따라 색상을 결정
-      const change = data.length > 1 ? Number(latestData.bstp_nmix_prpr ? latestData.bstp_nmix_prpr : latestData.ovrs_nmix_prpr) - Number(data[data.length - 2].bstp_nmix_prpr ? data[data.length - 2].bstp_nmix_prpr : data[data.length - 2].ovrs_nmix_prpr) : 0;
-      const changeClass = change >= 0 ? styles.positive : styles.negative;
-
-      return (
-        <div key={`${key}-${subKey}`} className={styles.indexItem}>
-          <span className={styles.subKey}>{subKey}</span>
-          <span className={styles.value}>{Number(latestData.bstp_nmix_prpr ? latestData.bstp_nmix_prpr : latestData.ovrs_nmix_prpr)}</span>
-          <span className={changeClass}>
-            {change >= 0 ? ` +${change.toFixed(2)} (${((change / Number(data[data.length - 2].bstp_nmix_prpr ? data[data.length - 2].bstp_nmix_prpr : data[data.length - 2].ovrs_nmix_prpr)) * 100).toFixed(2)}%)` : ` ${change.toFixed(2)} (${((change / Number(data[data.length - 2].bstp_nmix_prpr ? data[data.length - 2].bstp_nmix_prpr : data[data.length - 2].ovrs_nmix_prpr)) * 100).toFixed(2)}%)`}
-          </span>
-        </div>
-      );
-    });
-  });
 
   return (
     <div className={styles.rolling}>
       <div className={styles.inner}>
-        {formattedData}
         {formattedData}
         {formattedData}
       </div>
