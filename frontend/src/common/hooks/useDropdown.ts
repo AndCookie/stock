@@ -163,7 +163,6 @@ const useDropdown = (inputValue: string) => {
 
   const handleClickSearchBox = (e: MouseEvent) => {
     const isFocus = (e.target as HTMLElement).closest('form')?.dataset.id;
-    console.log('Clicked outside of search box:', !isFocus);
     if (isFocus) {
       setIsFocus(true);
     } else {
@@ -177,8 +176,6 @@ const useDropdown = (inputValue: string) => {
 
   useEffect(() => {
     updatedDropDownList();
-    console.log('Updated dropDownList:', dropDownList);
-    setIsFocus(true);
   }, [inputValue]);
 
   useEffect(() => {

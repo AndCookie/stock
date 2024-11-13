@@ -28,7 +28,7 @@ const Search = () => {
   };
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} data-id='searchForm'>
         <input
           className={styles.search}
           placeholder="주식, 메뉴, 종목코드를 검색하세요"
