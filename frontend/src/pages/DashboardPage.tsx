@@ -13,7 +13,7 @@
 // TO DO
 // Layout 정보 갱신될 때마다 백엔드에 POST 요청 보내서 저장하기, GET 요청 결과가 null이면 initialLayout으로
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import GridLayout, { Layout } from 'react-grid-layout';
 
 // 위젯 임포트
@@ -27,6 +27,7 @@ import TradingVolume from "../dashboard/tradingVolume/TradingVolume";
 
 // 훅 임포트
 import useWindowSize from './hooks/useWindowSize';
+import { usePastStockStore } from '../store/usePastStockStore';
 
 // 인터페이스 임포트
 import { IWidgetComponentProps } from '../common/definitions';
@@ -36,8 +37,6 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import styles from './DashboardPage.module.css';
 import { AiOutlineClose, AiOutlineCheck } from "react-icons/ai"; // X / 체크 아이콘
-import { usePastStockStore } from '../store/usePastStockStore';
-import { useTodayStockStore } from '../store/useTodayStockStore';
 
 // 위젯 구성 객체 (이름, 컴포넌트, 순서 정보 포함)
 const widgetConfig: { id: string; name: string; component: React.ComponentType<IWidgetComponentProps> }[] = [
@@ -51,13 +50,19 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 ];
 
 const DashboardPage = () => {
-  const { fetchPastStockData } = usePastStockStore();
-  const { fetchMinuteStockData } = useTodayStockStore();
+  const { pastStockData, fetchPastStockData, fetchYesterdayStockData } = usePastStockStore();
+  // const { minuteStockData, fetchMinuteStockData } = useTodayStockStore();
 
   useEffect(() => {
-    fetchPastStockData();
-    fetchMinuteStockData();
+    fetchPastStockData("005930", "D");
+    // fetchMinuteStockData();
   }, [])
+
+  useEffect(() => {
+    if (!pastStockData) return;
+    
+    fetchYesterdayStockData();
+  }, [pastStockData])
 
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
 
@@ -195,6 +200,9 @@ const DashboardPage = () => {
       handleAddWidget(widgetId);
     }
   };
+
+  // if (!pastStockData || !minuteStockData) return;
+  if (!pastStockData) return <div />;
 
   return (
     <div className={styles.container}>

@@ -1,5 +1,5 @@
 export interface IUserInfoProps {
-  dataRank: string;
+  dataRank: number;
   userName: string;
-  profit: string;
+  profit: number;
 }

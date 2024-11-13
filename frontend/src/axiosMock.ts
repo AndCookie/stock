@@ -5,50 +5,40 @@ const mock = new AxiosMockAdapter(axios);
 
 const BASEURL = "http://localhost:3000/api/v1/";
 
-// home-indicators
-const fakeIndexData = () => {
-  const startDate = new Date("2024-07-01");
-  const endDate = new Date("2024-10-30");
+// indicators
+function fakeIndicatorData() {
+  const data = [];
+  const start = new Date("2024-01-01");
+  const end = new Date(new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0]);
 
-  const fakeData = [];
+  const currentDate = start;
+  let previousValue = 1000;
 
-  const currentDate = new Date(startDate);
-  let indexValue = 3000;
+  while (currentDate <= end) {
+    const stck_bsop_date = currentDate.toISOString().split("T")[0].replace(/-/g, "");
 
-  while (currentDate <= endDate) {
-    const dailyChangeRate = (Math.random() - 0.5) * 0.01;
-    indexValue = parseFloat((indexValue * (1 + dailyChangeRate)).toFixed(2));
+    const changeFactor = Math.random() * 0.04 - 0.02; // -2% ~ +2% 변동
+    const bstp_nmix_prpr = (previousValue * (1 + changeFactor)).toFixed(2);
 
-    fakeData.push({
-      time: currentDate.toISOString().split("T")[0],
-      value: indexValue,
+    data.push({
+      stck_bsop_date,
+      bstp_nmix_prpr: parseFloat(bstp_nmix_prpr),
     });
 
+    previousValue = parseFloat(bstp_nmix_prpr);
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  return fakeData;
-};
+  return data;
+}
 
-const indexData = {
-  국내: {
-    코스피: fakeIndexData(),
-    코스닥: fakeIndexData(),
-  },
-  해외: {
-    다우존스: fakeIndexData(),
-    나스닥: fakeIndexData(),
-  },
-  환율: {
-    "원/달러": fakeIndexData(),
-    "엔/달러": fakeIndexData(),
-  },
-  원자재: {
-    WTI: fakeIndexData(),
-    금: fakeIndexData(),
-  },
-};
-
-mock.onGet(BASEURL + "index-detail").reply(200, indexData);
+mock.onGet(BASEURL + "stocks/kospi/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/kosdaq/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/nasdaq/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/dji/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/yen-dollar/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/won-dollar/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/wti/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/gold/").reply(200, fakeIndicatorData());
 
 // home-aiNews
 mock.onGet(BASEURL + "ai-news").reply(200, [
@@ -327,68 +317,42 @@ mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
 ]);
 
 // dashboard-chart
-const fakeStockData = () => {
-  const fakeData = [];
+function fakeStockData() {
+  const data = [];
+  const start = new Date("2020-01-01");
+  const end = new Date(new Date().toISOString().split('T')[0]);
 
-  const startDate = new Date("2024-07-01");
-  const endDate = new Date("2024-10-30");
+  let lastClosePrice = 50000;
 
-  const currentDate = new Date(startDate);
-  let previousClose = 50000;
+  for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
+    const closePrice = Math.max(10000, lastClosePrice + Math.floor(Math.random() * 1000 - 500));
+    const openPrice = closePrice + Math.floor(Math.random() * 200 - 100);
+    const highPrice = Math.max(openPrice, closePrice) + Math.floor(Math.random() * 200);
+    const lowPrice = Math.min(openPrice, closePrice) - Math.floor(Math.random() * 200);
+    const dailyVolume = Math.floor(Math.random() * 1000000 + 500000)
 
-  while (currentDate <= endDate) {
-    const open = parseFloat(
-      (previousClose * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
-    );
-    const high = parseFloat((open * (1 + Math.random() * 0.02)).toFixed(2));
-    const low = parseFloat((open * (1 - Math.random() * 0.02)).toFixed(2));
-    const close = parseFloat(
-      (open * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
-    );
-
-    fakeData.push({
-      time: currentDate.toISOString().split("T")[0],
-      open,
-      high,
-      low,
-      close,
+    data.push({
+      stck_bsop_date: date.toISOString().split('T')[0].replace(/-/g, ''),
+      stck_clpr: closePrice.toString(),
+      stck_oprc: openPrice.toString(),
+      stck_hgpr: highPrice.toString(),
+      stck_lwpr: lowPrice.toString(),
+      acml_vol: dailyVolume.toString(),
+      acml_tr_pbmn: (dailyVolume * closePrice).toString(),
+      flng_cls_code: "00",
+      prtt_rate: "0.00",
+      mod_yn: "N",
+      prdy_vrss_sign: Math.random() > 0.5 ? "1" : "2",
+      prdy_vrss: Math.floor(Math.random() * 500).toString(),
+      revl_issu_reas: "-",
     });
 
-    previousClose = close;
-    currentDate.setDate(currentDate.getDate() + 1);
+    lastClosePrice = closePrice;
   }
+  return data;
+}
 
-  return fakeData;
-};
-
-const fakeVolumeData = () => {
-  const fakeData = [];
-
-  const startDate = new Date("2024-07-01");
-  const endDate = new Date("2024-10-30");
-
-  const currentDate = new Date(startDate);
-  const minVolume = 1000000;
-  const maxVolume = 5000000;
-
-  while (currentDate <= endDate) {
-    const volume = Math.floor(
-      Math.random() * (maxVolume - minVolume) + minVolume
-    );
-
-    fakeData.push({
-      time: currentDate.toISOString().split("T")[0],
-      value: volume,
-    });
-
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return fakeData;
-};
-
-mock.onGet(BASEURL + "stockDetail").reply(200, fakeStockData());
-mock.onGet(BASEURL + "volumeDetail").reply(200, fakeVolumeData());
+mock.onGet(BASEURL + "stocks/stock-price/").reply(200, fakeStockData());
 
 // dashboard-chart
 const fakeMinuteData = () => {

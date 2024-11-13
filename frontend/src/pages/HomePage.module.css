@@ -83,7 +83,7 @@
 .mainContent {
   grid-column: span 12;
   display: grid;
-  grid-template-columns: 2fr 2fr 3fr;
+  grid-template-columns: 2fr 1.5fr 2.5fr;
   gap: 30px;
   margin: 0px 10px 50px 10px;
 }

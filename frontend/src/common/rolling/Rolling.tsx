@@ -1,46 +1,62 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
 import { useIndexStore } from '../../store/useIndexStore';
+import useSocketStore from '../../store/useSocketStore';
+import { IIndexEntry } from '../../store/definitions';
+
 import styles from './Rolling.module.css';
 
 const Rolling = () => {
-  const { indexData, fetchIndexData } = useIndexStore();
+  const { indexData } = useIndexStore();
+  const { kospiData, kosdaqData } = useSocketStore();
+
+  const [formattedData, setFormattedData] = useState<JSX.Element[] | null>(null);
 
   useEffect(() => {
-    fetchIndexData();
-  }, [fetchIndexData]);
+    if (!indexData) return;
 
+    const updatedData = Object.entries(indexData).flatMap(([key, indices]) => {
+      return Object.entries(indices as Record<string, IIndexEntry[]>).map(([subKey, data]) => {
+        const previous = data[data.length - 2];
+        let current;
+        if (kospiData && subKey === "코스피") {
+          current = kospiData;
+        } else if (kosdaqData && subKey === "코스닥") {
+          current = kosdaqData;
+        } else {
+          current = data[data.length - 1];
+        }
 
-  if (!indexData) {
-    return <div className={styles.rolling}>데이터를 불러오는 중입니다...</div>;
-  }
+        const previousValue = Number(previous.bstp_nmix_prpr ? previous.bstp_nmix_prpr : previous.ovrs_nmix_prpr);
+        const currentValue = Number(typeof current !== "object" ? current : "prpr_nmix" in current ? current.prpr_nmix : current.bstp_nmix_prpr);
 
-  const formattedData = Object.entries(indexData).flatMap(([key, indices]) => {
-    return Object.entries(indices).map(([subKey, data]) => {
-      const latestData = data[data.length - 1]; // 가장 최근의 데이터 가져오기
+        const change = currentValue - previousValue;
+        const changeClass = change >= 0 ? styles.positive : styles.negative;
 
-      if (!latestData) return null;
-
-      // 증가 또는 감소에 따라 색상을 결정
-      const change = data.length > 1 ? latestData.value - data[data.length - 2].value : 0;
-      const changeClass = change >= 0 ? styles.positive : styles.negative;
-
-      return (
-        <div key={`${key}-${subKey}`} className={styles.indexItem}>
-          <span className={styles.subKey}>{subKey}</span>
-          <span className={styles.value}>{latestData.value.toLocaleString()}</span>
-          <span className={changeClass}>
-            {change >= 0 ? ` +${change.toFixed(2)} (${((change / data[data.length - 2].value) * 100).toFixed(1)}%)` : ` ${change.toFixed(2)} (${((change / data[data.length - 2].value) * 100).toFixed(1)}%)`}
-          </span>
-        </div>
-      );
+        return (
+          <div key={`${key}-${subKey}`} className={styles.indexItem}>
+            <span className={styles.subKey}>{subKey}</span>
+            <span className={styles.value}>{Number(currentValue.toFixed(2)).toLocaleString()}</span>
+            <span className={changeClass}>
+              {change >= 0 ? " +" : ""}{Number(change.toFixed(2)).toLocaleString()} ({Number(((change / previousValue) * 100).toFixed(2)).toLocaleString()}%)
+            </span>
+          </div>
+        );
+      });
     });
-  });
+
+    setFormattedData(updatedData);
+  }, [indexData, kospiData, kosdaqData]);
+
+  if (!formattedData) {
+    return <div className={styles.rolling} />;
+  }
 
   return (
     <div className={styles.rolling}>
       <div className={styles.inner}>
         {formattedData}
-        {formattedData} {/* 두 번 렌더링하여 반복 효과 */}
+        {formattedData}
       </div>
     </div>
   );

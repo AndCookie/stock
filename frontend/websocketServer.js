@@ -2,31 +2,32 @@ import { WebSocketServer } from "ws";
 
 const socket = new WebSocketServer({ port: 8080 });
 
-const fakeTradingData = () => {
-  const now = new Date();
-  const formatTime = (date) =>
-    `${date.getHours().toString().padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}${date.getSeconds().toString().padStart(2, "0")}`;
-
+function fakeKospiData() {
+  const randomValue = (Math.random() * 1000 + 1000).toFixed(2);
   return {
-    type: "TRADING",
-    payload: {
-      STCK_CNTG_HOUR: formatTime(now),
-      STCK_PRPR: parseFloat((50000 * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)),
-      CNTG_VOL: Math.floor(Math.random() * 1000),
-      ACML_VOL: Math.floor(100000 + Math.random() * 5000),
-      CTTR: parseFloat((50 + Math.random() * 50).toFixed(2)),
-      CCLD_DVSN: Math.random() < 0.33 ? 1 : Math.random() < 0.66 ? 3 : 5,
+    stock_code: "0001",
+    indicator: {
+      prpr_nmix: randomValue.toString()
     }
   };
-};
+}
+
+function fakeKosdaqData() {
+  const randomValue = (Math.random() * 1000 + 1000).toFixed(2);
+  return {
+    stock_code: "1001",
+    indicator: {
+      prpr_nmix: randomValue.toString()
+    }
+  };
+}
 
 const fakeOrderBookData = () => {
-  const randomPrice = () => Math.floor(1000 + Math.random() * 1000);
-  const randomVolume = () => Math.floor(Math.random() * 1000);
+  const randomPrice = () => Math.floor(1000 + Math.random() * 1000).toString();
+  const randomVolume = () => Math.floor(Math.random() * 1000).toString();
 
   return {
-    type: "ORDER_BOOK",
-    payload: {
+    "ORDER_BOOK": {
       ASKP1: randomPrice(),
       ASKP2: randomPrice(),
       ASKP3: randomPrice(),
@@ -73,6 +74,23 @@ const fakeOrderBookData = () => {
   };
 };
 
+const fakeTradingData = () => {
+  const now = new Date();
+  const formatTime = (date) =>
+    `${date.getHours().toString().padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}${date.getSeconds().toString().padStart(2, "0")}`;
+
+  return {
+    "trading": {
+      STCK_CNTG_HOUR: formatTime(now),
+      STCK_PRPR: parseFloat((50000 * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)).toString(),
+      CNTG_VOL: Math.floor(Math.random() * 1000).toString(),
+      ACML_VOL: Math.floor(100000 + Math.random() * 5000).toString(),
+      CTTR: parseFloat((50 + Math.random() * 50).toFixed(2)).toString(),
+      CCLD_DVSN: Math.random() < 0.33 ? "1" : Math.random() < 0.66 ? "3" : "5",
+    }
+  };
+};
+
 const sendData = (ws, data) => {
   if (ws.readyState === ws.OPEN) {
     ws.send(JSON.stringify(data));
@@ -81,6 +99,8 @@ const sendData = (ws, data) => {
 
 socket.on("connection", (ws) => {
   const intervalId = setInterval(() => {
+    sendData(ws, fakeKospiData());
+    sendData(ws, fakeKosdaqData());
     sendData(ws, fakeTradingData());
     sendData(ws, fakeOrderBookData());
   }, 1000);
