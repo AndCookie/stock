@@ -36,9 +36,9 @@ const Rolling = () => {
         return (
           <div key={`${key}-${subKey}`} className={styles.indexItem}>
             <span className={styles.subKey}>{subKey}</span>
-            <span className={styles.value}>{currentValue}</span>
+            <span className={styles.value}>{Number(currentValue.toFixed(2)).toLocaleString()}</span>
             <span className={changeClass}>
-              {change >= 0 ? ` +${change.toFixed(2)} (${((change / previousValue) * 100).toFixed(2)}%)` : ` ${change.toFixed(2)} (${((change / previousValue) * 100).toFixed(2)}%)`}
+              {change >= 0 ? " +" : ""}{Number(change.toFixed(2)).toLocaleString()} ({Number(((change / previousValue) * 100).toFixed(2)).toLocaleString()}%)
             </span>
           </div>
         );
