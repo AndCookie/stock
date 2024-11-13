@@ -11,7 +11,7 @@ function fakeIndicatorData() {
   const start = new Date("2024-01-01");
   const end = new Date(new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0]);
 
-  let currentDate = start;
+  const currentDate = start;
   let previousValue = 1000;
 
   while (currentDate <= end) {

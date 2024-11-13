@@ -1,63 +1,51 @@
 import { useEffect, useRef, useState } from "react";
 import { createChart, ISeriesApi, ColorType } from "lightweight-charts";
 import { usePastStockStore } from "../../store/usePastStockStore";
-import usePastVolumeData from "./hooks/usePastVolumeData";
-import useSocketStore from "../../store/useSocketStore";
+// import usePastVolumeData from "./hooks/usePastVolumeData";
+// import useSocketStore from "../../store/useSocketStore";
 import { COLORS } from "../../common/utils";
-import { IStockData } from "../../store/definitions";
-import { useTodayStockStore } from "../../store/useTodayStockStore";
 
 const Chart = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  
+
   const { pastStockData, fetchPastStockData } = usePastStockStore();
   // const { pastVolumeData } = usePastVolumeData();
-  
-  // const { minuteStockData } = useTodayStockStore();
+
   // const { tradingData } = useSocketStore();
-  
-  const [updatedStockData, setUpdatedStockData] = useState<IStockData[]>(pastStockData || []);
+
+  const [chartStockData, setChartStockData] = useState(pastStockData?.map((item) => ({
+    time: `${item.stck_bsop_date.slice(0, 4)}-${item.stck_bsop_date.slice(4, 6)}-${item.stck_bsop_date.slice(6, 8)}`,
+    open: Number(item.stck_oprc),
+    close: Number(item.stck_clpr),
+    high: Number(item.stck_hgpr),
+    low: Number(item.stck_lwpr),
+  })));
+
   const [selectedPeriodCode, setSelectedPeriodCode] = useState('D');
 
-  // updeatedStockData에 따른 차트 데이터 업데이트
-  useEffect(() => { 
-    // const today = new Date();
-    // const year = today.getFullYear();
-    // const month = (today.getMonth() + 1).toString().padStart(2, "0");
-    // const day = today.getDate().toString().padStart(2, "0");
-    
-    // const openPrice = minuteStockData[0].stck_oprc;
-    // const closePrice = minuteStockData[minuteStockData.length - 1].stck_prpr;
-    
-    // let highPrice = minuteStockData[0].stck_hgpr;
-    // let lowPrice = minuteStockData[0].stck_lwpr;
-    
-    // minuteStockData.forEach((data) => {
-    //   if (data.stck_hgpr > highPrice) {
-    //     highPrice = data.stck_hgpr;
-    //   }
-    //   if (data.stck_lwpr < lowPrice) {
-    //     lowPrice = data.stck_lwpr;
-    //   }
-    // });
-    
-    setUpdatedStockData(updatedStockData);
-    // setUpdatedStockData((prev) =>
-    //   [...prev,
-    //   {
-    //     time: `${year}-${month}-${day}`,
-    //     open: parseFloat(openPrice),
-    //     high: parseFloat(highPrice),
-    //     low: parseFloat(lowPrice),
-    //     close: parseFloat(closePrice),
-    //   }]);
-  }, [updatedStockData])
+  useEffect(() => {
+    fetchPastStockData("005930", selectedPeriodCode);
+  }, [selectedPeriodCode])
+
+  // chartStockData 업데이트
+  useEffect(() => {
+    // pastStockData 전처리
+    const updatedPastStockData = pastStockData?.map((item) => ({
+      time: `${item.stck_bsop_date.slice(0, 4)}-${item.stck_bsop_date.slice(4, 6)}-${item.stck_bsop_date.slice(6, 8)}`,
+      open: Number(item.stck_oprc),
+      close: Number(item.stck_clpr),
+      high: Number(item.stck_hgpr),
+      low: Number(item.stck_lwpr),
+    }));
+
+    setChartStockData(updatedPastStockData);
+  }, [pastStockData])
 
   // 차트 초기화
   useEffect(() => {
-    // if (!chartContainerRef.current || !updatedStockData || !pastVolumeData) return;
-    if (!chartContainerRef.current || !updatedStockData) return;
+    // if (!chartContainerRef.current || !chartStockData || !pastVolumeData) return;
+    if (!chartContainerRef.current || !chartStockData) return;
 
     const chartOptions = {
       width: chartContainerRef.current.clientWidth,
@@ -96,7 +84,7 @@ const Chart = () => {
       upColor: COLORS.positive, downColor: COLORS.negative, wickUpColor: COLORS.positive, wickDownColor: COLORS.negative,
       borderVisible: false,
     });
-    candlestickSeries.setData(updatedStockData);
+    candlestickSeries.setData(chartStockData);
 
     // 참조 저장
     candlestickSeriesRef.current = candlestickSeries;
@@ -131,27 +119,35 @@ const Chart = () => {
       resizeObserver.disconnect();
       chart.remove();
     };
-  }, [updatedStockData]);
+  }, [chartStockData]);
 
+  // 금일 주가 업데이트
   // useEffect(() => {
   //   if (!tradingData || !candlestickSeriesRef.current) return ;
 
-  //   const realtimeStockData = updatedStockData[updatedStockData.length - 1];
+  //   const realtimeStockData = chartStockData[chartStockData.length - 1];
   //   realtimeStockData.close = tradingData.STCK_PRPR;
   //   realtimeStockData.high = Math.max(realtimeStockData.high, tradingData.STCK_PRPR);
   //   realtimeStockData.low = Math.min(realtimeStockData.low, tradingData.STCK_PRPR);
 
   //   candlestickSeriesRef.current.update(realtimeStockData);
-  // }, [tradingData, updatedStockData])
+  // }, [tradingData, chartStockData])
 
   return (
-    <div
-      ref={chartContainerRef}
-      style={{ width: "100%", height: "90%", marginTop: "3%" }}
-      onMouseDown={(event) => {
-        event.stopPropagation(); // 클릭 시 드래그 방지
-      }}
-    />
+    <>
+      {["W", "D", "M", "Y"].map((period) => (
+        <button key={period} onClick={() => setSelectedPeriodCode(period)}>
+          {period}
+        </button>
+      ))}
+      <div
+        ref={chartContainerRef}
+        style={{ width: "100%", height: "90%", marginTop: "3%" }}
+        onMouseDown={(event) => {
+          event.stopPropagation(); // 클릭 시 드래그 방지
+        }}
+      />
+    </>
   );
 };
 
