@@ -94,9 +94,9 @@ const IndicatorCard = ({ indexTypeId, index }: IIndicatorCardProps) => {
           {flagSrc && <img src={flagSrc} alt="flag" className={styles.flagIcon} />}
           {index}
         </div>
-        <div className={styles.value}>{renderedValue}</div>
+        <div className={styles.value}>{Number(renderedValue).toLocaleString()}</div>
         <div className={styles.percentage} style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}>
-          {renderedChangeValue >= 0 ? `+${renderedChangeValue.toFixed(2)}` : renderedChangeValue.toFixed(2)} ({renderedChangeRate.toFixed(1)}%)
+          {renderedChangeValue >= 0 ? "+" : ""}{Number(renderedChangeValue.toFixed(2)).toLocaleString()} ({renderedChangeRate.toFixed(2)}%)
         </div>
       </div>
       <div className={styles.imageInfo}>
