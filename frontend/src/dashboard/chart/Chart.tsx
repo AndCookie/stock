@@ -147,7 +147,7 @@ const Chart = () => {
 
     const realtimeVolumeData = chartVolumeData[chartVolumeData.length - 1];
     const prevRealtimeVolumeData = chartVolumeData[chartVolumeData.length - 2];
-    realtimeVolumeData.value = tradingData.ACML_VOL;
+    realtimeVolumeData.value = Number(tradingData.ACML_VOL);
     realtimeVolumeData.color = Number(tradingData.ACML_VOL) >= prevRealtimeVolumeData.value ? COLORS.positive : COLORS.negative
     histogramSeriesRef.current.update(realtimeVolumeData);
   }, [tradingData, chartStockData])

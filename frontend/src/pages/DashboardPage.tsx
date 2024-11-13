@@ -50,13 +50,19 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 ];
 
 const DashboardPage = () => {
-  const { pastStockData, fetchPastStockData } = usePastStockStore();
+  const { pastStockData, fetchPastStockData, fetchYesterdayStockData } = usePastStockStore();
   // const { minuteStockData, fetchMinuteStockData } = useTodayStockStore();
 
   useEffect(() => {
     fetchPastStockData("005930", "D");
     // fetchMinuteStockData();
   }, [])
+
+  useEffect(() => {
+    if (!pastStockData) return;
+    
+    fetchYesterdayStockData();
+  }, [pastStockData])
 
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
 

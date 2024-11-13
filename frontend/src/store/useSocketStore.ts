@@ -15,7 +15,9 @@ const useSocketStore = create<ISocketStore>((set) => ({
 
 export default useSocketStore;
 
-const SOCKET_URL = "wss://k11a204.p.ssafy.io/ws/";
+// const SOCKET_URL = "wss://k11a204.p.ssafy.io/ws/";
+const SOCKET_URL = "ws://localhost:8080";
+
 const ws = new WebSocket(SOCKET_URL);
 
 ws.onopen = () => {
@@ -25,6 +27,7 @@ ws.onopen = () => {
 ws.onmessage = (event) => {
   try {
     const data = JSON.parse(event.data);
+    // console.log(data);
 
     // kospi
     if (data.stock_code === "0001") {
