@@ -30,7 +30,7 @@
 }
 
 .content {
-  max-height: 80%;
+  max-height: 85%;
   margin: 30px auto 0px auto;
   overflow-y: scroll;
   overflow-x: scroll;
@@ -39,7 +39,7 @@
 
 .content::-webkit-scrollbar {
   width: 3px;
-  height: 3px;
+  height: 0;
 }
 
 .content::-webkit-scrollbar-thumb {
@@ -81,13 +81,13 @@
 
 .orderTable td.askVolume,
 .orderTable td.bidVolume {
-  padding: 10px 30px 10px 0;
+  padding: 10px 40px 10px 0;
   text-align: right;
 }
 
 .orderTable td.askPrice,
 .orderTable td.bidPrice {
-  padding: 10px 30px 10px 0;
+  padding: 10px 40px 10px 0;
   text-align: right;
 }
 
@@ -127,21 +127,53 @@
   /* border: 1px solid red; */
 }
 
+.bidInfo {
+  margin: 0;
+  padding: 0;
+}
+
+.bidDetail {
+  display: flex;
+  justify-content: space-around;
+  margin: 0;
+  padding: 0;
+  font-size: 9px;
+  width: 100%;
+}
+
 .bidVolume {
   color: #4881FF;
 }
 
 .summary {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   margin-top: 15px;
   font-size: 13px;
+  margin-left: -2px;
 }
 
 .askSummary, .bidSummary {
   color: #aaa;
+  width: 95px;
+  text-align: center;
+  /* border: 1px solid red; */
+}
+
+.askSummary span {
+  color: #FF4F4F;
+  padding-right: 5px;
+}
+
+.bidSummary span {
+  color: #4881FF;
+  padding-right: 5px;
 }
 
 .marketStatus {
   font-weight: bold;
+  width: 95px;
+  text-align: center;
+  /* border: 1px solid red; */
 }

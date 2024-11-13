@@ -8,7 +8,7 @@
 }
 
 .content {
-  height: 80%;
+  height: 85%;
   font-size: 11px;
   /* border: 1px solid green; */
 }
@@ -24,7 +24,7 @@
   height: 90%;
   overflow-y: auto;
   overflow-x: auto;
-  padding: 0 0 10px 0;
+  padding: 0;
 }
 
 .subContent::-webkit-scrollbar {
