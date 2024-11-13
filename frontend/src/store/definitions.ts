@@ -40,17 +40,38 @@ export interface IBalanceState {
 }
 
 // type of History
-export interface IHistoryData {
-  date: string;
-  name: string;
-  status: string;
-  shares: number;
-  price: number;
+export interface IStandardHistoryData {
+  odno: string; // 주문번호
+  pdno: string; // 종목코드
+  prdt_name: string; // 종목명
+  sll_buy_dvsn_cd: string; // 구매/판매
+  ord_dt: string; // 주문일자
+  ord_tmd: string; // 주문시간
+  ord_qty: number; // 주문수량
+  tot_ccld_qty: number; // 총체결수량
+  cncl_cfrm_qty: number; // 취소확인수량
+  rmn_qty: number; // 잔여수량
+  ord_unpr: number; // 주문단가
+  avg_prvs: number; // 체결평균가
 }
 
-export interface IHistoryState {
-  historyData: IHistoryData[] | null;
-  fetchHistoryData: () => Promise<void>;
+export interface IStandardHistoryState {
+  standardHistoryData: IStandardHistoryData[] | null;
+  fetchStandardHistoryData: () => Promise<void>;
+}
+
+export interface IScheduledHistoryData{
+  pdno: string; // 종목코드
+  prdt_name: string; // 종목명
+  sll_buy_dvsn_cd: string; // 구매/판매
+  ord_qty: number; // 주문수량
+  ord_unpr: number; // 주문단가
+  tar_pr: number; // 감시가격
+}
+
+export interface IScheduledHistoryState {
+  scheduledHistoryData: IScheduledHistoryData[] | null;
+  fetchScheduledHistoryData: () => Promise<void>;
 }
 
 // type of Favorite
