@@ -1,28 +1,31 @@
 import styles from './UserInfo.module.css';
-import goldMedal from '../../assets/images/userRanking/🥇.png';
-import silverMedal from '../../assets/images/userRanking/🥈.png';
-import bronzeMedal from '../../assets/images/userRanking/🥉.png';
 import { IUserInfoProps } from './definition';
 
 const UserInfo = ({ dataRank, userName, profit }: IUserInfoProps) => {
-  const selectMedal = (rank: string) => {
-    if (rank === '1') {
-      return goldMedal;
-    } else if (rank === '2') {
-      return silverMedal;
-    } else if (rank === '3') {
-      return bronzeMedal;
+  const selectMedal = (rank: number) => {
+    if (rank === 1) {
+      return '🥇';
+    } else if (rank === 2) {
+      return '🥈';
+    } else if (rank === 3) {
+      return '🥉';
     }
+    return null;
+  };
+
+  // profit에 양수일 때는 '+'를, 음수일 때는 '-'를 추가하는 함수
+  const formatProfit = (value: number) => {
+    return value > 0 ? `+${value}` : `${value}`;
   };
 
   return (
     <div className={styles.userInfoContainer}>
       <div className={styles.userInfo}>
-        <img src={selectMedal(dataRank)} alt="" className={styles.medalIcon} />
+        <div className={styles.medal}>{selectMedal(dataRank)}</div>
         <div className={styles.userName}>{userName}</div>
       </div>
-      <div className={Number(profit) > 0 ? `${styles.isProfitPlus}` : `${styles.isProfitMinus}`}>
-        {profit}%
+      <div className={profit > 0 ? `${styles.isProfitPlus}` : `${styles.isProfitMinus}`}>
+        {formatProfit(profit)}%
       </div>
     </div>
   );

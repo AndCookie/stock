@@ -1,6 +1,6 @@
 .userInfoContainer {
   display: flex;
-  margin: 10px auto;
+  margin: 15px auto;
   justify-content: space-between;
   align-items: center;
 }
@@ -9,21 +9,30 @@
   display: flex;
   align-items: center;
   text-align: left;
+  min-width: 170px;
+  /* border: 1px solid red; */
 }
 
 .userName {
-  margin-left: 10px;
+  margin-left: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+  /* border: 1px solid blue; */
 }
 
-.medalIcon {
-  width: 40px;
-  height: 41px;
+.medal {
+  font-size: 23px;
 }
 
 .isProfitPlus {
-  color: red;
+  color: #CF5055;
+  font-weight: 400;
 }
 
 .isProfitMinus {
-  color: blue;
+  color: #4881FF;
+  font-weight: 400;
 }

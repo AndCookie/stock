@@ -1,38 +1,54 @@
 .stockInfoContainer {
   display: flex;
-  margin: 10px -5px auto;
-  padding: 10px 20px;
+  margin: 10px 5px;
+  padding: 7px 20px 14px 20px;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #333;
+  font-size: 13px;
 }
 
 .companyInfo {
-  text-align: left;
   display: flex;
+  text-align: left;
+  width: 220px;
+  /* border: 1px solid red; */
+}
+
+.dataRank {
+  font-size: 15px;
+  font-weight: bold;
+  color: #555;
+}
+
+.logo {
+  width: 50px;
+  height: 20px;
+  margin: auto 15px auto 25px;
+}
+
+.stockName {
+  font-weight: 600;
+  color: #ccc;
 }
 
 .priceData {
   text-align: right;
-}
-
-.dataRank {
-  font-weight: bold;
-  color: gray;
-}
-
-.logo {
-  width: 20%;
-  height: 20%;
-  margin: auto 10px auto 20px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
 }
 
 .previousDayVersusData {
+  font-size: 11px;
 }
 
 .previousDayVersusPricePlus {
-  color: red;
+  color: #CF5055;
 }
 
 .previousDayVersusPriceMinus {
-  color: blue;
+  color: #4881FF;
 }
