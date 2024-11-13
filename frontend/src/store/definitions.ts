@@ -94,7 +94,7 @@ export interface IStockData {
   stck_oprc: string;
   stck_hgpr: string;
   stck_lwpr: string;
-  cntg_vol: string;
+  acml_vol: string;
   acml_tr_pbmn: string;
   flng_cls_code: string;
   prtt_rate: string;
