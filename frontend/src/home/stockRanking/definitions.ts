@@ -1,8 +1,8 @@
 export interface IStockInfoProps {
-  dataRank: string;
+  dataRank: number;
   logoLink?: string;
   stockName: string;
-  stockPrice: string;
-  previousDayVersusPrice: string;
-  previousDayVersus: string;
+  stockPrice: number;
+  previousDayVersusPrice: number;
+  previousDayVersus: number;
 }
