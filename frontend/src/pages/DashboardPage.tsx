@@ -28,7 +28,6 @@ import TradingVolume from "../dashboard/tradingVolume/TradingVolume";
 // 훅 임포트
 import useWindowSize from './hooks/useWindowSize';
 import { usePastStockStore } from '../store/usePastStockStore';
-import { useTodayStockStore } from '../store/useTodayStockStore';
 
 // 인터페이스 임포트
 import { IWidgetComponentProps } from '../common/definitions';
