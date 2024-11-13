@@ -1,29 +1,32 @@
-// 종목개요
-// 삼성전자 #IT 가격 등락률
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { usePastStockStore } from "../../store/usePastStockStore";
+import useSocketStore from "../../store/useSocketStore";
 import { IWidgetComponentProps } from "../../common/definitions";
+
 import styles from './Symbol.module.css'
+import { COLORS } from "../../common/utils";
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   // TODO: 실제 data를 넣어주세요
-  const {
-    name,
-    industry,
-    companyDetail,
-    currentPrice,
-    change,
-    rate,
-    favorite,
-  } = {
-    name: "삼성전자",
-    industry: "IT",
-    companyDetail: "반도체와반도체장비",
-    currentPrice: 56300,
-    change: -700, // 증감
-    rate: -1.1, // 증감률 (%)
-    favorite: false, // 좋아요(관심종목) 여부
-  };
+  const { name, industry, companyDetail, favorite } = { name: "삼성전자", industry: "IT", companyDetail: "반도체와반도체장비", favorite: false };
+
+  const { pastStockData, yesterdayStockData } = usePastStockStore();
+  const { tradingData } = useSocketStore();
+
+  const [renderedValue, setRenderedValue] = useState(Number(pastStockData![pastStockData!.length - 1].stck_clpr));
+  const [renderedChangeValue, setRenderedChangeValue] = useState(renderedValue - Number(yesterdayStockData));
+  const [renderedChangeRate, setRenderedChangeRate] = useState(0);
   const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
+
+  useEffect(() => {
+    if (!tradingData) return;
+    console.log(yesterdayStockData);
+
+    setRenderedValue(Number(tradingData.STCK_PRPR));
+    setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
+    setRenderedChangeRate((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData));
+  }, [tradingData])
 
   // TODO: 비즈니스 로직이니 분리하세요
   const toggleFavorite = () => {
@@ -31,10 +34,6 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     setIsFavorite((prev) => !prev);
   };
 
-  console.log("Change:", change);
-  console.log("Rate:", rate);
-  console.log('Styles:', styles);
-  
   return (
     <div className={styles.container}>
       {/* 왼쪽 영역 */}
@@ -62,23 +61,22 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
       {/* 오른쪽 영역 */}
       <div className={styles.rightSection}>
-        <div className={styles.price}>{currentPrice.toLocaleString()}원</div>
         <div
-          className={`${styles.change}`}
-          style={{ color: change >= 0 ? '#FF4F4F' : '#4881FF' }}
+          className={styles.price}
+          style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
         >
-          <span>
-            {change >= 0 ? `+${change}` : change}원
+          {Number(renderedValue.toFixed(2)).toLocaleString()}원
+        </div>
+        <div className={`${styles.change}`}>
+          <span style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}>
+            {renderedChangeValue >= 0 ? "+" : ""}{Number(renderedChangeValue.toFixed(2)).toLocaleString()}원
           </span>
-          <span>
-            ({rate >= 0 ? `+${rate}` : rate}%)
+          <span style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}>
+            ({renderedChangeRate >= 0 ? "+" : ""}{renderedChangeRate.toFixed(2)}%)
           </span>
         </div>
-
-
       </div>
     </div>
-
   );
 };
 
