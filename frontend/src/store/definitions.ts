@@ -188,11 +188,11 @@ export interface ITradingData {
 export interface ISocketStore {
   kospiData: IIndicatorData | null;
   kosdaqData: IIndicatorData | null;
+  orderBookData: IOrderBookData | null;
+  tradingData: ITradingData | null;
+
   setKospiData: (data: IIndicatorData) => void;
   setKosdaqData: (data: IIndicatorData) => void;
-
-  // orderBookData: IOrderBookData | null;
-  // tradingData: ITradingData | null;
-  // setOrderBookData: (data: IOrderBookData) => void;
-  // setTradingData: (data: ITradingData) => void;
+  setOrderBookData: (data: IOrderBookData) => void;
+  setTradingData: (data: ITradingData) => void;
 }

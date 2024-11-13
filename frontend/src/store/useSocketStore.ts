@@ -1,16 +1,16 @@
 import { create } from "zustand";
-import { ISocketStore, IIndicatorData } from "./definitions";
+import { ISocketStore, IIndicatorData, IOrderBookData, ITradingData } from "./definitions";
 
 const useSocketStore = create<ISocketStore>((set) => ({
   kospiData: null,
   kosdaqData: null,
+  orderBookData: null,
+  tradingData: null,
+
   setKospiData: (data: IIndicatorData) => set({ kospiData: data }),
   setKosdaqData: (data: IIndicatorData) => set({ kosdaqData: data }),
-
-  // orderBookData: null,
-  // tradingData: null,
-  // setOrderBookData: (data: IOrderBookData) => set({ orderBookData: data }),
-  // setTradingData: (data: ITradingData) => set({ tradingData: data }),
+  setOrderBookData: (data: IOrderBookData) => set({ orderBookData: data }),
+  setTradingData: (data: ITradingData) => set({ tradingData: data }),
 }));
 
 export default useSocketStore;
@@ -31,17 +31,14 @@ ws.onmessage = (event) => {
       useSocketStore.getState().setKospiData(data.indicator.prpr_nmix);
     // kosdaq
     } else if (data.stock_code === "1001") {
-      console.log(data.indicator.prpr_nmix)
       useSocketStore.getState().setKosdaqData(data.indicator.prpr_nmix);
+    // order book
+    } else if (data.ORDER_BOOK) {
+      useSocketStore.getState().setOrderBookData(data.ORDER_BOOK);
+    // trading
+    } else if (data.trading) {
+      useSocketStore.getState().setTradingData(data.trading);
     }
-
-    // if (data.ORDER_BOOK) {
-    //   console.log("ORDER_BOOK", data.ORDER_BOOK);
-    //   useSocketStore.getState().setOrderBookData(data.ORDER_BOOK);
-    // } else if (data.TRADING) {
-    //   console.log("TRADING", data.TRADING);
-    //   useSocketStore.getState().setTradingData(data.TRADING);
-    // }
   } catch (error) {
     console.log(error);
   }
@@ -64,30 +61,3 @@ const sendMessage = (message: object) => {
 };
 
 export { sendMessage };
-
-// const SOCKET_URL = "ws://localhost:8080";
-// const socket = new WebSocket(SOCKET_URL);
-
-// socket.onopen = () => {
-//   console.log("Connect WebSocket");
-// };
-
-// socket.onmessage = (event) => {
-//   const data = JSON.parse(event.data);
-
-//   if (data.type === "ORDER_BOOK") {
-//     useSocketStore.getState().setOrderBookData(data.payload);
-//   } else if (data.type === "TRADING") {
-//     useSocketStore.getState().setTradingData(data.payload);
-//   } else {
-//     console.warn(data.type);
-//   }
-// };
-
-// socket.onclose = () => {
-//   console.log("Close WebSocket");
-// };
-
-// socket.onerror = (error) => {
-//   console.error(error);
-// };
