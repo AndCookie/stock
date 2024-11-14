@@ -3,6 +3,8 @@ import StockInfo from './StockInfo';
 import { useState, useEffect } from 'react';
 import samsungLogo from '../../assets/images/samsung.png';
 
+import fetchVolumeRanking from './hooks/fetchVolumeRanking';
+
 const StockRanking = () => {
   // const data = useIndexData()
   const [selectedCategory, setSelectedCategory] = useState('거래 대금');
@@ -11,7 +13,7 @@ const StockRanking = () => {
   const categories = ['거래 대금', '거래량', '급상승', '급하락'];
 
   // 이거 각각의 세부 카테고리 호출할 때마다 axios로 데이터 저장
-  const [stockData] = useState(
+  const [stockData, setStockData] = useState(
     [
       {
         dataRank: 1,
@@ -59,6 +61,11 @@ const StockRanking = () => {
     // category 값에 따라 다른 API를 호출하는 코드 추가 가능
   };
 
+  const fetchvolumeRankingData = async () => {
+    const result = await fetchVolumeRanking();
+    setStockData(result);
+  };
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -69,6 +76,8 @@ const StockRanking = () => {
 
     updateTime();
     const intervalId = setInterval(updateTime, 60000); // 1분마다 업데이트
+
+    fetchvolumeRankingData();
 
     return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 제거
   }, []);
