@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
+import codeToName from '../../assets/codeToName.json';
 import { usePastStockStore } from "../../store/usePastStockStore";
 import useSocketStore from "../../store/useSocketStore";
 import { IWidgetComponentProps } from "../../common/definitions";
@@ -8,8 +10,11 @@ import styles from './Symbol.module.css'
 import { COLORS } from "../../common/utils";
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
+  const { stockCode } = useParams();
+
   // TODO: 실제 data를 넣어주세요
-  const { name, industry, companyDetail, favorite } = { name: "삼성전자", industry: "IT", companyDetail: "반도체와반도체장비", favorite: false };
+  const name = stockCode ? codeToName[stockCode] : "";
+  const { industry, companyDetail, favorite } = { industry: "IT", companyDetail: "반도체와반도체장비", favorite: false };
 
   const { pastStockData, yesterdayStockData } = usePastStockStore();
   const { tradingData } = useSocketStore();
