@@ -3,6 +3,7 @@ import { IStockInfoProps } from "./definitions";
 
 const StockInfo = ({
   dataRank,
+  // 로고 어떻게 해야하지요?
   logoLink,
   stockName,
   stockPrice,
@@ -13,7 +14,7 @@ const StockInfo = ({
     <div className={styles.stockInfoContainer}>
       <div className={styles.companyInfo}>
         <div className={styles.dataRank}>{dataRank}</div>
-        <img src={logoLink} alt="기업 로고" className={styles.logo} />
+        <img src={logoLink || ''} alt="기업 로고" className={styles.logo} />
         <div className={styles.stockName}>{stockName}</div>
       </div>
       <div className={styles.priceData}>
