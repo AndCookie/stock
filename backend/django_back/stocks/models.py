@@ -12,3 +12,4 @@ class StockData(models.Model):
     execution_date = models.DateField()
     execution_time = models.TimeField()
     remain_amount = models.IntegerField()
+    order_type = models.CharField(default="00")  # 00: 지정가, 01: 시장가
