@@ -8,5 +8,7 @@ class StockData(models.Model):
     stock_code = models.CharField(max_length=10)
     amount = models.IntegerField()
     price = models.IntegerField()
+    order_number = models.CharField(max_length=10)
     execution_date = models.DateField()
     execution_time = models.TimeField()
+    remain_amount = models.IntegerField()

@@ -1,10 +1,8 @@
-from .serializers import UserSerializer
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import FavoriteStock
+from .models import FavoriteStock, Balance
 import os
 
 state = os.environ.get("STATE")
@@ -47,6 +45,11 @@ def favorite_stock(request):
             return Response({"error": f"Stock {stock_code} is not in favorites."}, status=status.HTTP_404_NOT_FOUND)
         
 @api_view(['GET'])
-def order(request):
-    # 가격, 종목코드, 개수
-    pass
+@permission_classes([IsAuthenticated])
+def balance(request):
+    user = request.user
+    try:
+        balance = Balance.objects.get(user=user)
+    except:
+        balance = Balance.objects.create(user=user, balance=5000000)
+    return Response({"balance": balance.balance}, status=status.HTTP_200_OK)

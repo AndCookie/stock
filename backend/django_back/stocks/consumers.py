@@ -1,5 +1,4 @@
-import asyncio
-import json
+import asyncio, json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 import websockets
@@ -80,7 +79,6 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                 print("Connected to KIS WebSocket")
                 await self.request_to_kis("1", "H0UPCNT0", "0001")  # 코스피 지수 체결 실시간 등록
                 await self.request_to_kis("1", "H0UPCNT0", "1001")  # 코스닥 지수 체결 실시간 등록
-                # await self.request_to_kis("1", "HDFSCNT0", "DNASAAPL")  # 나스닥(?) 지수 체결 실시간 등록
 
                 while True:
                     message = await socket.recv()
@@ -114,12 +112,14 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         try:
             parts = message.split("|")
             if len(parts) >= 4:
+                pValue = parts[3].split('^')
                 if parts[1] == "H0STASP0":
-                    result = self.stock_hoka(parts[3])
+                    result = self.stock_hoka(pValue)
                 elif parts[1] == "H0STCNT0":
-                    result = self.stock_purchase(parts[3])
+                    result = self.stock_purchase(pValue)
                 elif parts[1] == "H0UPCNT0":
-                    result = self.indicator(parts[3])
+                    result = self.indicator(pValue)
+
                 return result
             return {}
         except Exception as e:
@@ -139,8 +139,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             print(f"Error parsing KIS data: {e}")
             return {}
 
-    def stock_purchase(self, data):
-        pValue = data.split('^')
+    def stock_purchase(self, pValue):
         ret = {
             'stock_code': pValue[0],             # 종목 코드
             'trading': {    
@@ -154,8 +153,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         }
         return ret
     
-    def stock_hoka(self, data):
-        pValue = data.split('^')
+    def stock_hoka(self, pValue):
         ret = {
             'stock_code': pValue[0], 
             'ORDER_BOOK': {    
@@ -205,8 +203,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         }
         return ret
 
-    def indicator(self, data):
-        pValue = data.split('^')
+    def indicator(self, pValue):
         ret = {
             'stock_code': pValue[0],             # 종목 코드
             'indicator': {    

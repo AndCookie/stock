@@ -1,8 +1,4 @@
-import requests
-import json
-import redis
-import asyncio
-import httpx
+import requests, json, redis, asyncio, httpx, time
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -12,9 +8,8 @@ from datetime import datetime, timedelta, date
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from .models import StockData
-from .serializers import StockDataSerializer
+from .serializers import StockDataSaveSerializer, StockDataSerializer
 from django.db.models import Sum, F, ExpressionWrapper, FloatField
-import time
 
 
 REAL_KIS_API_BASE_URL = "https://openapi.koreainvestment.com:9443"
@@ -434,26 +429,52 @@ def rankings(rank_type):
 def order(request):
     if request.method == 'GET':
         user = request.user
-        orders = StockData.objects.filter(user=user).order_by('-execution_time')  # 최신 순으로 정렬
-        serializer = StockDataSerializer(orders, many=True)
+        incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).order_by('-execution_date', '-execution_time')
+        for data in incomplete_data:
+            execution_date = data.execution_date.strftime("%Y%m%d")
+            order_number = data.order_number
+            url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/inquire-daily-ccld"
+            headers = get_paper_headers("VTTC8001R")
+            params = {
+                "CANO": settings.PAPER_ACCOUNT, 
+                "ACNT_PRDT_CD": "01", 
+                "INQR_STRT_DT": execution_date, 
+                "INQR_END_DT": execution_date, 
+                "SLL_BUY_DVSN_CD": "00", 
+                "INQR_DVSN": "00", 
+                "PDNO": "", 
+                "CCLD_DVSN": "00", # 00: 전체, 01: 체결, 02: 미체결
+                "ORD_GNO_BRNO": "", 
+                "ODNO": order_number, 
+                "INQR_DVSN_3": "00", 
+                "INQR_DVSN_1": "", 
+                "CTX_AREA_FK100": "", 
+                "CTX_AREA_NK100": ""
+            }
+            response = requests.request("GET", url, headers=headers, params=params)
+            if response.status_code == 200:    
+                response_data = response.json()
+                output = response_data['output1'][0]
+                data.remain_amount = output.get('rmn_qty')
+                data.price = output.get('tot_ccld_amt')
+                data.save()
+            else:
+                print(response.json())
+                return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+            time.sleep(0.25)
+        stock_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
+        serializer = StockDataSerializer(instance=stock_data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+            
     if request.method == 'POST':
         user = request.user
         stock_code = request.data.get('stock_code')
         trade_type = request.data.get('trade_type')
         amount = request.data.get('amount')
-        order_type = request.data.get('order_type')
-        try:
-            price = request.data.get('price')
-        except:
-            price = "0"
-        # 내 잔고와 비교했을때 더 높은 금액을 주문하면 막아야함
-        # 그럴러면 현재 시장가를 가져와서 가격 알아야하는디
-        # 매도해도 잔고에 추가해줘야함
-        # 이 부분은 일단 보류
-        url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/order-cash"
-
-        payload = {    
+        price = request.data.get('price')
+        target_price = request.data.get('target_price')
+        
+        payload = {
             "CANO": settings.PAPER_ACCOUNT,
             "ACNT_PRDT_CD": "01",
             "PDNO": stock_code,
@@ -462,41 +483,48 @@ def order(request):
             "ORD_UNPR": price  # 지정가인 경우 가격 담고, 시장가인 경우는 0으로
         }
         
-        if order_type == "market":
-            payload['ORD_DVSN'] = "01"
-        
-        if trade_type == 'buy':
-            headers = get_paper_headers('VTTC0802U')  # 매수 주문
-        elif trade_type == 'sell':
-            headers = get_paper_headers('VTTC0801U')  # 매도 주문
+        if target_price == "0":
+            # 시장가 주문
+            if price == "0":
+                payload['ORD_DVSN'] = "01"
+            # 아니면 지정가 주문
+        # 조건 주문
         else:
-            print(f"trade_type을 확인해주세요. 현재 trade_type은 {trade_type}입니다.")
+            pass
+        url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/order-cash"
 
+        headers = get_paper_headers('VTTC0802U' if trade_type == 'buy' else 'VTTC0801U')
         response =  requests.post(url, headers=headers, data=json.dumps(payload))
         
         if response.status_code == 200:
-            response = response.json()
-            if response.get('rt_cd') == "0": # 성공
-                serializer = StockDataSerializer()
+            response_data = response.json()
+            if response_data.get('rt_cd') == "0": # 성공
+                output = response_data.get('output')
                 execution_date = datetime.now().strftime("%Y%m%d")
-
+                order_number = output.get('ODNO')
+                execution_time = output.get('ORD_TMD')
+                
+                amount = int(amount)
                 if trade_type == 'sell':
                     amount *= -1
-                stock_data_serializer = serializer(data={
-                    "user": user,
+                serializer = StockDataSaveSerializer(data={
+                    "user": user.id,
                     "stock_code": stock_code,
                     "amount": amount, 
-                    "price": price, 
+                    "price": int(price) * amount, 
+                    "order_number": order_number, 
                     "execution_date": execution_date, 
-                    "execution_time": response['output']['ORD_TMD'], 
+                    "execution_time": execution_time, 
+                    "remain_amount": amount
                     }
                 )
-                if stock_data_serializer.is_valid():
-                    stock_data_serializer.save()
-                    return Response(response, status=status.HTTP_200_OK)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(response_data, status=status.HTTP_200_OK)
                 else:
-                    return Response(stock_data_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:  # 실패
+                print(response.json())
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
         else:
             print(response.json())
