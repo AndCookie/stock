@@ -40,6 +40,47 @@ mock.onGet(BASEURL + "stocks/won-dollar/").reply(200, fakeIndicatorData());
 mock.onGet(BASEURL + "stocks/wti/").reply(200, fakeIndicatorData());
 mock.onGet(BASEURL + "stocks/gold/").reply(200, fakeIndicatorData());
 
+// home-stockRanking
+function fakeStockRankingData() {
+  const stockNames = ["삼성전자", "LG전자", "SK하이닉스", "현대자동차", "카카오", "네이버", "셀트리온", "삼성SDI", "현대모비스", "POSCO"];
+
+  const data = stockNames.map((name, index) => {
+    const stck_prpr = Math.floor(Math.random() * 50000) + 30000;
+    const prdy_vrss = Math.floor(Math.random() * 2000) - 1000;
+    const prdy_ctrt = ((prdy_vrss / stck_prpr) * 100).toFixed(2);
+    const prdy_vrss_sign = prdy_vrss >= 0 ? "5" : "1";
+
+    return {
+      hts_kor_isnm: name,
+      mksc_shrn_iscd: `00${index + 1}000`,
+      data_rank: (index + 1).toString(),
+      stck_prpr: stck_prpr.toString(),
+      prdy_vrss: prdy_vrss.toString(),
+      prdy_vrss_sign,
+      prdy_ctrt,
+      acml_vol: (Math.floor(Math.random() * 1000000) + 100000).toString(),
+      prdy_vol: (Math.floor(Math.random() * 1000000) + 100000).toString(),
+      lstn_stcn: (Math.floor(Math.random() * 5000000) + 1000000).toString(),
+      avrg_vol: (Math.floor(Math.random() * 100000) + 10000).toString(),
+      n_befr_clpr_vrss_prpr_rate: ((Math.random() * 2 - 1).toFixed(2)).toString(),
+      vol_intr: (Math.random() * 100).toFixed(2),
+      vol_tnrt: (Math.random() * 0.5).toFixed(2),
+      nday_vol_tnrt: (Math.random() * 0.5).toFixed(2),
+      avrg_tr_pbmn: (Math.floor(Math.random() * 100000000) + 10000000).toString(),
+      tr_pbmn_tnrt: (Math.random() * 0.5).toFixed(2),
+      nday_tr_pbmn_tnrt: (Math.random() * 0.5).toFixed(2),
+      acml_tr_pbmn: (Math.floor(Math.random() * 1000000000) + 100000000).toString(),
+    };
+  });
+
+  return data;
+}
+
+mock.onGet(BASEURL + "stocks/volume-ranking/").reply(200, fakeStockRankingData());
+mock.onGet(BASEURL + "stocks/amount-ranking/").reply(200, fakeStockRankingData());
+mock.onGet(BASEURL + "stocks/advance-ranking/").reply(200, fakeStockRankingData());
+mock.onGet(BASEURL + "stocks/decline-ranking/").reply(200, fakeStockRankingData());
+
 // home-aiNews
 mock.onGet(BASEURL + "ai-news").reply(200, [
   {
