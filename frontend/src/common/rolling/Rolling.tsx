@@ -7,14 +7,10 @@ import { IIndexEntry } from '../../store/definitions';
 import styles from './Rolling.module.css';
 
 const Rolling = () => {
-  const { indexData, fetchIndexData } = useIndexStore();
+  const { indexData } = useIndexStore();
   const { kospiData, kosdaqData } = useSocketStore();
 
   const [formattedData, setFormattedData] = useState<JSX.Element[] | null>(null);
-
-  useEffect(() => {
-    fetchIndexData();
-  }, [])
 
   useEffect(() => {
     if (!indexData) return;
