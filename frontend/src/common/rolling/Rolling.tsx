@@ -29,7 +29,7 @@ const Rolling = () => {
         }
 
         const previousValue = Number(previous.bstp_nmix_prpr ? previous.bstp_nmix_prpr : previous.ovrs_nmix_prpr);
-        const currentValue = Number(typeof current !== "object" ? current : "bstp_nmix" in current ? current.bstp_nmix : "ovrs_nmix_prpr" in current ? current.ovrs_nmix_prpr : "0");
+        const currentValue = Number(typeof current !== "object" ? current : "bstp_nmix_prpr" in current ? current.bstp_nmix_prpr : "ovrs_nmix_prpr" in current ? current.ovrs_nmix_prpr : "0");
 
         const change = currentValue - previousValue;
         const changeClass = change >= 0 ? styles.positive : styles.negative;
