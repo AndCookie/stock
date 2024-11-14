@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const BASEURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-const fetchVolumeRanking = async () => {
+const fetchStockRanking = async (category: string) => {
   try {
-    const res = await axios.get(BASEURL + 'stocks/volume-ranking/');
+    const res = await axios.get(BASEURL + `stocks/${category}-ranking/`);
     if (res.data) {
       return res.data;
     }
@@ -15,4 +15,4 @@ const fetchVolumeRanking = async () => {
   return false;
 };
 
-export default fetchVolumeRanking;
+export default fetchStockRanking;
