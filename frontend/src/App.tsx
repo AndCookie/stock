@@ -18,7 +18,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="" element={<HomePage />}></Route>
-        <Route path="/dashboard" element={<DashboardPage />}></Route>
+        <Route path="/dashboard/:stockCode" element={<DashboardPage />}></Route>
         <Route path="/market/:indexTypeId" element={<MarketPage />}></Route>
       </Routes>
       <Rolling />
