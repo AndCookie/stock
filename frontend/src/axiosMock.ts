@@ -22,7 +22,7 @@ function fakeIndicatorData() {
 
     data.push({
       stck_bsop_date,
-      bstp_nmix_prpr: parseFloat(bstp_nmix_prpr),
+      bstp_nmix_prpr: parseFloat(bstp_nmix_prpr).toString(),
     });
 
     previousValue = parseFloat(bstp_nmix_prpr);
@@ -327,52 +327,44 @@ function fakeStockData() {
 
 mock.onGet(BASEURL + "stocks/stock-price/").reply(200, fakeStockData());
 
-// dashboard-chart
-const fakeMinuteData = () => {
+// dashboard-tradingVolume
+function fakeMinuteData() {
+  const data = [];
   const now = new Date();
+  const today = now.toISOString().split("T")[0].replace(/-/g, "");
 
-  const formatDate = (date: Date) => `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}`;
+  const startTime = new Date();
+  startTime.setHours(9, 0, 0, 0);
 
-  const today = formatDate(now);
+  while (startTime <= now) {
+    const hour = startTime.toTimeString().split(" ")[0].replace(/:/g, "").substring(0, 6);
 
-  const fakeTimeSeries = (startHour: number, endHour: number) => {
-    const timeSeries: string[] = [];
-    for (let hour = startHour; hour <= endHour; hour++) {
-      for (let minute = 0; minute < 60; minute++) {
-        if (hour === endHour && minute === 0) break;
-        timeSeries.push(`${hour.toString().padStart(2, "0")}${minute.toString().padStart(2, "0")}00`
-        );
-      }
-    }
-    return timeSeries;
-  };
+    const randomPrice = (base: number) => (base + Math.floor(Math.random() * 100 - 50)).toString();
 
-  const timeSeries = fakeTimeSeries(9, 11);
+    const basePrice = 58000;
+    const openPrice = randomPrice(basePrice);
+    const highPrice = randomPrice(basePrice + 50);
+    const lowPrice = randomPrice(basePrice - 50);
+    const currentPrice = randomPrice(basePrice);
+    const volume = (1000 + Math.floor(Math.random() * 5000)).toString();
+    const totalVolume = (Math.floor(Math.random() * 1e9)).toString();
 
-  const randomStockPrice = () => parseFloat((50000 * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2));
-  const randomVolume = () => Math.floor(Math.random() * 200000);
-  const randomTotalPrice = () => Math.floor(Math.random() * 10000000000);
-
-  const fakeData = timeSeries.map((time) => {
-    const openPrice = randomStockPrice();
-    const closePrice = randomStockPrice();
-    const highPrice = Math.max(openPrice, closePrice) + randomStockPrice() % 50;
-    const lowPrice = Math.min(openPrice, closePrice) - randomStockPrice() % 50;
-
-    return {
+    data.push({
       stck_bsop_date: today,
-      stck_cntg_hour: time,
-      stck_prpr: closePrice,
+      stck_cntg_hour: hour,
+      stck_prpr: currentPrice,
       stck_oprc: openPrice,
       stck_hgpr: highPrice,
       stck_lwpr: lowPrice,
-      cntg_vol: randomVolume(),
-      acml_tr_pbmn: randomTotalPrice(),
-    };
-  });
+      cntg_vol: volume,
+      acml_tr_pbmn: totalVolume,
+    });
 
-  return fakeData;
-};
+    startTime.setMinutes(startTime.getMinutes() + 1);
+  }
+
+  return data;
+}
 
 mock.onGet(BASEURL + "stocks/minute-price/").reply(200, fakeMinuteData());
 
