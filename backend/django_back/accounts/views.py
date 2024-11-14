@@ -9,43 +9,6 @@ import os
 
 state = os.environ.get("STATE")
 BASE_URL = 'http://localhost:8000/api/accounts/'
-GOOGLE_CALLBACK_URI = BASE_URL + 'social/login/'
-
-def google_login(request):
-    return
-
-
-def google_logout(request):
-    return
-
-
-def google_signup(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-
-        token = TokenObtainPairSerializer.get_token(user)
-        refresh_token = str(token)
-        access_token = str(token.access_token)
-        res = Response(
-                {
-                    "user": serializer.data,
-                    "message": "register successs",
-                    "token": {
-                        "access": access_token,
-                        "refresh": refresh_token,
-                    },
-                },
-                status=status.HTTP_200_OK,
-            )
-            
-        # jwt 토큰 => 쿠키에 저장
-        res.set_cookie("access", access_token, httponly=True)
-        res.set_cookie("refresh", refresh_token, httponly=True)
-        
-        return res
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET', 'POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
