@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from .models import StockData
 from .serializers import StockDataSaveSerializer, StockDataSerializer
 from django.db.models import Sum, F, ExpressionWrapper, FloatField
+from accounts.models import Balance
 
 
 REAL_KIS_API_BASE_URL = "https://openapi.koreainvestment.com:9443"
@@ -515,17 +516,72 @@ def order(request):
                     "order_number": order_number, 
                     "execution_date": execution_date, 
                     "execution_time": execution_time, 
-                    "remain_amount": amount
+                    "remain_amount": amount, 
+                    "order_type": payload['ORD_DVSN']
                     }
                 )
                 if serializer.is_valid():
                     serializer.save()
+                    balance = Balance.objects.get(user=user)
+                    balance.balance -= int(price) * amount
+                    balance.save()
                     return Response(response_data, status=status.HTTP_200_OK)
                 else:
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:  # 실패
                 print(response.json())
                 return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            print(response.json())
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+    
+    if request.method == 'PUT':
+        order_number = request.data.get('order_number')
+        amount = request.data.get('amount')
+        price = request.data.get('price')
+        stock_data = StockData.objects.get(order_number=order_number)
+        payload = {
+            "CANO": settings.PAPER_ACCOUNT,
+            "ACNT_PRDT_CD": "01",
+            "KRX_FWDG_ORD_ORGNO": "",
+            "ORGN_ODNO": order_number,  # 주문 번호
+            "ORD_DVSN": stock_data.order_type,  # 주문 구분
+            "RVSE_CNCL_DVSN_CD": "01" if price != "0" else "02",  # 정정 취소 구분 코드, 01: 정정, 02: 취소
+            "ORD_QTY": amount,  # 0이면 전부 취소, 그 이외는 수량 설정
+            "ORD_UNPR": price,  # 정정이면 가격 설정, 시장가나 취소면 0 설정
+            "QTY_ALL_ORD_YN": "Y" if amount == 0 else "N"  # ORD_QTY에서 0이면 Y, 그게 아니면 N
+        }
+        
+        url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/order-rvsecncl"
+        
+        headers = get_paper_headers('VTTC0803U')
+        response =  requests.post(url, headers=headers, data=json.dumps(payload))
+        
+        if response.status_code == 200:
+            response_data = response.json()
+            if response_data.get('rt_cd') == "0": # 성공
+                output = response_data.get('output')
+                execution_date = datetime.now().strftime("%Y%m%d")
+                order_number = output.get('ODNO')
+                execution_time = output.get('ORD_TMD')
+                # 정정이면
+                # 가격 데이터, 주문 번호, execution_date, execution_time 수정
+                if payload['RVSE_CNCL_DVSN_CD'] == "01":
+                    stock_data.price = price
+                    stock_data.order_number = order_number
+                    stock_data.execution_date = execution_date
+                    stock_data.execution_time = execution_time
+                # 취소라면?
+                else:
+                    # 전량 취소면 그냥 제거
+                    if amount == '0':
+                        stock_data.delete()
+                    # 일부 취소면 값만 변경
+                    else:
+                        stock_data.amount -= amount
+                        stock_data.save()
+                    
+                    return Response(response_data, status=status.HTTP_200_OK)
         else:
             print(response.json())
             return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
@@ -540,7 +596,7 @@ def holdings(request):
         .values('stock_code')
         .annotate(
             total_amount=Sum('amount'),  # 보유 수량 합계
-            total_value=Sum(F('price') * F('amount'))  # 총 가치
+            total_value=Sum('price')  # 총 가치
         )
         .annotate(
             average_price=ExpressionWrapper(F('total_value') / F('total_amount'), output_field=FloatField())
