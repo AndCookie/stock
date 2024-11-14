@@ -11,48 +11,50 @@ const StockRanking = () => {
   const categories = ['거래 대금', '거래량', '급상승', '급하락'];
 
   // 이거 각각의 세부 카테고리 호출할 때마다 axios로 데이터 저장
-  const [stockData] = useState([
-    {
-      dataRank: 1,
-      stockName: '삼성전자',
-      logoLink: samsungLogo,
-      stockPrice: 58000,
-      previousDayVersusPrice: 300,
-    },
-    {
-      dataRank: 2,
-      stockName: 'SK하이닉스',
-      logoLink: samsungLogo,
-      stockPrice: 146400,
-      previousDayVersusPrice: -7600,
-    },
-    {
-      dataRank: 3,
-      stockName: '현대자동차',
-      logoLink: samsungLogo,
-      stockPrice: 1051900,
-      previousDayVersusPrice: 95,
-    },
-    {
-      dataRank: 4,
-      stockName: '포스코',
-      logoLink: samsungLogo,
-      stockPrice: 2245,
-      previousDayVersusPrice: -30,
-    },
-    {
-      dataRank: 5,
-      stockName: '두산',
-      logoLink: samsungLogo,
-      stockPrice: 192600,
-      previousDayVersusPrice: 4800,
-    },
-  ].map(stock => ({
-    ...stock,
-    previousDayVersus: (Math.abs(stock.previousDayVersusPrice) / stock.stockPrice) * 100,
-  })));
+  const [stockData] = useState(
+    [
+      {
+        dataRank: 1,
+        stockName: '삼성전자',
+        logoLink: samsungLogo,
+        stockPrice: 58000,
+        previousDayVersusPrice: 300,
+      },
+      {
+        dataRank: 2,
+        stockName: 'SK하이닉스',
+        logoLink: samsungLogo,
+        stockPrice: 146400,
+        previousDayVersusPrice: -7600,
+      },
+      {
+        dataRank: 3,
+        stockName: '현대자동차',
+        logoLink: samsungLogo,
+        stockPrice: 1051900,
+        previousDayVersusPrice: 95,
+      },
+      {
+        dataRank: 4,
+        stockName: '포스코',
+        logoLink: samsungLogo,
+        stockPrice: 2245,
+        previousDayVersusPrice: -30,
+      },
+      {
+        dataRank: 5,
+        stockName: '두산',
+        logoLink: samsungLogo,
+        stockPrice: 192600,
+        previousDayVersusPrice: 4800,
+      },
+    ].map((stock) => ({
+      ...stock,
+      previousDayVersus: (Math.abs(stock.previousDayVersusPrice) / stock.stockPrice) * 100,
+    }))
+  );
 
-  const setCategoryAndGetData = (category : string) => {
+  const setCategoryAndGetData = (category: string) => {
     setSelectedCategory(category);
     // category 값에 따라 다른 API를 호출하는 코드 추가 가능
   };
