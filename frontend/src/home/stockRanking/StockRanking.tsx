@@ -3,7 +3,7 @@ import StockInfo from './StockInfo';
 import { useState, useEffect } from 'react';
 import samsungLogo from '../../assets/images/samsung.png';
 
-import fetchStockRanking from './hooks/fetchVolumeRanking';
+import fetchStockRanking from './hooks/fetchStockRanking';
 
 const StockRanking = () => {
   // const data = useIndexData()
@@ -68,8 +68,14 @@ const StockRanking = () => {
   };
 
   const fetchStockRankingData = async (category: string) => {
-    const result = await fetchStockRanking(category);
-    setStockData(result);
+    const data = await fetchStockRanking(category);
+    const transformedData = data.map((item) => ({
+      dataRank: item['data_rank'],
+      stockName: item['hts_kor_isnm'],
+      stockPrice: item['stck_prpr'],
+      previousDayVersusPrice: item['prdy_vrss']
+    }))
+    setStockData(transformedData);
   };
 
   useEffect(() => {
