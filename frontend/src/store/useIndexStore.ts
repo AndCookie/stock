@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { IIndexState } from "./definitions";
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
-// const baseURL = "https://k11a204.p.ssafy.io/api/";
+// const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
+const baseURL = "https://k11a204.p.ssafy.io/api/";
 
 export const useIndexStore = create<IIndexState>((set) => ({
   indexData: null,

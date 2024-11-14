@@ -21,7 +21,6 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
   useEffect(() => {
     if (!tradingData) return;
-    console.log(yesterdayStockData);
 
     setRenderedValue(Number(tradingData.STCK_PRPR));
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
