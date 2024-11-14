@@ -28,6 +28,7 @@ import TradingVolume from "../dashboard/tradingVolume/TradingVolume";
 // 훅 임포트
 import useWindowSize from './hooks/useWindowSize';
 import { usePastStockStore } from '../store/usePastStockStore';
+import { useMinuteStockStore } from '../store/useMinuteStockStore';
 
 // 인터페이스 임포트
 import { IWidgetComponentProps } from '../common/definitions';
@@ -51,16 +52,16 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 
 const DashboardPage = () => {
   const { pastStockData, fetchPastStockData, fetchYesterdayStockData } = usePastStockStore();
-  // const { minuteStockData, fetchMinuteStockData } = useTodayStockStore();
+  const { minuteStockData, fetchMinuteStockData } = useMinuteStockStore();
 
   useEffect(() => {
     fetchPastStockData("005930", "D");
-    // fetchMinuteStockData();
+    fetchMinuteStockData("005930");
   }, [])
 
   useEffect(() => {
     if (!pastStockData) return;
-    
+
     fetchYesterdayStockData();
   }, [pastStockData])
 
@@ -201,8 +202,7 @@ const DashboardPage = () => {
     }
   };
 
-  // if (!pastStockData || !minuteStockData) return;
-  if (!pastStockData) return <div />;
+  if (!pastStockData || !minuteStockData) return <div />;
 
   return (
     <div className={styles.container}>

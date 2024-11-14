@@ -110,8 +110,8 @@ export interface IPastStockState {
   fetchYesterdayStockData: () => void;
 }
 
-// type of Today Stock
-export interface ITodayStockData {
+// type of Minute Stock
+export interface IMinuteStockData {
   stck_bsop_date: string;
   stck_cntg_hour: string;
   stck_prpr: string;
@@ -122,9 +122,9 @@ export interface ITodayStockData {
   acml_tr_pbmn: string;
 }
 
-export interface ITodayStockState {
-  minuteStockData: ITodayStockData[] | null;
-  fetchMinuteStockData: () => Promise<void>;
+export interface IMinuteStockState {
+  minuteStockData: IMinuteStockData[] | null;
+  fetchMinuteStockData: (arg0: string) => Promise<void>;
 }
 
 // type of Websocket
