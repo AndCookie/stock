@@ -25,7 +25,7 @@ const Rolling = () => {
           current = kosdaqData;
         } else {
           current = data[data.length - 1];
-          console.log(current);
+          // console.log(current);
         }
 
         const previousValue = Number(previous.bstp_nmix_prpr ? previous.bstp_nmix_prpr : previous.ovrs_nmix_prpr);
