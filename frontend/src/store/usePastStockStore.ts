@@ -33,4 +33,16 @@ export const usePastStockStore = create<IPastStockState>((set, get) => ({
       }));
     }
   },
+
+  clearPastStockData: () => {
+    set(() => ({
+      pastStockData: null,
+    }))
+  },
+
+  clearYesterdayStockData: () => {
+    set(() => ({
+      yesterdayStockData: null,
+    }))
+  },
 }));

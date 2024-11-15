@@ -125,6 +125,8 @@ export interface IPastStockState {
   yesterdayStockData: string | null;
   fetchPastStockData: (arg0: string, arg1: string) => Promise<void>;
   fetchYesterdayStockData: () => void;
+  clearPastStockData: () => void;
+  clearYesterdayStockData: () => void;
 }
 
 // type of Minute Stock
