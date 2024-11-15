@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import codeToName from '../../assets/codeToName.json';
 import { usePastStockStore } from "../../store/usePastStockStore";
+import { useMinuteStockStore } from "../../store/useMinuteStockStore";
 import useSocketStore from "../../store/useSocketStore";
 import { IWidgetComponentProps } from "../../common/definitions";
 
@@ -17,12 +18,21 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const { industry, companyDetail, favorite } = { industry: "IT", companyDetail: "반도체와반도체장비", favorite: false };
 
   const { pastStockData, yesterdayStockData } = usePastStockStore();
+  const { minuteStockData } = useMinuteStockStore();
   const { tradingData } = useSocketStore();
 
-  const [renderedValue, setRenderedValue] = useState(Number(pastStockData![pastStockData!.length - 1].stck_clpr));
-  const [renderedChangeValue, setRenderedChangeValue] = useState(renderedValue - Number(yesterdayStockData));
+  const [renderedValue, setRenderedValue] = useState(0);
+  const [renderedChangeValue, setRenderedChangeValue] = useState(0);
   const [renderedChangeRate, setRenderedChangeRate] = useState(0);
   const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
+
+  useEffect(() => {
+    if (!pastStockData || !minuteStockData) return;
+
+    setRenderedValue(Number(minuteStockData![minuteStockData!.length - 1].stck_prpr));
+    setRenderedChangeValue(Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData));
+    setRenderedChangeRate((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)) / Number(yesterdayStockData) * 100);
+  }, [pastStockData])
 
   useEffect(() => {
     if (!tradingData) return;

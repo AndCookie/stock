@@ -69,7 +69,7 @@ const DashboardPage = () => {
 
     // 웹 소켓 종목코드 전송
     sendMessage({ stock_code: stockCode });
-  }, [])
+  }, [stockCode])
 
   useEffect(() => {
     if (!pastStockData) return;

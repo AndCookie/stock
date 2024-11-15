@@ -5,12 +5,14 @@ import useSocketStore from '../../store/useSocketStore';
 
 import styles from './OrderBook.module.css';
 import { COLORS } from '../../common/utils';
+import { usePastStockStore } from '../../store/usePastStockStore';
 
 const OrderBook: React.FC = () => {
+  const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
   const { orderBookData, tradingData } = useSocketStore();
   
-  const currentPrice = Number(minuteStockData![0].stck_prpr);          // 기준 가격
+  const currentPrice = Number(yesterdayStockData);                     // 기준 가격
   const maxAskPrice = currentPrice * 1.3;                              // 상한가
   const minBidPrice = currentPrice * 0.7;                              // 하한가
   const [maxPrice, setMaxPrice] = useState(Number.NEGATIVE_INFINITY);  // 최고가
