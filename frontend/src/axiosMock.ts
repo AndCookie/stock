@@ -142,84 +142,125 @@ mock.onGet(BASEURL + "account/balance").reply(200, {
   ],
 });
 
-// home-account-history
-mock.onGet(BASEURL + "account/history").reply(200, [
-  {
-    date: "2024-06-16",
-    name: "카카오",
-    status: "구매완료",
-    shares: 1,
-    price: 60000,
+// home-account-history 일반주문
+mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
+  { // 체결 지정가 매수
+    odno: "0001569139", // 주문번호
+    pdno: "009150", // 종목코드
+    prdt_name: "삼성전기", // 종목명
+    sll_buy_dvsn_cd: "BUY", // 구매/판매
+    ord_dt: "20240101", // 주문일자
+    ord_tmd: "131438", // 주문시간
+    ord_qty: "90", // 주문수량
+    tot_ccld_qty: "90", // 총체결수량
+    cncl_cfrm_qty: "0", // 취소확인수량
+    rmn_qty: "0", // 잔여수량
+    ord_unpr: "140000", // 주문단가
+    avg_prvs: "140000", // 체결평균가
   },
-  {
-    date: "2024-06-16",
-    name: "카카오",
-    status: "판매완료",
-    shares: 1,
-    price: 60000,
+  { // 체결 시장가 매수
+    odno: "0001569140",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20240101",
+    ord_tmd: "142042",
+    ord_qty: "50",
+    tot_ccld_qty: "50",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "150000", // 참고 시장가가 150500일 때 25주, 시장가가 149500일 때 25주 체결되면 평단이 150000임
   },
-  {
-    date: "2024-07-01",
-    name: "삼성전자",
-    status: "구매완료",
-    shares: 3,
-    price: 50000,
+  { // 체결 지정가 매도
+    odno: "0001569141",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_dt: "20240201",
+    ord_tmd: "100128",
+    ord_qty: "60",
+    tot_ccld_qty: "60",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "170000",
+    avg_prvs: "170000",
   },
-  {
-    date: "2024-07-11",
-    name: "삼성전자",
-    status: "판매완료",
-    shares: 3,
-    price: 50000,
+  { // 체결 시장가 매도
+    odno: "0001569142",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_dt: "20240301",
+    ord_tmd: "093850",
+    ord_qty: "80",
+    tot_ccld_qty: "80",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "160000",
   },
-  {
-    date: "2024-08-08",
-    name: "피엔티",
-    status: "구매완료",
-    shares: 19,
-    price: 52500,
+  { // 취소
+    odno: "0001569143",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241010",
+    ord_tmd: "130303",
+    ord_qty: "80",
+    tot_ccld_qty: "0",
+    cncl_cfrm_qty: "80",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "180000",
   },
-  {
-    date: "2024-08-08",
-    name: "피엔티",
-    status: "판매완료",
-    shares: 19,
-    price: 52500,
+  { // 미체결
+    odno: "0001569144",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241010",
+    ord_tmd: "130504",
+    ord_qty: "80",
+    tot_ccld_qty: "40",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "40",
+    ord_unpr: "0",
+    avg_prvs: "180000",
   },
-  {
-    date: "2024-09-09",
-    name: "한진자동차",
-    status: "구매대기",
-    shares: 9,
-    price: 90000,
+  { // 체결 시장가 매도
+    odno: "0001569145",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241020",
+    ord_tmd: "093850",
+    ord_qty: "80",
+    tot_ccld_qty: "80",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "160000",
   },
-  {
-    date: "2024-10-10",
-    name: "우진전자",
-    status: "판매대기",
-    shares: 10,
-    price: 100000,
+]);
+
+// home-account-history 조건주문
+mock.onGet(BASEURL + "stocks/history/scheduled").reply(200, [
+  { // 지정가 조건주문
+    pdno: "009150", // 종목코드
+    prdt_name: "삼성전기", // 종목명
+    sll_buy_dvsn_cd: "SELL", // 구매/판매
+    ord_qty: "200", // 주문수량
+    ord_unpr: "120000", // 주문단가
+    tar_pr: "120000", // 감시가격
   },
-  {
-    date: "2024-11-11",
-    name: "병주증권",
-    status: "구매완료",
-    shares: 11,
-    price: 100000,
-  },
-  {
-    date: "2024-11-15",
-    name: "광영오버시스리미티드",
-    status: "판매대기",
-    shares: 11,
-    price: 1111111,
-  },
-  {
-    date: "2024-11-24",
-    name: "태완엘레베이터",
-    status: "판매완료",
-    shares: 24,
-    price: 1124124,
+  { // 시장가 조건주문
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_qty: "100",
+    ord_unpr: "0",
+    tar_pr: "130000",
   },
 ]);
 
