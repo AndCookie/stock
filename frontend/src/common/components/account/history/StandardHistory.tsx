@@ -60,6 +60,7 @@ const StandardHistory = () => {
 
   useEffect(() => {
     if (standardHistoryData) {
+      console.log("무야호", standardHistoryData)
       if (filter === "ALL") {
         setFilteredHistoryData(standardHistoryData);
       } else {
@@ -81,12 +82,11 @@ const StandardHistory = () => {
       parseInt(orderMonth) === selectedMonth
     );
   });
-  const completedHistoryData = filteredByDate.filter((order) => order.rmn_qty === 0 && order.ord_qty === order.tot_ccld_qty)
-  const pendingHistoryData = filteredByDate.filter((order) => order.rmn_qty !== 0)
-  const cancelledHistoryData = filteredByDate.filter((order) => order.rmn_qty === 0 && order.ord_qty === order.cncl_cfrm_qty)
+  const completedAndCancelledHistoryData = filteredByDate.filter((order) => order.mode === "completed" || order.mode === "cancelled")
+  const pendingHistoryData = filteredByDate.filter((order) => order.mode === "pending")
   const last60Months = getLast60Months();
 
-  const renderHistoryData = (historyData: IStandardHistoryData[], mode: string) =>
+  const renderHistoryData = (historyData: IStandardHistoryData[]) =>
     historyData.length > 0 ? (
       historyData.map((order, index) => (
         <div key={index} className={styles.order}>
@@ -102,12 +102,12 @@ const StandardHistory = () => {
               >
                 {order.sll_buy_dvsn_cd === "BUY" ? "구매" : "판매"}
                 {" "}
-                {mode === "completed" ? "완료" : mode === "pending" ? "대기" : "취소"}
+                {order.mode === "completed" ? "완료" : order.mode === "pending" ? "대기" : "취소"}
               </span>{" "}
               · <span className={styles.shares}>{order.ord_qty}주</span>
             </div>
           </div>
-          {mode === "cancelled" ? (
+          {order.mode === "cancelled" ? (
             <span className={styles.price}></span>
           ) : (
             <span className={styles.price}>주당 {order.avg_prvs.toLocaleString()}원</span>
@@ -139,17 +139,12 @@ const StandardHistory = () => {
       <div className={styles.content}>
         <div className={styles.section}>
           <div className={styles.title}>체결된 주문</div>
-          {renderHistoryData(completedHistoryData, "completed")}
+          {renderHistoryData(completedAndCancelledHistoryData)}
         </div>
 
         <div className={styles.section}>
           <div className={styles.title}>미체결 주문</div>
-          {renderHistoryData(pendingHistoryData, "pending")}
-        </div>
-
-        <div className={styles.section}>
-          <div className={styles.title}>취소된 주문</div>
-          {renderHistoryData(cancelledHistoryData, "cancelled")}
+          {renderHistoryData(pendingHistoryData)}
         </div>
       </div>
     </div>

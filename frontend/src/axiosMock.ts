@@ -187,6 +187,20 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
     ord_unpr: "0",
     avg_prvs: "180000",
   },
+  { // 체결 시장가 매도
+    odno: "0001569145",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241020",
+    ord_tmd: "093850",
+    ord_qty: "80",
+    tot_ccld_qty: "80",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "160000",
+  },
 ]);
 
 // home-account-history 조건주문

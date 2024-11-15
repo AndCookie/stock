@@ -74,6 +74,7 @@ export interface IStandardHistoryData {
   rmn_qty: number; // 잔여수량
   ord_unpr: number; // 주문단가
   avg_prvs: number; // 체결평균가
+  mode: string; // 모드 (프론트에서 처리)
 }
 
 export interface IStandardHistoryState {
