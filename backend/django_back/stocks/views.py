@@ -292,7 +292,7 @@ def stock_price(request):
         # 누락된 날짜에 대해 데이터 요청 및 저장
         if end_date_str not in existing_dates:
             response_data = fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_code)
-            if len(response_data):
+            if response_data:
                 last_date = response_data[-1]["stck_bsop_date"]
                 # 마지막 날짜 기준으로 업데이트 및 존재 확인
                 current_date = datetime.strptime(last_date, "%Y%m%d").date()
@@ -303,7 +303,7 @@ def stock_price(request):
 
         # 이전 날짜로 이동
         current_date -= timedelta(days=1)
-        time.sleep(0.1)
+        time.sleep(0.2)
 
     # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
@@ -654,6 +654,7 @@ async def get_stock_price(client, stock_code, semaphore):
         return stock_code, None
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def all_time_rankings(request):
     top_users = User.objects.order_by('-balance')[:3]
     response_data = [
@@ -667,18 +668,45 @@ def all_time_rankings(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def all_time_rankings(request):
-    top_users = User.objects.order_by('-balance')[:3]
-    response_data = [
-            {
-                "username": user.username,
-                "return_rate": round(user.balance / 5000000, 2)
+def trend(request):
+    data_type = request.GET.get('data_type')
+    stock_code = request.GET.get('stock_code')
+    if data_type == 'trader':
+        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-member"
+        headers = get_paper_headers('FHKST01010600')
+        params = {
+            "fid_cond_mrkt_div_code": "J",
+            "fid_input_iscd": stock_code,
+        }
+        response =  requests.get(url, headers=headers, params=params)
+        if response.status_code == 200:
+            return Response(response.json()['output'], status=status.HTTP_200_OK)
+        else:
+            print(response.json())
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+    elif data_type == 'investor':
+        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-investor"
+        headers = get_paper_headers('FHKST01010900')
+        params = {
+            "fid_cond_mrkt_div_code": "J",
+            "fid_input_iscd": stock_code,
+        }
+        response =  requests.get(url, headers=headers, params=params)
+        if response.status_code == 200:
+            output = response.json()['output'][0]
+            data = {
+                "prsn_ntby_qty": output.get("prsn_ntby_qty"), 
+                "frgn_ntby_qty": output.get("frgn_ntby_qty"), 
+                "orgn_ntby_qty": output.get("orgn_ntby_qty"), 
+                "prsn_ntby_tr_pbmn": output.get("prsn_ntby_tr_pbmn"), 
+                "frgn_ntby_tr_pbmn": output.get("frgn_ntby_tr_pbmn"), 
+                "orgn_ntby_tr_pbmn": output.get("orgn_ntby_tr_pbmn"), 
             }
-            for user in top_users
-        ]
-    
-    return Response(response_data, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            print(response.json())
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):

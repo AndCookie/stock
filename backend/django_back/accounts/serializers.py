@@ -21,5 +21,4 @@ class PositionSaveSerializer(serializers.ModelSerializer):
 class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = '__all__'
-        excludes = ['user']
+        fields = ['widget', 'x', 'y', 'width', 'height']
