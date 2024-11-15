@@ -48,11 +48,11 @@ const useDropdown = (inputValue: string) => {
     }
 
     if (event.code === 'Enter') {
-      // 원래 let
       const keyword = dropDownList[dropDownItemIndex]
         ? dropDownList[dropDownItemIndex]
         : inputValue;
-      navigate(`/dashboard/${nameToCode[keyword]}`);
+        
+      navigate(`/dashboard/${nameToCode[keyword as keyof typeof nameToCode]}`);
     }
   };
 
@@ -66,7 +66,7 @@ const useDropdown = (inputValue: string) => {
   };
 
   const handleClickDropDownList = (dropDownItem: string) => {
-    navigate(`/dashboard/${nameToCode[dropDownItem]}`);
+    navigate(`/dashboard/${nameToCode[dropDownItem as keyof typeof nameToCode]}`);
   };
 
   useEffect(() => {
