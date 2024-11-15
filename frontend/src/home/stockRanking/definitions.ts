@@ -1,6 +1,5 @@
 export interface IStockRankingData {
   hts_kor_isnm: string;
-  mksc_shrn_iscd: string;
   data_rank: string;
   stck_prpr: string;
   prdy_vrss: string;
@@ -8,6 +7,8 @@ export interface IStockRankingData {
   prdy_ctrt: string;
   acml_vol: string;
 
+  mksc_shrn_iscd?: string;
+  stck_shrn_iscd? :string;
   stck_hgpr?: string;
   hgpr_hour?: string;
   acml_hgpr_date?: string;
@@ -24,6 +25,7 @@ export interface IStockRankingData {
   oprc_vrss_prpr_rate?: string;
   prd_rsfl?: string;
   prd_rsfl_rate?: string;
+  
 }
 
 
