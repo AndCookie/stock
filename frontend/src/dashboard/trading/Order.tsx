@@ -10,8 +10,7 @@ import styles from "./Order.module.css";
 const Order = () => {
   // Zustand 스토어에서 tradingData 배열 가져오기
   const tradingData = useSocketStore((state) => state.tradingData);
-  
-  const [initialMarketPrice, setInitialMarketPrice] = useState(null);
+  const [initialMarketPrice, setInitialMarketPrice] = useState(0);
 
   // 접속 시점의 가장 최신 STCK_PRPR 값을 한 번만 설정
   useEffect(() => {
