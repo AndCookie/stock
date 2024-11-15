@@ -8,7 +8,8 @@ const StockInfo: React.FC<IStockInfoProps> = ({ stockRankingData }) => {
   const navigate = useNavigate();
 
   const clickStock = () => {
-    navigate(`/dashboard/${stockRankingData.mksc_shrn_iscd}`);
+    const stockCode = stockRankingData.mksc_shrn_iscd ? stockRankingData.mksc_shrn_iscd : stockRankingData.stck_shrn_iscd;
+    navigate(`/dashboard/${stockCode}`);
   };
 
   return (

@@ -37,19 +37,16 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
 
   useEffect(() => {
-    if (!pastStockData || !minuteStockData) return;
+    if (!minuteStockData || !yesterdayStockData) return;
 
     setRenderedValue(Number(minuteStockData![minuteStockData!.length - 1].stck_prpr));
     setRenderedChangeValue(
       Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)
     );
     setRenderedChangeRate(
-      ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) -
-        Number(yesterdayStockData)) /
-        Number(yesterdayStockData)) *
-        100
+      ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)) / Number(yesterdayStockData)) * 100
     );
-  }, [pastStockData]);
+  }, [minuteStockData, yesterdayStockData]);
 
   // 여기부터 코드 다시 입력
   useEffect(() => {
@@ -67,16 +64,13 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
     setRenderedValue(Number(tradingData.STCK_PRPR));
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
-    setRenderedChangeRate(
-      ((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) *
-        100
-    );
+    setRenderedChangeRate(((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) * 100);
   }, [tradingData]);
 
   // TODO: 비즈니스 로직이니 분리하세요
   const toggleFavorite = () => {
     if (!stockCode) return;
-    
+
     // TODO: post 요청을 통해 서버 상태 업데이트
     setIsFavorite((prev) => !prev);
     if (!isFavorite) {
@@ -85,6 +79,8 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       deleteFavoriteData(stockCode);
     }
   };
+
+  if (!renderedChangeValue) return <div />;
 
   return (
     <div className={styles.container}>

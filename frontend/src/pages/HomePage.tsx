@@ -4,8 +4,8 @@ import Indicators from '../home/indicators/Indicators';
 import Account from '../home/account/HomeAccount';
 import UserRanking from '../home/userRanking/UserRanking';
 import StockRanking from '../home/stockRanking/StockRanking';
-import Advice from '../home/advice/Advice';
-import AiNews from '../home/aiNews/AiNews';
+// import Advice from '../home/advice/Advice';
+// import AiNews from '../home/aiNews/AiNews';
 import { useIndexStore } from '../store/useIndexStore';
 
 import styles from './HomePage.module.css';
@@ -32,10 +32,10 @@ const HomePage: React.FC = () => {
         <StockRanking />
       </section>
 
-      <section className={styles.bottomContent}>
+      {/* <section className={styles.bottomContent}>
         <Advice />
         <AiNews />
-      </section>
+      </section> */}
     </>
   );
 };

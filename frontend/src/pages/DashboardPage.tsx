@@ -54,7 +54,7 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 ];
 
 const DashboardPage = () => {
-  const { pastStockData, fetchPastStockData, fetchYesterdayStockData } = usePastStockStore();
+  const { pastStockData, fetchPastStockData, fetchYesterdayStockData, clearPastStockData, clearYesterdayStockData } = usePastStockStore();
   const { minuteStockData, fetchMinuteStockData } = useMinuteStockStore();
   const { indexData, fetchIndexData } = useIndexStore();
 
@@ -71,6 +71,9 @@ const DashboardPage = () => {
     sendMessage({ "stock_code": stockCode });
 
     return () => {
+      clearPastStockData();
+      clearYesterdayStockData();
+
       sendMessage({
         "stock_code": stockCode,
         "exit": "True",
