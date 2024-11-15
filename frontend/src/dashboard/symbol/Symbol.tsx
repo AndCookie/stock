@@ -22,7 +22,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     favorite: false,
   };
 
-  const { pastStockData, yesterdayStockData } = usePastStockStore();
+  const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
   const { tradingData } = useSocketStore();
 

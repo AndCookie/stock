@@ -54,7 +54,7 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 ];
 
 const DashboardPage = () => {
-  const { pastStockData, fetchPastStockData, fetchYesterdayStockData, clearPastStockData, clearYesterdayStockData } = usePastStockStore();
+  const { dailyPastStockData, pastStockData, fetchDailyPastStockData, fetchPastStockData, fetchYesterdayStockData, clearDailyPastStockData, clearPastStockData, clearYesterdayStockData } = usePastStockStore();
   const { minuteStockData, fetchMinuteStockData } = useMinuteStockStore();
   const { indexData, fetchIndexData } = useIndexStore();
 
@@ -63,7 +63,8 @@ const DashboardPage = () => {
   useEffect(() => {
     if (!stockCode) return;
 
-    fetchPastStockData(stockCode, "D");
+    fetchDailyPastStockData(stockCode);
+    fetchPastStockData(stockCode, "M");
     fetchMinuteStockData(stockCode);
     fetchIndexData();
 
@@ -71,6 +72,7 @@ const DashboardPage = () => {
     sendMessage({ "stock_code": stockCode });
 
     return () => {
+      clearDailyPastStockData();
       clearPastStockData();
       clearYesterdayStockData();
 
@@ -82,10 +84,12 @@ const DashboardPage = () => {
   }, [stockCode])
 
   useEffect(() => {
-    if (!pastStockData) return;
-
-    fetchYesterdayStockData();
-  }, [pastStockData])
+    if (dailyPastStockData) {
+      fetchYesterdayStockData();
+    } else if (pastStockData) {
+      fetchYesterdayStockData();
+    }
+  }, [dailyPastStockData, pastStockData])
 
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
 
