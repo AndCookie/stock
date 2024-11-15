@@ -8,11 +8,11 @@ import useOrderButton from "./useOrderButton";
 const OrderButton: React.FC<IOrderButtonProps> = ({ mode, trackedPrice, price, quantity }) => {
   const { placeOrder } = useOrderButton();
   const { balanceData, fetchBalanceData } = useBalanceStore();
-  const { upperLimit, lowerLimit } = useStockLimit();
+  const { maxAskPrice, minBidPrice } = useStockLimit();
   const finalQuantity = typeof quantity === "number" ? quantity : 0;
   const totalPrice = price * finalQuantity
-  const totalUpperPrice = upperLimit * finalQuantity
-  const totalLowerPrice = lowerLimit * finalQuantity
+  const totalUpperPrice = maxAskPrice * finalQuantity
+  const totalLowerPrice = minBidPrice * finalQuantity
   // TODO 종목 코드 연결
   const stockCode = "137400";
 
