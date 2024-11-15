@@ -707,6 +707,26 @@ def trend(request):
             print(response.json())
             return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
 
+@api_view(['GET'])
+def information(request):
+    stock_code = request.GET.get('stock_code')
+    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/search-stock-info"
+    headers = get_real_headers('CTPF1002R', "P")
+    params = {
+        "PRDT_TYPE_CD": "300",
+        "PDNO": stock_code,
+    }
+    response =  requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        output = response.json()['output']
+        data = {
+            "std_idst_clsf_cd_name": output.get("std_idst_clsf_cd_name"), 
+            "idx_bztp_scls_cd_name": output.get("idx_bztp_scls_cd_name"), 
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    else:
+        print(response.json())
+        return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):

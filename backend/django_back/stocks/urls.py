@@ -24,4 +24,5 @@ urlpatterns = [
     path('stock-price/', views.stock_price),
     path('all-time-ranking/', views.all_time_rankings),
     path('trend/', views.trend),
+    path('information/', views.information),
 ]
