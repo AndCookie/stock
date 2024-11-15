@@ -32,15 +32,22 @@ ws.onmessage = (event) => {
     // kospi
     if (data.stock_code === "0001") {
       useSocketStore.getState().setKospiData(data.indicator.prpr_nmix);
-    // kosdaq
+      // kosdaq
     } else if (data.stock_code === "1001") {
       useSocketStore.getState().setKosdaqData(data.indicator.prpr_nmix);
-    // order book
+      // order book
     } else if (data.ORDER_BOOK) {
       useSocketStore.getState().setOrderBookData(data.ORDER_BOOK);
-    // trading
+      // trading
     } else if (data.trading) {
-      useSocketStore.getState().setTradingData(data.trading);
+      useSocketStore.getState().setTradingData({
+        STCK_CNTG_HOUR: Number(data.trading.STCK_CNTG_HOUR),
+        STCK_PRPR: Number(data.trading.STCK_PRPR),
+        CNTG_VOL: Number(data.trading.CNTG_VOL),
+        ACML_VOL: Number(data.trading.ACML_VOL),
+        CTTR: Number(data.trading.CTTR),
+        CCLD_DVSN: Number(data.trading.CCLD_DVSN),
+      });
     }
   } catch (error) {
     console.log(error);

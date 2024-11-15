@@ -43,7 +43,7 @@ const TradingVolume: React.FC = () => {
                 <td className={styles.tradePrice}>{Number(data.STCK_PRPR).toLocaleString()}</td>
                 <td
                   className={styles.tradeVolume}
-                  style={{ color: data.CCLD_DVSN === "1" ? '#FF4F4F' : data.CCLD_DVSN === "5" ? '#4881FF' : 'inherit' }}
+                  style={{ color: data.CCLD_DVSN === 1 ? '#FF4F4F' : data.CCLD_DVSN === 5 ? '#4881FF' : 'inherit' }}
                 >
                   {Number(data.CNTG_VOL).toLocaleString()}
                 </td>

@@ -15,7 +15,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
-  const name = stockCode ? codeToName[stockCode] : '';
+  const name = stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : "";
   const { industry, companyDetail, favorite } = {
     industry: 'IT',
     companyDetail: '반도체와반도체장비',
@@ -75,6 +75,8 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
   // TODO: 비즈니스 로직이니 분리하세요
   const toggleFavorite = () => {
+    if (!stockCode) return;
+    
     // TODO: post 요청을 통해 서버 상태 업데이트
     setIsFavorite((prev) => !prev);
     if (!isFavorite) {
