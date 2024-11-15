@@ -121,10 +121,13 @@ export interface IStockData {
 }
 
 export interface IPastStockState {
+  dailyPastStockData: IStockData[] | null;
   pastStockData: IStockData[] | null;
   yesterdayStockData: string | null;
+  fetchDailyPastStockData: (arg0: string) => Promise<void>;
   fetchPastStockData: (arg0: string, arg1: string) => Promise<void>;
   fetchYesterdayStockData: () => void;
+  clearDailyPastStockData: () => void;
   clearPastStockData: () => void;
   clearYesterdayStockData: () => void;
 }
