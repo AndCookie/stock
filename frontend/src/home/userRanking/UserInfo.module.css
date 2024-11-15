@@ -10,11 +10,13 @@
   align-items: center;
   text-align: left;
   min-width: 170px;
+  font-size: 15px;
   /* border: 1px solid red; */
 }
 
 .userName {
-  margin-left: 15px;
+  color: #ccc;
+  margin-left: 18px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -28,11 +30,11 @@
 }
 
 .isProfitPlus {
-  color: #CF5055;
+  color: #cf5055;
   font-weight: 400;
 }
 
 .isProfitMinus {
-  color: #4881FF;
+  color: #4881ff;
   font-weight: 400;
 }

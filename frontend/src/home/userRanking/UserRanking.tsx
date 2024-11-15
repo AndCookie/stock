@@ -40,10 +40,8 @@ const UserRanking = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.categoryTabs}>
-        모의투자 랭킹
-      </div>
-      
+      <div className={styles.categoryTabs}>모의투자 랭킹</div>
+
       <div className={styles.content}>
         <div className={styles.weekly}>
           <div className={styles.rankname}>주간 수익률</div>

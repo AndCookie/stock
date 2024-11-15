@@ -23,7 +23,7 @@
   left: 0;
   width: 160px;
   height: 3px;
-  background-color: #7B00F7;
+  background-color: #7b00f7;
   border-radius: 50px;
 }
 
@@ -59,4 +59,3 @@
 .content::-webkit-scrollbar-track {
   background: transparent; /* 스크롤 트랙 배경을 투명하게 설정 */
 }
-

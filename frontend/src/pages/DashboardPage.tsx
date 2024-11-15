@@ -14,6 +14,7 @@
 // Layout 정보 갱신될 때마다 백엔드에 POST 요청 보내서 저장하기, GET 요청 결과가 null이면 initialLayout으로
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import GridLayout, { Layout } from 'react-grid-layout';
 
 // 위젯 임포트
@@ -28,6 +29,9 @@ import TradingVolume from "../dashboard/tradingVolume/TradingVolume";
 // 훅 임포트
 import useWindowSize from './hooks/useWindowSize';
 import { usePastStockStore } from '../store/usePastStockStore';
+import { useMinuteStockStore } from '../store/useMinuteStockStore';
+import { useIndexStore } from '../store/useIndexStore';
+import { sendMessage } from '../store/useSocketStore';
 
 // 인터페이스 임포트
 import { IWidgetComponentProps } from '../common/definitions';
@@ -51,16 +55,32 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 
 const DashboardPage = () => {
   const { pastStockData, fetchPastStockData, fetchYesterdayStockData } = usePastStockStore();
-  // const { minuteStockData, fetchMinuteStockData } = useTodayStockStore();
+  const { minuteStockData, fetchMinuteStockData } = useMinuteStockStore();
+  const { indexData, fetchIndexData } = useIndexStore();
+
+  const { stockCode } = useParams();
 
   useEffect(() => {
-    fetchPastStockData("005930", "D");
-    // fetchMinuteStockData();
-  }, [])
+    if (!stockCode) return;
+
+    fetchPastStockData(stockCode, "D");
+    fetchMinuteStockData(stockCode);
+    fetchIndexData();
+
+    // 웹 소켓 종목코드 전송
+    sendMessage({ "stock_code": stockCode });
+
+    return () => {
+      sendMessage({
+        "stock_code": stockCode,
+        "exit": "True",
+      })
+    }
+  }, [stockCode])
 
   useEffect(() => {
     if (!pastStockData) return;
-    
+
     fetchYesterdayStockData();
   }, [pastStockData])
 
@@ -92,7 +112,6 @@ const DashboardPage = () => {
   // const [selectedWidgets, setSelectedWidgets] = useState<{ [key: string]: boolean }>(
   //   Object.keys(widgetComponents).reduce((acc, key) => ({ ...acc, [key]: true }), {})
   // );
-
 
   // 각 위젯의 가시성 상태
   const [showModal, setShowModal] = useState(false); // 모달 창 표시 여부
@@ -201,8 +220,7 @@ const DashboardPage = () => {
     }
   };
 
-  // if (!pastStockData || !minuteStockData) return;
-  if (!pastStockData) return <div />;
+  if (!pastStockData || !minuteStockData || !indexData) return <div />;
 
   return (
     <div className={styles.container}>

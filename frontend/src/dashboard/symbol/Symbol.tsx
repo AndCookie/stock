@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
+import codeToName from '../../assets/codeToName.json';
 import { usePastStockStore } from "../../store/usePastStockStore";
+import { useMinuteStockStore } from "../../store/useMinuteStockStore";
 import useSocketStore from "../../store/useSocketStore";
 import { IWidgetComponentProps } from "../../common/definitions";
 
@@ -8,24 +11,35 @@ import styles from './Symbol.module.css'
 import { COLORS } from "../../common/utils";
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
+  const { stockCode } = useParams();
+
   // TODO: 실제 data를 넣어주세요
-  const { name, industry, companyDetail, favorite } = { name: "삼성전자", industry: "IT", companyDetail: "반도체와반도체장비", favorite: false };
+  const name = stockCode ? codeToName[stockCode] : "";
+  const { industry, companyDetail, favorite } = { industry: "IT", companyDetail: "반도체와반도체장비", favorite: false };
 
   const { pastStockData, yesterdayStockData } = usePastStockStore();
+  const { minuteStockData } = useMinuteStockStore();
   const { tradingData } = useSocketStore();
 
-  const [renderedValue, setRenderedValue] = useState(Number(pastStockData![pastStockData!.length - 1].stck_clpr));
-  const [renderedChangeValue, setRenderedChangeValue] = useState(renderedValue - Number(yesterdayStockData));
+  const [renderedValue, setRenderedValue] = useState(0);
+  const [renderedChangeValue, setRenderedChangeValue] = useState(0);
   const [renderedChangeRate, setRenderedChangeRate] = useState(0);
   const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
 
   useEffect(() => {
+    if (!pastStockData || !minuteStockData) return;
+
+    setRenderedValue(Number(minuteStockData![minuteStockData!.length - 1].stck_prpr));
+    setRenderedChangeValue(Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData));
+    setRenderedChangeRate((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)) / Number(yesterdayStockData) * 100);
+  }, [pastStockData])
+
+  useEffect(() => {
     if (!tradingData) return;
-    console.log(yesterdayStockData);
 
     setRenderedValue(Number(tradingData.STCK_PRPR));
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
-    setRenderedChangeRate((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData));
+    setRenderedChangeRate((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData) * 100);
   }, [tradingData])
 
   // TODO: 비즈니스 로직이니 분리하세요

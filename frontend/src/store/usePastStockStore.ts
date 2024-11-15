@@ -3,7 +3,6 @@ import { IPastStockState } from "./definitions";
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
-// const baseURL = "https://k11a204.p.ssafy.io/api/";
 
 export const usePastStockStore = create<IPastStockState>((set, get) => ({
   pastStockData: null,
@@ -26,11 +25,11 @@ export const usePastStockStore = create<IPastStockState>((set, get) => ({
   },
 
   fetchYesterdayStockData: () => {
-    const { pastStockData } = get(); // 현재 상태에서 pastStockData 가져오기
+    const { pastStockData } = get();
 
     if (pastStockData) {
       set(() => ({
-        yesterdayStockData: pastStockData[pastStockData.length - 1].stck_clpr,
+        yesterdayStockData: pastStockData[pastStockData.length - 2].stck_clpr,
       }));
     }
   },
