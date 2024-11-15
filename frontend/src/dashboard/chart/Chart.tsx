@@ -25,10 +25,13 @@ const Chart = () => {
   const { stockCode } = useParams();
 
   useEffect(() => {
-    if (!stockCode) return;
-
     setChartStockData(null);
     setChartVolumeData(null);
+  }, [])
+
+  useEffect(() => {
+    if (!stockCode) return;
+
     fetchPastStockData(stockCode, selectedPeriodCode);
   }, [selectedPeriodCode])
 
@@ -124,7 +127,7 @@ const Chart = () => {
       },
     });
     histogramSeries.setData(chartVolumeData);
-    
+
     // 참조 저장
     candlestickSeriesRef.current = candlestickSeries;
     histogramSeriesRef.current = histogramSeries;
@@ -139,7 +142,7 @@ const Chart = () => {
 
   // tradingData 업데이트
   useEffect(() => {
-    if (!candlestickSeriesRef.current || !histogramSeriesRef.current || !tradingData || !chartStockData || !chartVolumeData) return ;
+    if (!candlestickSeriesRef.current || !histogramSeriesRef.current || !tradingData || !chartStockData || !chartVolumeData) return;
 
     const realtimeStockData = chartStockData[chartStockData.length - 1];
     realtimeStockData.close = Number(tradingData.STCK_PRPR);
