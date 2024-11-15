@@ -15,7 +15,7 @@ const TradingVolume: React.FC = () => {
 
     setRenderedTradingData((prevData) => {
       const updatedData = [...prevData, tradingData];
-      return updatedData.slice(-100).sort((a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR));
+      return updatedData.sort((a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR));
     });
   }, [tradingData]);
 

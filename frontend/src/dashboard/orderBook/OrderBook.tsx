@@ -53,6 +53,7 @@ const OrderBook: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      {yesterdayStockData}
       <div className={styles.categoryTabs}>호가</div>
       {/* <div className={styles.marketInfo}>
         <p>시간외단일가 56,800원 <span className={styles.priceChange}>+0.35%</span></p>

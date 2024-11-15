@@ -39,7 +39,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
     setRenderedValue(Number(tradingData.STCK_PRPR));
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
-    setRenderedChangeRate((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData));
+    setRenderedChangeRate((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData) * 100);
   }, [tradingData])
 
   // TODO: 비즈니스 로직이니 분리하세요

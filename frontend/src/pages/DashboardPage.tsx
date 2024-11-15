@@ -68,7 +68,14 @@ const DashboardPage = () => {
     fetchIndexData();
 
     // 웹 소켓 종목코드 전송
-    sendMessage({ stock_code: stockCode });
+    sendMessage({ "stock_code": stockCode });
+
+    return () => {
+      sendMessage({
+        "stock_code": stockCode,
+        "exit": "True",
+      })
+    }
   }, [stockCode])
 
   useEffect(() => {
