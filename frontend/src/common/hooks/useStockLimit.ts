@@ -13,15 +13,15 @@ const getTickSize = (price: number) => {
 };
 
 const useStockLimit = () => {
-  const { pastStockData } = usePastStockStore();
+  const { yesterdayStockData } = usePastStockStore();
 
   // stockData의 마지막 데이터에서 전일 종가를 사용하여 상한가와 하한가 계산
-  const { upperLimit, lowerLimit } = useMemo(() => {
-    if (!pastStockData) {
-      return { upperLimit: 0, lowerLimit: 0 };
+  const { maxAskPrice, minBidPrice } = useMemo(() => {
+    if (!yesterdayStockData) {
+      return { maxAskPrice: 0, minBidPrice: 0 };
     }
 
-    const lastClosingPrice = pastStockData[pastStockData.length - 1].close; // 전일 종가
+    const lastClosingPrice = Number(yesterdayStockData); // 전일 종가
     const calculatedUpperLimit = lastClosingPrice * 1.3;
     const calculatedLowerLimit = lastClosingPrice * 0.7;
 
@@ -32,10 +32,10 @@ const useStockLimit = () => {
     const adjustedUpperLimit = Math.floor(calculatedUpperLimit / tickSizeUpper) * tickSizeUpper;
     const adjustedLowerLimit = Math.ceil(calculatedLowerLimit / tickSizeLower) * tickSizeLower;
 
-    return { upperLimit: adjustedUpperLimit, lowerLimit: adjustedLowerLimit };
-  }, [pastStockData]);
+    return { maxAskPrice: adjustedUpperLimit, minBidPrice: adjustedLowerLimit };
+  }, [yesterdayStockData]);
 
-  return { upperLimit, lowerLimit };
+  return { maxAskPrice, minBidPrice };
 };
 
 export default useStockLimit;
