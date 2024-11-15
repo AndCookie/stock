@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { createChart, ISeriesApi, ColorType } from "lightweight-charts";
-import styles from './Chart.module.css';
 
 import { usePastStockStore } from "../../store/usePastStockStore";
-import useSocketStore, { sendMessage } from "../../store/useSocketStore";
+import useSocketStore from "../../store/useSocketStore";
 
+import styles from './Chart.module.css';
 import { COLORS } from "../../common/utils";
 import { IChartStockData, IChartVolumeData } from "./definitions";
 
@@ -21,10 +22,17 @@ const Chart = () => {
 
   const [selectedPeriodCode, setSelectedPeriodCode] = useState('D');
 
+  const { stockCode } = useParams();
+
   useEffect(() => {
     setChartStockData(null);
     setChartVolumeData(null);
-    fetchPastStockData("005930", selectedPeriodCode);
+  }, [])
+
+  useEffect(() => {
+    if (!stockCode) return;
+
+    fetchPastStockData(stockCode, selectedPeriodCode);
   }, [selectedPeriodCode])
 
   // chartStockData 업데이트
@@ -68,9 +76,6 @@ const Chart = () => {
   // 차트 초기화
   useEffect(() => {
     if (!chartContainerRef.current || !chartStockData || !chartVolumeData) return;
-
-    // 웹 소켓 종목코드 전송
-    sendMessage({ stock_code: "005930" });
 
     const chartOptions = {
       width: chartContainerRef.current.clientWidth,
@@ -122,7 +127,7 @@ const Chart = () => {
       },
     });
     histogramSeries.setData(chartVolumeData);
-    
+
     // 참조 저장
     candlestickSeriesRef.current = candlestickSeries;
     histogramSeriesRef.current = histogramSeries;
@@ -137,7 +142,7 @@ const Chart = () => {
 
   // tradingData 업데이트
   useEffect(() => {
-    if (!candlestickSeriesRef.current || !histogramSeriesRef.current || !tradingData || !chartStockData || !chartVolumeData) return ;
+    if (!candlestickSeriesRef.current || !histogramSeriesRef.current || !tradingData || !chartStockData || !chartVolumeData) return;
 
     const realtimeStockData = chartStockData[chartStockData.length - 1];
     realtimeStockData.close = Number(tradingData.STCK_PRPR);

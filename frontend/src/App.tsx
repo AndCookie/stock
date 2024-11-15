@@ -10,7 +10,7 @@ import Rolling from './common/rolling/Rolling';
 import './index.css';
 
 // 백엔드 구현 전 axios MOCK !!! 배포 시에는 제거하세요
-import "./axiosMock";
+// import "./axiosMock";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="" element={<HomePage />}></Route>
-        <Route path="/dashboard" element={<DashboardPage />}></Route>
+        <Route path="/dashboard/:stockCode" element={<DashboardPage />}></Route>
         <Route path="/market/:indexTypeId" element={<MarketPage />}></Route>
       </Routes>
       <Rolling />

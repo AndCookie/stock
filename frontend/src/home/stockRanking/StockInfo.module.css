@@ -13,6 +13,7 @@
   text-align: left;
   width: 180px;
   /* border: 1px solid red; */
+  cursor: pointer;
 }
 
 .dataRank {
@@ -41,6 +42,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 5px;
+  cursor: pointer;
 }
 
 .price {

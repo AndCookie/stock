@@ -1,17 +1,25 @@
-import { IStockInfoProps } from './definitions';
+import { useNavigate } from "react-router-dom";
+
+import { IStockInfoProps } from "./definitions";
 
 import styles from './StockInfo.module.css';
 
 const StockInfo: React.FC<IStockInfoProps> = ({ stockRankingData }) => {
+  const navigate = useNavigate();
+
+  const clickStock = () => {
+    navigate(`/dashboard/${stockRankingData.mksc_shrn_iscd}`);
+  };
+
   return (
     <div className={styles.stockInfoContainer}>
-      <div className={styles.companyInfo}>
+      <div className={styles.companyInfo} onClick={clickStock}>
         <div className={styles.dataRank}>{stockRankingData.data_rank}</div>
         {/* <img src={logoLink || ''} alt="기업 로고" className={styles.logo} /> */}
         <div className={styles.stockName}>{stockRankingData.hts_kor_isnm}</div>
       </div>
-      <div className={styles.priceData}>
-        <div className={styles.price}>{Number(stockRankingData.stck_prpr).toLocaleString()}원</div>
+      <div className={styles.priceData}  onClick={clickStock}>
+        <div>{Number(stockRankingData.stck_prpr).toLocaleString()}원</div>
         <div
           className={`${styles.previousDayVersusData} ${
             Number(stockRankingData.prdy_vrss) > 0
