@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import styles from "./Favorite.module.css";
-import { useFavoriteStore } from "../../../store/useFavoriteStore";
+import { useEffect } from 'react';
+import styles from './Favorite.module.css';
+import { useFavoriteStore } from '../../../store/useFavoriteStore';
 import { COLORS } from '../../../common/utils';
 
 const Favorites = () => {
@@ -11,7 +11,7 @@ const Favorites = () => {
   }, []);
 
   const calculatePercentage = (prev: number, current: number) => {
-    return ((Math.abs(current - prev) / prev) * 100).toFixed(1)
+    return ((Math.abs(current - prev) / prev) * 100).toFixed(1);
   };
 
   if (!favoriteData) return <div></div>;
@@ -39,10 +39,13 @@ const Favorites = () => {
                       stock.currentValue - stock.prevValue > 0
                         ? COLORS.positive
                         : stock.currentValue - stock.prevValue < 0
-                          ? COLORS.negative
-                          : COLORS.neutral
+                        ? COLORS.negative
+                        : COLORS.neutral,
                   }}
-                >{stock.currentValue > stock.prevValue ? '+' : ''}{(stock.currentValue - stock.prevValue).toLocaleString()}</span>
+                >
+                  {stock.currentValue > stock.prevValue ? '+' : ''}
+                  {(stock.currentValue - stock.prevValue).toLocaleString()}
+                </span>
                 &nbsp;
                 <span
                   className={styles.percentage}
@@ -51,9 +54,10 @@ const Favorites = () => {
                       stock.currentValue - stock.prevValue > 0
                         ? COLORS.positive
                         : stock.currentValue - stock.prevValue < 0
-                          ? COLORS.negative
-                          : COLORS.neutral
-                  }}>
+                        ? COLORS.negative
+                        : COLORS.neutral,
+                  }}
+                >
                   ({calculatePercentage(stock.prevValue, stock.currentValue)}%)
                 </span>
               </div>
