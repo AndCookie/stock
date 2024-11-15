@@ -453,16 +453,18 @@ def orders(request):
                 "CTX_AREA_NK100": ""
             }
             response = requests.request("GET", url, headers=headers, params=params)
+            amount = int(data.amount)
+            sign = amount // abs(amount)
             if response.status_code == 200:    
                 response_data = response.json()
                 output = response_data['output1'][0]
                 data.remain_amount = output.get('rmn_qty')
-                data.price = output.get('tot_ccld_amt')
+                data.price = int(output.get('tot_ccld_amt')) * sign
                 data.save()
             else:
                 print(response.json())
                 return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
-            time.sleep(0.25)
+            time.sleep(0.5)
         stock_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
         serializer = StockDataSerializer(instance=stock_data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -592,7 +594,7 @@ def holdings(request):
     user = request.user
 
     holdings = (
-        StockData.objects.filter(user=user)
+        StockData.objects.filter(user=user).exclude(price=0)
         .values('stock_code')
         .annotate(
             total_amount=Sum('amount'),  # 보유 수량 합계
