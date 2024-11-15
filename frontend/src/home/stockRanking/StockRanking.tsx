@@ -49,7 +49,7 @@ const StockRanking = () => {
     return () => clearInterval(intervalId);
   }, [selectedCategory]);
 
-  if (renderedStockRankingData.length === 0) return <div />;
+  if (!renderedStockRankingData || renderedStockRankingData.length === 0) return <div />;
 
   return (
     <div className={styles.container}>
