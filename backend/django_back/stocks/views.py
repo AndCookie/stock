@@ -427,7 +427,7 @@ def rankings(rank_type):
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def order(request):
+def orders(request):
     if request.method == 'GET':
         user = request.user
         incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).order_by('-execution_date', '-execution_time')
