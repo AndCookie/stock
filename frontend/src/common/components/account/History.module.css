@@ -6,12 +6,12 @@
   display: flex;
   font-size: 18px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #3D3D47;
+  border-bottom: 1px solid #3d3d47;
 }
 
 .tabOne {
   cursor: pointer;
-  color: #3D3D47;
+  color: #3d3d47;
   width: 50px;
   background: none;
   color: #bbb;
@@ -24,7 +24,7 @@
 
 .tabTwo {
   cursor: pointer;
-  color: #3D3D47;
+  color: #3d3d47;
   width: 80px;
   background: none;
   color: #bbb;
@@ -36,18 +36,18 @@
 }
 
 .activeTabButton {
-  color: #E5E5E6;
+  color: #e5e5e6;
 }
 
 .activeTabButton::after {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0px;
   height: 2px;
   width: 100%;
-  background-color: #E5E5E6;
+  background-color: #e5e5e6;
   border-radius: 1px;
 }
 
@@ -104,6 +104,7 @@
 .title {
   font-size: 14px;
   font-weight: bold;
+  margin-left: 10px;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -120,46 +121,52 @@
 }
 
 .date {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #bbb;
-  width: 40px;
+  width: 60px;
+  margin-left: 10px;
+  /* border: 1px solid red; */
 }
 
 .orderInfo {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 100px;
+  min-width: 120px;
+  /* border: 1px solid red; */
 }
 
 .name {
   font-weight: bold;
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 90px;
+  max-width: 115px;
+  color: #ccc;
 }
 
 .status {
-  color: #CF5055;
-  font-size: 12px;
+  color: #cf5055;
+  font-size: 13px;
 }
 
 .status-sell {
-  color: #4881FF;
+  color: #4881ff;
 }
 
 .shares {
   color: #888;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .price {
   font-weight: bold;
-  font-size: 13px;
-  width: 75px;
+  font-size: 15px;
+  width: 100px;
   text-align: right;
+  color: #ccc;
+  /* border: 1px solid red; */
 }
 
 .emptyMessage {
