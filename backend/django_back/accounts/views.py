@@ -2,7 +2,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import FavoriteStock, Balance
+from .models import FavoriteStock, Balance, Position
+from .serializers import PositionSerializer, PositionSaveSerializer
 import os
 
 state = os.environ.get("STATE")
@@ -53,3 +54,29 @@ def balance(request):
     except:
         balance = Balance.objects.create(user=user, balance=5000000)
     return Response({"balance": balance.balance}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def position(request):
+    user = request.user
+    if request.method == "GET":
+        positions = Position.objects.filter(user=user)
+        serializer = PositionSerializer(positions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == "POST":
+        if Position.objects.filter(user=user).exists():
+            positions = Position.objects.filter(user=user)
+            positions.delete()
+        
+        layout = request.data.get("layout")
+        for l in layout:
+            l['width'] = l['w']
+            del l['w']
+            l['height'] = l['h']
+            del l['h']
+            l['user'] = user.id
+        serializer = PositionSaveSerializer(data=layout, many=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return Response({"message": "Data saved."}, status=status.HTTP_200_OK)
