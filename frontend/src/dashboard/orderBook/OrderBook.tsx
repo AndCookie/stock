@@ -2,17 +2,19 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { useMinuteStockStore } from '../../store/useMinuteStockStore';
 import useSocketStore from '../../store/useSocketStore';
+import useStockLimit from '../../common/hooks/useStockLimit';
 
 import styles from './OrderBook.module.css';
 import { COLORS } from '../../common/utils';
+import { usePastStockStore } from '../../store/usePastStockStore';
 
 const OrderBook: React.FC = () => {
+  const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
   const { orderBookData, tradingData } = useSocketStore();
-  
-  const currentPrice = Number(minuteStockData![0].stck_prpr);          // 기준 가격
-  const maxAskPrice = currentPrice * 1.3;                              // 상한가
-  const minBidPrice = currentPrice * 0.7;                              // 하한가
+
+  const currentPrice = Number(yesterdayStockData);                     // 기준가
+  const { maxAskPrice, minBidPrice } = useStockLimit();                // 상한가와 하한가
   const [maxPrice, setMaxPrice] = useState(Number.NEGATIVE_INFINITY);  // 최고가
   const [minPrice, setMinPrice] = useState(Number.POSITIVE_INFINITY);  // 최저가
   const [quantity, setQuantity] = useState(0);                         // 거래량
@@ -57,7 +59,7 @@ const OrderBook: React.FC = () => {
       </div> */}
 
       <div className={styles.content} ref={contentRef}>
-      {/* <div className={styles.content}> */}
+        {/* <div className={styles.content}> */}
 
         <table className={styles.orderTable}>
           <thead>
