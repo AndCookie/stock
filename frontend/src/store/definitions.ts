@@ -15,21 +15,21 @@ export interface IIndexEntry {
 }
 
 export interface IIndexData {
-  "국내": {
-    "코스피": IIndexEntry[] | null;
-    "코스닥": IIndexEntry[] | null;
+  국내: {
+    코스피: IIndexEntry[] | null;
+    코스닥: IIndexEntry[] | null;
   };
-  "해외": {
-    "다우존스": IIndexEntry[] | null;
-    "나스닥": IIndexEntry[] | null;
+  해외: {
+    다우존스: IIndexEntry[] | null;
+    나스닥: IIndexEntry[] | null;
   };
-  "환율": {
-    "원/달러": IIndexEntry[] | null;
-    "엔/달러": IIndexEntry[] | null;
+  환율: {
+    '원/달러': IIndexEntry[] | null;
+    '엔/달러': IIndexEntry[] | null;
   };
-  "원자재": {
-    "WTI": IIndexEntry[] | null;
-    "금": IIndexEntry[] | null;
+  원자재: {
+    WTI: IIndexEntry[] | null;
+    금: IIndexEntry[] | null;
   };
 }
 
@@ -96,16 +96,11 @@ export interface IScheduledHistoryState {
   fetchScheduledHistoryData: () => Promise<void>;
 }
 
-// type of Favorite
-export interface IFavoriteData {
-  name: string;
-  currentValue: number;
-  prevValue: number;
-}
-
 export interface IFavoriteState {
-  favoriteData: IFavoriteData[] | null;
+  favoriteData: string[] | null;
   fetchFavoriteData: () => Promise<void>;
+  postFavoriteData: (stockCode: string) => Promise<void>;
+  deleteFavoriteData: (stockCode: string) => Promise<void>;
 }
 
 // type of Past Stock
@@ -155,58 +150,58 @@ export interface IIndicatorData {
 }
 
 export interface IOrderBookData {
-  ASKP1: string;  // 매도호가 1
-  ASKP2: string;  // 매도호가 2
-  ASKP3: string;  // 매도호가 3
-  ASKP4: string;  // 매도호가 4
-  ASKP5: string;  // 매도호가 5
-  ASKP6: string;  // 매도호가 6
-  ASKP7: string;  // 매도호가 7
-  ASKP8: string;  // 매도호가 8
-  ASKP9: string;  // 매도호가 9
-  ASKP10: string;  // 매도호가 10
-  BIDP1: string;  // 매수호가 1
-  BIDP2: string;  // 매수호가 2
-  BIDP3: string;  // 매수호가 3
-  BIDP4: string;  // 매수호가 4
-  BIDP5: string;  // 매수호가 5
-  BIDP6: string;  // 매수호가 6
-  BIDP7: string;  // 매수호가 7
-  BIDP8: string;  // 매수호가 8
-  BIDP9: string;  // 매수호가 9
-  BIDP10: string;  // 매수호가 10
-  ASKP_RSQN1: string;  // 매도호가 잔량 1
-  ASKP_RSQN2: string;  // 매도호가 잔량 2
-  ASKP_RSQN3: string;  // 매도호가 잔량 3
-  ASKP_RSQN4: string;  // 매도호가 잔량 4
-  ASKP_RSQN5: string;  // 매도호가 잔량 5
-  ASKP_RSQN6: string;  // 매도호가 잔량 6
-  ASKP_RSQN7: string;  // 매도호가 잔량 7
-  ASKP_RSQN8: string;  // 매도호가 잔량 8
-  ASKP_RSQN9: string;  // 매도호가 잔량 9
-  ASKP_RSQN10: string;  // 매도호가 잔량 10
-  BIDP_RSQN1: string;  // 매수호가 잔량 1
-  BIDP_RSQN2: string;  // 매수호가 잔량 2
-  BIDP_RSQN3: string;  // 매수호가 잔량 3
-  BIDP_RSQN4: string;  // 매수호가 잔량 4
-  BIDP_RSQN5: string;  // 매수호가 잔량 5
-  BIDP_RSQN6: string;  // 매수호가 잔량 6
-  BIDP_RSQN7: string;  // 매수호가 잔량 7
-  BIDP_RSQN8: string;  // 매수호가 잔량 8
-  BIDP_RSQN9: string;  // 매수호가 잔량 9
-  BIDP_RSQN10: string;  // 매수호가 잔량 10
-  TOTAL_ASKP_RSQN: string;  // 총 매도호가 잔량
-  TOTAL_BIDP_RSQN: string;  // 총 매수호가 잔량
+  ASKP1: string; // 매도호가 1
+  ASKP2: string; // 매도호가 2
+  ASKP3: string; // 매도호가 3
+  ASKP4: string; // 매도호가 4
+  ASKP5: string; // 매도호가 5
+  ASKP6: string; // 매도호가 6
+  ASKP7: string; // 매도호가 7
+  ASKP8: string; // 매도호가 8
+  ASKP9: string; // 매도호가 9
+  ASKP10: string; // 매도호가 10
+  BIDP1: string; // 매수호가 1
+  BIDP2: string; // 매수호가 2
+  BIDP3: string; // 매수호가 3
+  BIDP4: string; // 매수호가 4
+  BIDP5: string; // 매수호가 5
+  BIDP6: string; // 매수호가 6
+  BIDP7: string; // 매수호가 7
+  BIDP8: string; // 매수호가 8
+  BIDP9: string; // 매수호가 9
+  BIDP10: string; // 매수호가 10
+  ASKP_RSQN1: string; // 매도호가 잔량 1
+  ASKP_RSQN2: string; // 매도호가 잔량 2
+  ASKP_RSQN3: string; // 매도호가 잔량 3
+  ASKP_RSQN4: string; // 매도호가 잔량 4
+  ASKP_RSQN5: string; // 매도호가 잔량 5
+  ASKP_RSQN6: string; // 매도호가 잔량 6
+  ASKP_RSQN7: string; // 매도호가 잔량 7
+  ASKP_RSQN8: string; // 매도호가 잔량 8
+  ASKP_RSQN9: string; // 매도호가 잔량 9
+  ASKP_RSQN10: string; // 매도호가 잔량 10
+  BIDP_RSQN1: string; // 매수호가 잔량 1
+  BIDP_RSQN2: string; // 매수호가 잔량 2
+  BIDP_RSQN3: string; // 매수호가 잔량 3
+  BIDP_RSQN4: string; // 매수호가 잔량 4
+  BIDP_RSQN5: string; // 매수호가 잔량 5
+  BIDP_RSQN6: string; // 매수호가 잔량 6
+  BIDP_RSQN7: string; // 매수호가 잔량 7
+  BIDP_RSQN8: string; // 매수호가 잔량 8
+  BIDP_RSQN9: string; // 매수호가 잔량 9
+  BIDP_RSQN10: string; // 매수호가 잔량 10
+  TOTAL_ASKP_RSQN: string; // 총 매도호가 잔량
+  TOTAL_BIDP_RSQN: string; // 총 매수호가 잔량
   [key: string]: string; // 추가하여 동적 키에 대한 타입 허용
 }
 
 export interface ITradingData {
-  STCK_CNTG_HOUR: string;  // 주식 체결 시간
-  STCK_PRPR: string;  // 주식 현재가
-  CNTG_VOL: string;  // 체결 거래량
-  ACML_VOL: string;  // 누적 거래량
-  CTTR: string;  // 체결강도
-  CCLD_DVSN: string;  // 체결구분
+  STCK_CNTG_HOUR: string; // 주식 체결 시간
+  STCK_PRPR: string; // 주식 현재가
+  CNTG_VOL: string; // 체결 거래량
+  ACML_VOL: string; // 누적 거래량
+  CTTR: string; // 체결강도
+  CCLD_DVSN: string; // 체결구분
 }
 
 export interface ISocketStore {
