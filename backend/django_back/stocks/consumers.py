@@ -126,7 +126,6 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             # JSON 메시지로 간주하고 처리
             try:
                 recv_dic = json.loads(message)
-                print(recv_dic)
                 tr_id = recv_dic['header']['tr_id']
 
                 if tr_id == 'PINGPONG':
@@ -230,4 +229,8 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
     async def request_to_kis(self, tr_type, tr_id, stock_code):
         payload = self.get_payload(tr_type, tr_id, stock_code)
         await KISWebSocketConsumer.kis_socket.send(json.dumps(payload))
-        await self.send(json.dumps({"message": f"{stock_code} {tr_id} Tracking started"}))
+        if tr_type == "2":
+            await self.send(json.dumps({"message": f"{stock_code} {tr_id} Tracking finished"}))
+        else:
+            await self.send(json.dumps({"message": f"{stock_code} {tr_id} Tracking started"}))
+            
