@@ -431,9 +431,9 @@ def orders(request):
     if request.method == 'GET':
         user = request.user
         incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).order_by('-execution_date', '-execution_time')
-        for data in incomplete_data:
-            execution_date = data.execution_date.strftime("%Y%m%d")
-            order_number = data.order_number
+        for stock_data in incomplete_data:
+            execution_date = stock_data.execution_date.strftime("%Y%m%d")
+            order_number = stock_data.order_number
             url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/inquire-daily-ccld"
             headers = get_paper_headers("VTTC8001R")
             params = {
@@ -453,20 +453,20 @@ def orders(request):
                 "CTX_AREA_NK100": ""
             }
             response = requests.request("GET", url, headers=headers, params=params)
-            amount = int(data.amount)
+            amount = int(stock_data.amount)
             sign = amount // abs(amount)
             if response.status_code == 200:    
                 response_data = response.json()
                 output = response_data['output1'][0]
-                data.remain_amount = output.get('rmn_qty')
-                data.price = int(output.get('tot_ccld_amt')) * sign
-                data.save()
+                stock_data.remain_amount = output.get('rmn_qty')
+                stock_data.price = int(output.get('tot_ccld_amt')) * sign
+                stock_data.save()
             else:
                 print(response.json())
                 return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
             time.sleep(0.5)
-        stock_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
-        serializer = StockDataSerializer(instance=stock_data, many=True)
+        all_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
+        serializer = StockDataSerializer(instance=all_data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
             
     if request.method == 'POST':
@@ -512,14 +512,15 @@ def orders(request):
                     amount *= -1
                 serializer = StockDataSaveSerializer(data={
                     "user": user.id,
-                    "stock_code": stock_code,
-                    "amount": amount, 
-                    "price": int(price) * amount, 
                     "order_number": order_number, 
+                    "stock_code": stock_code,
                     "execution_date": execution_date, 
                     "execution_time": execution_time, 
+                    "amount": amount, 
                     "remain_amount": amount, 
-                    "order_type": payload['ORD_DVSN']
+                    "price": price, 
+                    "target_price": target_price, 
+                    "order_type": payload['ORD_DVSN'] if target_price == "0" else "03"
                     }
                 )
                 if serializer.is_valid():
@@ -561,6 +562,7 @@ def orders(request):
         
         if response.status_code == 200:
             response_data = response.json()
+            print(response_data)
             if response_data.get('rt_cd') == "0": # 성공
                 output = response_data.get('output')
                 execution_date = datetime.now().strftime("%Y%m%d")
