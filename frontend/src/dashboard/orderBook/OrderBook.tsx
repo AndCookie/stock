@@ -116,7 +116,7 @@ const OrderBook: React.FC = () => {
                         {Number(renderedTradingData[i].STCK_PRPR).toLocaleString()}
                       </span>
                       <span style={{
-                        color: renderedTradingData[i].CCLD_DVSN === "1" ? '#FF4F4F' : renderedTradingData[i].CCLD_DVSN === "5" ? '#4881FF' : '#26d4a5',
+                        color: renderedTradingData[i].CCLD_DVSN === 1 ? '#FF4F4F' : renderedTradingData[i].CCLD_DVSN === 5 ? '#4881FF' : '#26d4a5',
                       }}>
                         {Number(renderedTradingData[i].CNTG_VOL).toLocaleString()}
                       </span>

@@ -196,12 +196,12 @@ export interface IOrderBookData {
 }
 
 export interface ITradingData {
-  STCK_CNTG_HOUR: string; // 주식 체결 시간
-  STCK_PRPR: string; // 주식 현재가
-  CNTG_VOL: string; // 체결 거래량
-  ACML_VOL: string; // 누적 거래량
-  CTTR: string; // 체결강도
-  CCLD_DVSN: string; // 체결구분
+  STCK_CNTG_HOUR: number; // 주식 체결 시간
+  STCK_PRPR: number; // 주식 현재가
+  CNTG_VOL: number; // 체결 거래량
+  ACML_VOL: number; // 누적 거래량
+  CTTR: number; // 체결강도
+  CCLD_DVSN: number; // 체결구분
 }
 
 export interface ISocketStore {
