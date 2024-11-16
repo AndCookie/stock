@@ -56,18 +56,17 @@ def gold(request):
     return Response(indicators('gold'), status=status.HTTP_200_OK)
 
 def indicators(indicator):
-    # 캐시 안쓰면 3.5초 걸림
-    # 캐리 쓰면 15ms로, 200배 차이남
-    # 물론 DB 쓰는거랑 얼마나 차이나는지 확인해봐야함...
     cache_key = f"indicator_day_data:{indicator}"
     
-    # 어제부터 3년 전까지의 날짜 범위 설정
     end_date = date.today()
     start_date = end_date - timedelta(days=3*365)  # 약 3년 전
 
     # Redis에서 기존 데이터를 가져오기
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
+    end_date_str = end_date.strftime("%Y%m%d")
+    if end_date_str in existing_dates:
+        existing_dates.remove(end_date_str)
     
     current_date = end_date  # 이대로 한번의 요청은 가나?확인 필요
     while current_date >= start_date:
@@ -92,19 +91,16 @@ def indicators(indicator):
 
         # 이전 날짜로 이동
         current_date -= timedelta(days=1)
-        time.sleep(0.2)
+        time.sleep(0.3)
 
-    # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    all_data = [json.loads(item) for item in indicator_data]
 
-    return all_data
+    return [json.loads(item) for item in indicator_data]
 
 def fetch_and_save_korea_indicator_day_data(date_str, indicator):
     print(f'{indicator}의 {date_str}의 데이터 가져옴')
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice"
     
-    # 쿼리 파라미터 설정
     params = {
         "fid_cond_mrkt_div_code": "U",    # 시장 구분 코드
         "fid_input_iscd": "",         # 지수 코드
@@ -128,14 +124,14 @@ def fetch_and_save_korea_indicator_day_data(date_str, indicator):
         response_data = response.json()
         cache_key = f"indicator_day_data:{indicator}"
         
-        pipe = redis_client.pipeline()  # 파이프라인 사용으로 일괄 저장
+        pipe = redis_client.pipeline()
 
         for daily_data in response_data['output2']:
             timestamp = datetime.strptime(daily_data['stck_bsop_date'], "%Y%m%d").timestamp()
             pipe.zadd(cache_key, {json.dumps(daily_data): timestamp})
 
-        pipe.execute()  # Redis에 일괄 저장
-        return response_data['output2']  # 일별 데이터 반환
+        pipe.execute()
+        return response_data['output2']
     else:
         print(f"Failed to fetch data for {indicator.upper()} on {date_str}: {response.status_code}")
         return None
@@ -144,7 +140,6 @@ def fetch_and_save_overseas_indicator_day_data(start_date_str, end_date_str, ind
     print(f'{indicator}의 {start_date_str}의 데이터 가져옴')
     url = f"{REAL_KIS_API_BASE_URL}/uapi/overseas-price/v1/quotations/inquire-daily-chartprice"
     
-    # 쿼리 파라미터 설정
     params = {
         "fid_cond_mrkt_div_code": "N",    # 시장 구분 코드
         "fid_input_iscd": "",         # 지수 코드
@@ -180,14 +175,14 @@ def fetch_and_save_overseas_indicator_day_data(start_date_str, end_date_str, ind
         response_data = response.json()
         cache_key = f"indicator_day_data:{indicator}"
         
-        pipe = redis_client.pipeline()  # 파이프라인 사용으로 일괄 저장
+        pipe = redis_client.pipeline()
 
         for daily_data in response_data['output2']:
             timestamp = datetime.strptime(daily_data['stck_bsop_date'], "%Y%m%d").timestamp()
             pipe.zadd(cache_key, {json.dumps(daily_data): timestamp})
 
-        pipe.execute()  # Redis에 일괄 저장
-        return response_data['output2']  # 일별 데이터 반환
+        pipe.execute()
+        return response_data['output2']
     else:
         print(f"Failed to fetch data for {indicator.upper()} on {start_date_str}: {response.status_code}")
         return None
@@ -202,14 +197,12 @@ def minute_price(request):
     end_time = datetime.now()
     start_time = datetime.combine(date.today(), datetime.strptime("090000", "%H%M%S").time())
     
-    # Redis 키 설정
     cache_key = f"stock_min_data:{stock_code}"
     today_str = date.today().strftime("%Y%m%d")
 
-    # Redis에서 모든 기존 데이터를 한 번에 가져오기
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = []
-    existing_times = set()  # 이미 존재하는 stck_cntg_hour 값을 저장할 set
+    existing_times = set()
 
     # 오늘 날짜 데이터 필터링 및 Redis에서 오래된 데이터 삭제
     for value in indicator_data:
@@ -225,14 +218,11 @@ def minute_price(request):
     while current_time >= start_time:
         time_str = current_time.strftime("%H%M") + "00"
         
-        # 이미 Redis에 해당 시간이 존재하면 건너뜀
-        if time_str not in existing_times:
-            # 누락된 데이터 요청 및 Redis에 저장
+        if time_str not in existing_times or current_time == end_time:  # 적어도 한번은 실행하도록
             fetch_and_save_stock_minute_data(stock_code, time_str)
         
         current_time -= timedelta(minutes=30)
 
-    # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
 
@@ -241,7 +231,6 @@ def minute_price(request):
 def fetch_and_save_stock_minute_data(stock_code, time_str):
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice"
 
-    # 요청 파라미터 설정
     params = {
         "FID_ETC_CLS_CODE": "", 
         "FID_COND_MRKT_DIV_CODE": "J",  # 시장 구분 코드
@@ -256,13 +245,12 @@ def fetch_and_save_stock_minute_data(stock_code, time_str):
         response = response.json()
         cache_key = f"stock_min_data:{stock_code}"
 
-        # Redis에 데이터 저장
         pipe = redis_client.pipeline()
         for minute_data in response['output2']:
             pipe.zadd(cache_key, {json.dumps(minute_data): minute_data['stck_cntg_hour']})
         pipe.execute()
 
-        return response['output2']  # 새로 가져온 데이터를 반환
+        return response['output2']
     else:
         print(response.json())
         print(f"Failed to fetch minute data for {stock_code} at {time_str}: {response.status_code}")
@@ -278,7 +266,7 @@ def stock_price(request):
     end_date = date.today()
     start_date = end_date - timedelta(days=100*365)  # 약 100년 전
     start_date_str = start_date.strftime("%Y%m%d")
-    # Redis에서 기존 데이터를 가져오기
+
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
     
@@ -286,8 +274,8 @@ def stock_price(request):
     current_date = end_date  # 당일 일봉 
     while current_date >= start_date:
         end_date_str = current_date.strftime("%Y%m%d")
-        # 누락된 날짜에 대해 데이터 요청 및 저장
-        if end_date_str not in existing_dates:
+        
+        if end_date_str not in existing_dates or current_date == end_date:
             response_data = fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_code)
             if response_data:
                 last_date = response_data[-1]["stck_bsop_date"]
@@ -298,11 +286,9 @@ def stock_price(request):
         else:
             break
 
-        # 이전 날짜로 이동
         current_date -= timedelta(days=1)
         time.sleep(0.2)
 
-    # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
 
@@ -312,7 +298,6 @@ def fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_c
     print(f'{stock_code}의 {end_date_str}의 데이터 가져옴')
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
     
-    # 쿼리 파라미터 설정
     params = {
         "fid_cond_mrkt_div_code": "J",    # 시장 구분 코드
         "fid_input_iscd": stock_code,         # 종목 코드
@@ -329,14 +314,14 @@ def fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_c
         response_data = response.json()
         cache_key = f"stock_{period_code}_data:{stock_code}"
         
-        pipe = redis_client.pipeline()  # 파이프라인 사용으로 일괄 저장
+        pipe = redis_client.pipeline()
         for daily_data in response_data['output2']:
             if not daily_data.get("stck_bsop_date"):
                 break
             timestamp = datetime.strptime(daily_data['stck_bsop_date'], "%Y%m%d").timestamp()
             pipe.zadd(cache_key, {json.dumps(daily_data): timestamp})
 
-        pipe.execute()  # Redis에 일괄 저장
+        pipe.execute()
         while response_data['output2'] and "stck_bsop_date" not in response_data['output2'][-1]:
             response_data['output2'].pop()
         return response_data['output2']  # 일별 데이터 반환
@@ -601,51 +586,37 @@ def holdings(request):
         )
         .filter(total_amount__gt=0)  # 보유 수량이 0 이상인 종목만 반환
     )
+    
+    if not holdings:
+        return Response([], status=status.HTTP_200_OK)
 
-    stock_codes = [holding["stock_code"] for holding in holdings]
-
-    current_prices = asyncio.run(fetch_current_prices(stock_codes))
+    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
+    headers = get_real_headers('FHKST11300006', "P")
+    params = {}
+    for index, holding in enumerate(holdings):
+        params[f"fid_cond_mrkt_div_code_{index+1}"] = "J"
+        params[f"fid_input_iscd_{index+1}"] = holding["stock_code"]
+    response =  requests.get(url, headers=headers, params=params)
 
     response_data = [
         {
             "stock_code": holding["stock_code"],
             "total_amount": holding["total_amount"],
             "average_price": holding["average_price"],
-            "current_price": current_prices.get(holding["stock_code"]),
         }
         for holding in holdings
     ]
+    
+    if response.status_code == 200:
+        outputs = response.json()['output']
+        for index, output in enumerate(outputs):
+            response_data[index]['stock_name'] = output.get("inter_kor_isnm")
+            response_data[index]['current_price'] = output.get("inter2_prpr")
+    else:
+        print(response.json())
+        return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
 
     return Response(response_data, status=status.HTTP_200_OK)
-
-# Fetch 주식 현재가 비동기 요청
-async def fetch_current_prices(stock_codes):
-    semaphore = asyncio.Semaphore(10)  # 최대 동시 요청 제한
-    async with httpx.AsyncClient() as client:
-        tasks = [get_stock_price(client, stock_code, semaphore) for stock_code in stock_codes]
-        responses = await asyncio.gather(*tasks)
-        return {stock_code: price for stock_code, price in responses if price is not None}
-
-async def get_stock_price(client, stock_code, semaphore):
-    async with semaphore:  # 세마포어로 요청 동시성 제어
-        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-price"
-        headers = get_paper_headers('FHKST01010100')
-        params = {
-            "FID_COND_MRKT_DIV_CODE": "J",
-            "FID_INPUT_ISCD": stock_code,
-        }
-
-        try:
-            response = await client.get(url, headers=headers, params=params)
-            if response.status_code == 200:
-                data = response.json()
-                price = data.get('output', {}).get('stck_prpr')  # 현재가
-                return stock_code, price
-            else:
-                print(f"Failed to fetch price for {stock_code}: {response.status_code}")
-        except Exception as e:
-            print(f"Error fetching price for {stock_code}: {e}")
-        return stock_code, None
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -725,6 +696,39 @@ def information(request):
 @api_view(['GET'])
 def disclosure(request):
     stock_code = request.GET.get('stock_code')
+    
+    cache_key = f"stock_news:{stock_code}"
+    end_date = date.today()
+    start_date = end_date - timedelta(days=90)
+
+    # Redis에서 기존 데이터를 가져오기
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    existing_dates = {json.loads(item)["data_dt"] for item in indicator_data}
+    
+    # current_date = end_date - timedelta(days=1)
+    current_date = end_date  # 당일 일봉
+    while current_date >= start_date:
+        current_date_str = current_date.strftime("%Y%m%d")
+        # 누락된 날짜에 대해 데이터 요청 및 저장
+        if current_date == end_date:  # 오늘 데이터는 무조건 가져오게
+            fetch_and_save_stock_news(current_date_str, stock_code)
+        elif current_date_str not in existing_dates:
+            fetch_and_save_stock_news(current_date_str, stock_code)
+        else:
+            break
+
+        current_date -= timedelta(days=1)
+        time.sleep(0.3)
+
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    all_data = [json.loads(item) for item in indicator_data]
+    
+    return Response(all_data, status=status.HTTP_200_OK)
+
+def fetch_and_save_stock_news(date_str, stock_code):
+    print(f'{stock_code}의 {date_str}의 뉴스 가져옴')
+    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
+    
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/news-title"
     headers = get_real_headers('FHKST01011800', "P")
     params = {
@@ -732,25 +736,30 @@ def disclosure(request):
         "FID_COND_MRKT_CLS_CODE": "", 
         "FID_INPUT_ISCD": stock_code,
         "FID_TITL_CNTT": "", 
-        "FID_INPUT_DATE_1": "", 
+        "FID_INPUT_DATE_1": date_str,
         "FID_INPUT_HOUR_1": "", 
         "FID_RANK_SORT_CLS_CODE": "", 
         "FID_INPUT_SRNO": "", 
     }
-    response =  requests.get(url, headers=headers, params=params)
+    response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
-        outputs = response.json()['output']
-        data = []
-        for output in outputs:
-            data.append({
-                "hts_pbnt_titl_cntt": output.get('hts_pbnt_titl_cntt'), 
-                "dorg": output.get('dorg'), 
-                "data_dt": output.get('data_dt'), 
-            })
-        return Response(data, status=status.HTTP_200_OK)
+        response_data = response.json()
+        cache_key = f"stock_news:{stock_code}"
+        
+        pipe = redis_client.pipeline()
+        for daily_data in response_data['output']:
+            timestamp = datetime.strptime(daily_data['data_dt'] + daily_data['data_tm'], "%Y%m%d%H%M%S").timestamp()
+            data = {
+                "hts_pbnt_titl_cntt": daily_data.get('hts_pbnt_titl_cntt'), 
+                "dorg": daily_data.get('dorg'), 
+                "data_dt": daily_data.get('data_dt'), 
+            }
+            pipe.zadd(cache_key, {json.dumps(data): timestamp})
+
+        pipe.execute()
     else:
-        print(response.json())
-        return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+        print(f"Failed to fetch news for {stock_code} on {stock_code}: {response.status_code}")
+    return None
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):

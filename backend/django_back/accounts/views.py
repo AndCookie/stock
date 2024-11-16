@@ -18,7 +18,7 @@ def favorite_stock(request):
     if request.method == 'GET':
         user = request.user
         favorite_stocks = FavoriteStock.objects.filter(user=user)
-        print(favorite_stocks)
+
         url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
         headers = get_real_headers('FHKST11300006', "P")
         params = {}
@@ -30,7 +30,7 @@ def favorite_stock(request):
         data = []
         if response.status_code == 200:
             outputs = response.json()['output']
-            for index, output in enumerate(outputs):
+            for output in outputs:
                 data.append({
                     'stock_code': output.get("inter_shrn_iscd"), 
                     'stock_name': output.get("inter_kor_isnm"),
