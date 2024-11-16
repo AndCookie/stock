@@ -60,7 +60,7 @@ const StandardHistory = () => {
 
   useEffect(() => {
     if (standardHistoryData) {
-      console.log("무야호", standardHistoryData)
+      console.log("### standardHistoryData: ", standardHistoryData)
       if (filter === "ALL") {
         setFilteredHistoryData(standardHistoryData);
       } else {

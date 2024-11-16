@@ -220,3 +220,11 @@ export interface ISocketStore {
   setOrderBookData: (data: IOrderBookData) => void;
   setTradingData: (data: ITradingData) => void;
 }
+
+import { Layout } from 'react-grid-layout';
+
+export interface IWidgetPositionState {
+  widgetPosition: Layout[];
+  fetchWidgetPosition: () => Promise<void>;
+  postWidgetPosition: (layout: Layout[]) => Promise<void>;
+}

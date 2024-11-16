@@ -9,7 +9,7 @@ export const useBalanceStore = create<IBalanceState>((set) => ({
 
   fetchBalanceData: async () => {
     try {
-      const response = await axios.get(baseURL + "account/balance");
+      const response = await axios.get(baseURL + "accounts/balance");
       set(() => ({
         balanceData: response.data,
       }));

@@ -581,3 +581,16 @@ mock.onPost(BASEURL + "stocks/order/").reply(config => {
   const orderData = JSON.parse(config.data);
   return [200, { message: "Order placed successfully", orderData }]
 })
+
+// dashboard 위젯
+mock.onGet(BASEURL + "accounts/position/").reply(200, {
+  "layout": [
+    { "widget": "chartWidget", "x": 0, "y": 2, "w": 6, "h": 8 },
+    { "widget": "infoWidget", "x": 0, "y": 10, "w": 3, "h": 6 },
+    { "widget": "orderBookWidget", "x": 6, "y": 0, "w": 3, "h": 16 },
+    { "widget": "symbolWidget", "x": 0, "y": 0, "w": 6, "h": 2 },
+    { "widget": "tradingWidget", "x": 9, "y": 5, "w": 3, "h": 11 },
+    { "widget": "tradingTrendWidget", "x": 3, "y": 10, "w": 3, "h": 6 },
+    { "widget": "tradingVolumeWidget", "x": 9, "y": 0, "w": 3, "h": 5 }
+  ]
+})
