@@ -63,7 +63,15 @@ def position(request):
     if request.method == "GET":
         positions = Position.objects.filter(user=user)
         serializer = PositionSerializer(positions, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = serializer.data
+        
+        for d in serializer.data:
+            d['w'] = d['width']
+            d['h'] = d['height']
+            del d['width']
+            del d['height']
+        
+        return Response({'layout': data}, status=status.HTTP_200_OK)
     if request.method == "POST":
         if Position.objects.filter(user=user).exists():
             positions = Position.objects.filter(user=user)
