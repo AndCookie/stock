@@ -15,7 +15,8 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
-  const name = stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : "";
+  const name =
+    stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
   const { industry, companyDetail, favorite } = {
     industry: 'IT',
     companyDetail: '반도체와반도체장비',
@@ -44,27 +45,32 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)
     );
     setRenderedChangeRate(
-      ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)) / Number(yesterdayStockData)) * 100
+      ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) -
+        Number(yesterdayStockData)) /
+        Number(yesterdayStockData)) *
+        100
     );
   }, [minuteStockData, yesterdayStockData]);
 
   // 여기부터 코드 다시 입력
   useEffect(() => {
-    fetchFavoriteData();
-    // 이 현재 종목 코드를 어디서 가져오ㄴ가 문제다 !!
-    if (favoriteData && '현재 종목 코드' in favoriteData) {
-      setIsFavorite(true);
+    if (favoriteData && Array.isArray(favoriteData)) {
+      const isFavoriteStock = favoriteData.some((item) => item.stock_code === stockCode);
+      setIsFavorite(isFavoriteStock);
     } else {
       setIsFavorite(false);
     }
-  }, [tradingData]);
+  }, [favoriteData, stockCode]);
 
   useEffect(() => {
     if (!tradingData) return;
 
     setRenderedValue(Number(tradingData.STCK_PRPR));
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
-    setRenderedChangeRate(((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) * 100);
+    setRenderedChangeRate(
+      ((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) *
+        100
+    );
   }, [tradingData]);
 
   // TODO: 비즈니스 로직이니 분리하세요
