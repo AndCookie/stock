@@ -96,8 +96,16 @@ export interface IScheduledHistoryState {
   fetchScheduledHistoryData: () => Promise<void>;
 }
 
+interface IFavoriteData {
+  stock_code: string;
+  stock_name: string;
+  stock_price: string;
+  fluctuation_rate: string;
+  fluctuation_difference: string;
+}
+
 export interface IFavoriteState {
-  favoriteData: string[] | null;
+  favoriteData: IFavoriteData[] | null;
   getLoginToken: () => string;
   fetchFavoriteData: () => Promise<void>;
   postFavoriteData: (stockCode: string) => Promise<void>;
