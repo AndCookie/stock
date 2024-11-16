@@ -6,5 +6,6 @@ urlpatterns = [
     path('signup/',include('dj_rest_auth.registration.urls')),
     path('social/',include('allauth.socialaccount.urls')),
     path('favorite-stock/', views.favorite_stock),    
-    path('balance/', views.balance),    
+    path('balance/', views.balance),
+    path('position/', views.position), 
 ]

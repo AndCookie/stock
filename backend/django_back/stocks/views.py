@@ -92,13 +92,11 @@ def indicators(indicator):
 
         # 이전 날짜로 이동
         current_date -= timedelta(days=1)
+        time.sleep(0.2)
 
     # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
-
-    # 'stck_bsop_date' 기준으로 오름차순 정렬 후 반환
-    all_data.sort(key=lambda x: x["stck_bsop_date"])
 
     return all_data
 
@@ -237,7 +235,6 @@ def minute_price(request):
     # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
-    all_data.sort(key=lambda x: x["stck_cntg_hour"])
 
     return Response(all_data, status=status.HTTP_200_OK)
 
@@ -292,7 +289,7 @@ def stock_price(request):
         # 누락된 날짜에 대해 데이터 요청 및 저장
         if end_date_str not in existing_dates:
             response_data = fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_code)
-            if len(response_data):
+            if response_data:
                 last_date = response_data[-1]["stck_bsop_date"]
                 # 마지막 날짜 기준으로 업데이트 및 존재 확인
                 current_date = datetime.strptime(last_date, "%Y%m%d").date()
@@ -303,14 +300,11 @@ def stock_price(request):
 
         # 이전 날짜로 이동
         current_date -= timedelta(days=1)
-        time.sleep(0.1)
+        time.sleep(0.2)
 
     # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
-
-    # 'stck_bsop_date' 기준으로 오름차순 정렬 후 반환
-    all_data.sort(key=lambda x: x["stck_bsop_date"])
 
     return Response(all_data, status=status.HTTP_200_OK)
 
@@ -431,9 +425,9 @@ def orders(request):
     if request.method == 'GET':
         user = request.user
         incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).order_by('-execution_date', '-execution_time')
-        for data in incomplete_data:
-            execution_date = data.execution_date.strftime("%Y%m%d")
-            order_number = data.order_number
+        for stock_data in incomplete_data:
+            execution_date = stock_data.execution_date.strftime("%Y%m%d")
+            order_number = stock_data.order_number
             url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/inquire-daily-ccld"
             headers = get_paper_headers("VTTC8001R")
             params = {
@@ -453,20 +447,20 @@ def orders(request):
                 "CTX_AREA_NK100": ""
             }
             response = requests.request("GET", url, headers=headers, params=params)
-            amount = int(data.amount)
+            amount = int(stock_data.amount)
             sign = amount // abs(amount)
             if response.status_code == 200:    
                 response_data = response.json()
                 output = response_data['output1'][0]
-                data.remain_amount = output.get('rmn_qty')
-                data.price = int(output.get('tot_ccld_amt')) * sign
-                data.save()
+                stock_data.remain_amount = output.get('rmn_qty')
+                stock_data.price = int(output.get('tot_ccld_amt')) * sign
+                stock_data.save()
             else:
                 print(response.json())
                 return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
             time.sleep(0.5)
-        stock_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
-        serializer = StockDataSerializer(instance=stock_data, many=True)
+        all_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
+        serializer = StockDataSerializer(instance=all_data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
             
     if request.method == 'POST':
@@ -512,14 +506,15 @@ def orders(request):
                     amount *= -1
                 serializer = StockDataSaveSerializer(data={
                     "user": user.id,
-                    "stock_code": stock_code,
-                    "amount": amount, 
-                    "price": int(price) * amount, 
                     "order_number": order_number, 
+                    "stock_code": stock_code,
                     "execution_date": execution_date, 
                     "execution_time": execution_time, 
+                    "amount": amount, 
                     "remain_amount": amount, 
-                    "order_type": payload['ORD_DVSN']
+                    "price": price, 
+                    "target_price": target_price, 
+                    "order_type": payload['ORD_DVSN'] if target_price == "0" else "03"
                     }
                 )
                 if serializer.is_valid():
@@ -561,6 +556,7 @@ def orders(request):
         
         if response.status_code == 200:
             response_data = response.json()
+            print(response_data)
             if response_data.get('rt_cd') == "0": # 성공
                 output = response_data.get('output')
                 execution_date = datetime.now().strftime("%Y%m%d")
@@ -652,6 +648,7 @@ async def get_stock_price(client, stock_code, semaphore):
         return stock_code, None
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def all_time_rankings(request):
     top_users = User.objects.order_by('-balance')[:3]
     response_data = [
@@ -665,18 +662,65 @@ def all_time_rankings(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def all_time_rankings(request):
-    top_users = User.objects.order_by('-balance')[:3]
-    response_data = [
-            {
-                "username": user.username,
-                "return_rate": round(user.balance / 5000000, 2)
+def trend(request):
+    data_type = request.GET.get('data_type')
+    stock_code = request.GET.get('stock_code')
+    if data_type == 'trader':
+        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-member"
+        headers = get_paper_headers('FHKST01010600')
+        params = {
+            "fid_cond_mrkt_div_code": "J",
+            "fid_input_iscd": stock_code,
+        }
+        response =  requests.get(url, headers=headers, params=params)
+        if response.status_code == 200:
+            return Response(response.json()['output'], status=status.HTTP_200_OK)
+        else:
+            print(response.json())
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+    elif data_type == 'investor':
+        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-investor"
+        headers = get_paper_headers('FHKST01010900')
+        params = {
+            "fid_cond_mrkt_div_code": "J",
+            "fid_input_iscd": stock_code,
+        }
+        response =  requests.get(url, headers=headers, params=params)
+        if response.status_code == 200:
+            output = response.json()['output'][0]
+            data = {
+                "prsn_ntby_qty": output.get("prsn_ntby_qty"), 
+                "frgn_ntby_qty": output.get("frgn_ntby_qty"), 
+                "orgn_ntby_qty": output.get("orgn_ntby_qty"), 
+                "prsn_ntby_tr_pbmn": output.get("prsn_ntby_tr_pbmn"), 
+                "frgn_ntby_tr_pbmn": output.get("frgn_ntby_tr_pbmn"), 
+                "orgn_ntby_tr_pbmn": output.get("orgn_ntby_tr_pbmn"), 
             }
-            for user in top_users
-        ]
-    
-    return Response(response_data, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            print(response.json())
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+
+@api_view(['GET'])
+def information(request):
+    stock_code = request.GET.get('stock_code')
+    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/search-stock-info"
+    headers = get_real_headers('CTPF1002R', "P")
+    params = {
+        "PRDT_TYPE_CD": "300",
+        "PDNO": stock_code,
+    }
+    response =  requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        output = response.json()['output']
+        data = {
+            "std_idst_clsf_cd_name": output.get("std_idst_clsf_cd_name"), 
+            "idx_bztp_scls_cd_name": output.get("idx_bztp_scls_cd_name"), 
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    else:
+        print(response.json())
+        return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):

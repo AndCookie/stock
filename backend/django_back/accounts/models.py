@@ -23,3 +23,12 @@ class FavoriteStock(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.stock_code}"
+    
+    
+class Position(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    widget = models.CharField(max_length=50)
+    x = models.IntegerField()
+    y = models.IntegerField()
+    width = models.IntegerField()
+    height = models.IntegerField()

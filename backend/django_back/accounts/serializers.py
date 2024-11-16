@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, Position
 from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,3 +12,13 @@ class UserSerializer(serializers.ModelSerializer):
             password = validated_data['password']
         )
         return user
+    
+class PositionSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = '__all__'
+        
+class PositionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ['widget', 'x', 'y', 'width', 'height']
