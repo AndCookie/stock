@@ -92,13 +92,11 @@ def indicators(indicator):
 
         # 이전 날짜로 이동
         current_date -= timedelta(days=1)
+        time.sleep(0.2)
 
     # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
-
-    # 'stck_bsop_date' 기준으로 오름차순 정렬 후 반환
-    all_data.sort(key=lambda x: x["stck_bsop_date"])
 
     return all_data
 
@@ -237,7 +235,6 @@ def minute_price(request):
     # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
-    all_data.sort(key=lambda x: x["stck_cntg_hour"])
 
     return Response(all_data, status=status.HTTP_200_OK)
 
@@ -308,9 +305,6 @@ def stock_price(request):
     # Redis에 추가된 데이터를 다시 가져와 정렬
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
-
-    # 'stck_bsop_date' 기준으로 오름차순 정렬 후 반환
-    all_data.sort(key=lambda x: x["stck_bsop_date"])
 
     return Response(all_data, status=status.HTTP_200_OK)
 
