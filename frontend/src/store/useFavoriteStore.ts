@@ -16,7 +16,7 @@ export const useFavoriteStore = create<IFavoriteState>((set, get) => ({
     try {
       const response = await axios.get(`${baseURL}accounts/favorite-stock/`, {
         headers: {
-          Authorization: loginToken,
+          Authorization: `Token ${loginToken}`,
         },
       });
       set(() => ({
@@ -37,7 +37,7 @@ export const useFavoriteStore = create<IFavoriteState>((set, get) => ({
         { stock_code: stockCode },
         {
           headers: {
-            Authorization: loginToken,
+            Authorization: `Token ${loginToken}`,
           },
         }
       );
@@ -53,7 +53,7 @@ export const useFavoriteStore = create<IFavoriteState>((set, get) => ({
     try {
       const response = await axios.delete(`${baseURL}accounts/favorite-stock`, {
         headers: {
-          Authorization: loginToken,
+          Authorization: `Token ${loginToken}`,
         },
         data: {
           stock_code: stockCode,
