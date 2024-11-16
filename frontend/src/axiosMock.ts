@@ -147,7 +147,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
   { // 체결 지정가 매수
     odno: "0001569139", // 주문번호
     pdno: "009150", // 종목코드
-    prdt_name: "삼성전기", // 종목명
+    // prdt_name: "삼성전기", // 종목명
     sll_buy_dvsn_cd: "BUY", // 구매/판매
     ord_dt: "20240101", // 주문일자
     ord_tmd: "131438", // 주문시간
@@ -161,7 +161,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
   { // 체결 시장가 매수
     odno: "0001569140",
     pdno: "009150",
-    prdt_name: "삼성전기",
+    // prdt_name: "삼성전기",
     sll_buy_dvsn_cd: "BUY",
     ord_dt: "20240101",
     ord_tmd: "142042",
@@ -175,7 +175,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
   { // 체결 지정가 매도
     odno: "0001569141",
     pdno: "009150",
-    prdt_name: "삼성전기",
+    // prdt_name: "삼성전기",
     sll_buy_dvsn_cd: "SELL",
     ord_dt: "20240201",
     ord_tmd: "100128",
@@ -189,7 +189,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
   { // 체결 시장가 매도
     odno: "0001569142",
     pdno: "009150",
-    prdt_name: "삼성전기",
+    // prdt_name: "삼성전기",
     sll_buy_dvsn_cd: "SELL",
     ord_dt: "20240301",
     ord_tmd: "093850",
@@ -203,7 +203,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
   { // 취소
     odno: "0001569143",
     pdno: "009150",
-    prdt_name: "삼성전기",
+    // prdt_name: "삼성전기",
     sll_buy_dvsn_cd: "BUY",
     ord_dt: "20241010",
     ord_tmd: "130303",
@@ -217,7 +217,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
   { // 미체결
     odno: "0001569144",
     pdno: "009150",
-    prdt_name: "삼성전기",
+    // prdt_name: "삼성전기",
     sll_buy_dvsn_cd: "BUY",
     ord_dt: "20241010",
     ord_tmd: "130504",
@@ -231,7 +231,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
   { // 체결 시장가 매도
     odno: "0001569145",
     pdno: "009150",
-    prdt_name: "삼성전기",
+    // prdt_name: "삼성전기",
     sll_buy_dvsn_cd: "BUY",
     ord_dt: "20241020",
     ord_tmd: "093850",
@@ -248,7 +248,7 @@ mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
 mock.onGet(BASEURL + "stocks/history/scheduled").reply(200, [
   { // 지정가 조건주문
     pdno: "009150", // 종목코드
-    prdt_name: "삼성전기", // 종목명
+    // prdt_name: "삼성전기", // 종목명
     sll_buy_dvsn_cd: "SELL", // 구매/판매
     ord_qty: "200", // 주문수량
     ord_unpr: "120000", // 주문단가
@@ -256,7 +256,7 @@ mock.onGet(BASEURL + "stocks/history/scheduled").reply(200, [
   },
   { // 시장가 조건주문
     pdno: "009150",
-    prdt_name: "삼성전기",
+    // prdt_name: "삼성전기",
     sll_buy_dvsn_cd: "SELL",
     ord_qty: "100",
     ord_unpr: "0",

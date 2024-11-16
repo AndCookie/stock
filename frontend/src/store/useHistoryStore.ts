@@ -1,6 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 import { IScheduledHistoryState, IStandardHistoryState } from "./definitions";
+import codeToName from "../assets/codeToName.json";
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
@@ -21,6 +22,8 @@ export const useStandardHistoryStore = create<IStandardHistoryState>((set) => ({
           mode = "pending";
         }
 
+        const prdt_name = item.pdno && item.pdno in codeToName ? codeToName[item.pdno as keyof typeof codeToName] : "";
+
         return {
           ...item,
           ord_qty: Number(item.ord_qty),
@@ -29,9 +32,11 @@ export const useStandardHistoryStore = create<IStandardHistoryState>((set) => ({
           rmn_qty: Number(item.rmn_qty),
           ord_unpr: Number(item.ord_unpr),
           avg_prvs: Number(item.avg_prvs),
-          mode, // 새로운 mode 필드 추가
+          prdt_name, // 종목명 필드 추가
+          mode, // mode 필드 추가
         };
       });
+
       set(() => ({
         standardHistoryData: formattedData,
       }));
@@ -46,8 +51,20 @@ export const useScheduledHistoryStore = create<IScheduledHistoryState>((set) => 
   fetchScheduledHistoryData: async () => {
     try {
       const response = await axios.get(baseURL + "stocks/history/scheduled");
+      const formattedData = response.data.map((item: any) => {
+        const prdt_name = item.pdno && item.pdno in codeToName ? codeToName[item.pdno as keyof typeof codeToName] : "";
+
+        return {
+          ...item,
+          ord_qty: Number(item.ord_qty),
+          ord_unpr: Number(item.ord_unpr),
+          tar_pr: Number(item.tar_pr),
+          prdt_name, // 종목명 필드 추가
+        };
+      });
+
       set(() => ({
-        scheduledHistoryData: response.data,
+        scheduledHistoryData: formattedData,
       }));
     } catch (error) {
       console.log(error)
