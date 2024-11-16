@@ -1,17 +1,22 @@
 import axios from 'axios';
 import { create } from 'zustand';
 import { IFavoriteState } from './definitions';
+import { useLoginStore } from './useLoginStore';
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-export const useFavoriteStore = create<IFavoriteState>((set) => ({
+export const useFavoriteStore = create<IFavoriteState>((set, get) => ({
   favoriteData: null,
 
+  getLoginToken: () => useLoginStore.getState().loginToken,
+
   fetchFavoriteData: async () => {
+    const loginToken = get().getLoginToken();
+
     try {
       const response = await axios.get(`${baseURL}accounts/favorite-stock/`, {
         headers: {
-          Authorization: '32b78c8997dd6bc6c2abb4aa18f18d8ddc023508',
+          Authorization: `Token ${loginToken}`,
         },
       });
       set(() => ({
@@ -24,13 +29,15 @@ export const useFavoriteStore = create<IFavoriteState>((set) => ({
   },
 
   postFavoriteData: async (stockCode: string) => {
+    const loginToken = get().getLoginToken();
+
     try {
       const response = await axios.post(
-        `${baseURL}accounts/favorite-stock`,
+        `${baseURL}accounts/favorite-stock/`,
         { stock_code: stockCode },
         {
           headers: {
-            Authorization: '32b78c8997dd6bc6c2abb4aa18f18d8ddc023508',
+            Authorization: `Token ${loginToken}`,
           },
         }
       );
@@ -41,10 +48,12 @@ export const useFavoriteStore = create<IFavoriteState>((set) => ({
   },
 
   deleteFavoriteData: async (stockCode: string) => {
+    const loginToken = get().getLoginToken();
+
     try {
-      const response = await axios.delete(`${baseURL}accounts/favorite-stock`, {
+      const response = await axios.delete(`${baseURL}accounts/favorite-stock/`, {
         headers: {
-          Authorization: '32b78c8997dd6bc6c2abb4aa18f18d8ddc023508',
+          Authorization: `Token ${loginToken}`,
         },
         data: {
           stock_code: stockCode,

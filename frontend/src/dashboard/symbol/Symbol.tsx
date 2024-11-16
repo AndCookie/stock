@@ -33,7 +33,6 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
 
   const favoriteData = useFavoriteStore((state) => state.favoriteData);
-  const fetchFavoriteData = useFavoriteStore((state) => state.fetchFavoriteData);
   const postFavoriteData = useFavoriteStore((state) => state.postFavoriteData);
   const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
 
@@ -54,14 +53,13 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
   // 여기부터 코드 다시 입력
   useEffect(() => {
-    fetchFavoriteData();
-    // 이 현재 종목 코드를 어디서 가져오ㄴ가 문제다 !!
-    if (favoriteData && '현재 종목 코드' in favoriteData) {
-      setIsFavorite(true);
+    if (favoriteData && Array.isArray(favoriteData)) {
+      const isFavoriteStock = favoriteData.some((item) => item.stock_code === stockCode);
+      setIsFavorite(isFavoriteStock);
     } else {
       setIsFavorite(false);
     }
-  }, [tradingData]);
+  }, [favoriteData, stockCode]);
 
   useEffect(() => {
     if (!tradingData) return;
