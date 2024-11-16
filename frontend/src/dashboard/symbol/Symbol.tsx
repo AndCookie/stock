@@ -15,8 +15,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
-  const name =
-    stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
+  const name = stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
   const { industry, companyDetail, favorite } = {
     industry: 'IT',
     companyDetail: '반도체와반도체장비',

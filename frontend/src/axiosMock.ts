@@ -42,9 +42,11 @@ mock.onGet(BASEURL + "stocks/gold/").reply(200, fakeIndicatorData());
 
 // home-stockRanking
 function fakeStockRankingData() {
-  const stockNames = ["삼성전자", "LG전자", "SK하이닉스", "현대자동차", "카카오", "네이버", "셀트리온", "삼성SDI", "현대모비스", "POSCO"];
+  const stockNames = ["삼성전자", "LG전자", "카카오", "NAVER", "셀트리온", "삼성SDI", "현대모비스"];
+  const stockCodeList = ["005930", "066570", "035720", "035420", "068270", "006400", "012330"]
 
   const data = stockNames.map((name, index) => {
+    const mksc_shrn_iscd = stockCodeList[index];
     const stck_prpr = Math.floor(Math.random() * 50000) + 30000;
     const prdy_vrss = Math.floor(Math.random() * 2000) - 1000;
     const prdy_ctrt = ((prdy_vrss / stck_prpr) * 100).toFixed(2);
@@ -52,7 +54,7 @@ function fakeStockRankingData() {
 
     return {
       hts_kor_isnm: name,
-      mksc_shrn_iscd: `00${index + 1}000`,
+      mksc_shrn_iscd: mksc_shrn_iscd,
       data_rank: (index + 1).toString(),
       stck_prpr: stck_prpr.toString(),
       prdy_vrss: prdy_vrss.toString(),
@@ -416,7 +418,7 @@ function fakeMinuteData() {
   const today = now.toISOString().split("T")[0].replace(/-/g, "");
 
   const startTime = new Date();
-  startTime.setHours(9, 0, 0, 0);
+  startTime.setHours(0, 0, 0, 0);
 
   while (startTime <= now) {
     const hour = startTime.toTimeString().split(" ")[0].replace(/:/g, "").substring(0, 6);
