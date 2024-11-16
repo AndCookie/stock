@@ -18,24 +18,27 @@ def favorite_stock(request):
         user = request.user
         favorite_stocks = FavoriteStock.objects.filter(user=user)
         data = [{"stock_code": stock.stock_code} for stock in favorite_stocks]
-        for d in data:
-            url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-price"
-            headers = get_real_headers('FHKST01010100')
-            params = {
-                "fid_cond_mrkt_div_code": "J",
-                "fid_input_iscd": d['stock_code'],
-            }
-            response =  requests.get(url, headers=headers, params=params)
+        
+        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
+        headers = get_real_headers('FHKST11300006', "P")
+        params = {}
+        for index, d in enumerate(data):
+            params[f"fid_cond_mrkt_div_code_{index}"] = "J"
+            params[f"fid_input_iscd_{index}"] = d['stock_code']
+        response =  requests.get(url, headers=headers, params=params)
             
-            if response.status_code == 200:
-                output = response.json()['output']
-                stock_price = output.get("stck_prpr")
+        if response.status_code == 200:
+            outputs = response.json()['output']
+            for index, output in enumerate(outputs):
+                stock_price = output.get("inter2_prpr")
                 flunctation_rate = output.get("prdy_ctrt")
-            else:
-                return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+                data[index]['stock_price'] = stock_price
+                data[index]['flunctation_rate'] = flunctation_rate
+        else:   
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
             
-            d['stock_price'] = stock_price
-            d['flunctation_rate'] = flunctation_rate
+        d['stock_price'] = stock_price
+        d['flunctation_rate'] = flunctation_rate
         return Response(data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
