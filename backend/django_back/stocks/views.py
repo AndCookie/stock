@@ -721,6 +721,36 @@ def information(request):
     else:
         print(response.json())
         return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+    
+@api_view(['GET'])
+def disclosure(request):
+    stock_code = request.GET.get('stock_code')
+    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/news-title"
+    headers = get_real_headers('FHKST01011800', "P")
+    params = {
+        "FID_NEWS_OFER_ENTP_CODE": "", 
+        "FID_COND_MRKT_CLS_CODE": "", 
+        "FID_INPUT_ISCD": stock_code,
+        "FID_TITL_CNTT": "", 
+        "FID_INPUT_DATE_1": "", 
+        "FID_INPUT_HOUR_1": "", 
+        "FID_RANK_SORT_CLS_CODE": "", 
+        "FID_INPUT_SRNO": "", 
+    }
+    response =  requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        outputs = response.json()['output']
+        data = []
+        for output in outputs:
+            data.append({
+                "hts_pbnt_titl_cntt": output.get('hts_pbnt_titl_cntt'), 
+                "dorg": output.get('dorg'), 
+                "data_dt": output.get('data_dt'), 
+            })
+        return Response(data, status=status.HTTP_200_OK)
+    else:
+        print(response.json())
+        return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):

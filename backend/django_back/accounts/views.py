@@ -4,10 +4,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import FavoriteStock, Balance, Position
 from .serializers import PositionSerializer, PositionSaveSerializer
-import os
+from stocks.views import get_real_headers
+import os, requests
 
 state = os.environ.get("STATE")
 BASE_URL = 'http://localhost:8000/api/accounts/'
+REAL_KIS_API_BASE_URL = "https://openapi.koreainvestment.com:9443"
 
 @api_view(['GET', 'POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -15,8 +17,29 @@ def favorite_stock(request):
     if request.method == 'GET':
         user = request.user
         favorite_stocks = FavoriteStock.objects.filter(user=user)
-        stock_codes = [stock.stock_code for stock in favorite_stocks]
-        return Response(stock_codes, status=status.HTTP_200_OK)
+        data = [{"stock_code": stock.stock_code} for stock in favorite_stocks]
+        
+        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
+        headers = get_real_headers('FHKST11300006', "P")
+        params = {}
+        for index, d in enumerate(data):
+            params[f"fid_cond_mrkt_div_code_{index}"] = "J"
+            params[f"fid_input_iscd_{index}"] = d['stock_code']
+        response =  requests.get(url, headers=headers, params=params)
+            
+        if response.status_code == 200:
+            outputs = response.json()['output']
+            for index, output in enumerate(outputs):
+                stock_price = output.get("inter2_prpr")
+                flunctation_rate = output.get("prdy_ctrt")
+                data[index]['stock_price'] = stock_price
+                data[index]['flunctation_rate'] = flunctation_rate
+        else:   
+            return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+            
+        d['stock_price'] = stock_price
+        d['flunctation_rate'] = flunctation_rate
+        return Response(data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
         user = request.user
