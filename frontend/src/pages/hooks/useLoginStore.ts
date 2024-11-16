@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { create } from 'zustand';
+import { ILoginState } from './definition';
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-export const useLogin = create((set) => ({
-  loginToken: null,
+export const useLoginStore = create<ILoginState>((set) => ({
+  loginToken: '',
 
   login: async () => {
     try {
