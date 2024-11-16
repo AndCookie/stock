@@ -98,7 +98,8 @@ export interface IScheduledHistoryState {
 
 export interface IFavoriteState {
   favoriteData: string[] | null;
-  fetchFavoriteData: () => Promise<void>;
+  getLoginToken: () => string;
+  fetchFavoriteData: (s) => Promise<void>;
   postFavoriteData: (stockCode: string) => Promise<void>;
   deleteFavoriteData: (stockCode: string) => Promise<void>;
 }
