@@ -4,10 +4,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import FavoriteStock, Balance, Position
 from .serializers import PositionSerializer, PositionSaveSerializer
-import os
+from stocks.views import get_real_headers
+import os, requests
 
 state = os.environ.get("STATE")
 BASE_URL = 'http://localhost:8000/api/accounts/'
+REAL_KIS_API_BASE_URL = "https://openapi.koreainvestment.com:9443"
 
 @api_view(['GET', 'POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -15,8 +17,26 @@ def favorite_stock(request):
     if request.method == 'GET':
         user = request.user
         favorite_stocks = FavoriteStock.objects.filter(user=user)
-        stock_codes = [stock.stock_code for stock in favorite_stocks]
-        return Response(stock_codes, status=status.HTTP_200_OK)
+        data = [{"stock_code": stock.stock_code} for stock in favorite_stocks]
+        for d in data:
+            url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-price"
+            headers = get_real_headers('FHKST01010100')
+            params = {
+                "fid_cond_mrkt_div_code": "J",
+                "fid_input_iscd": d['stock_code'],
+            }
+            response =  requests.get(url, headers=headers, params=params)
+            
+            if response.status_code == 200:
+                output = response.json()['output']
+                stock_price = output.get("stck_prpr")
+                flunctation_rate = output.get("prdy_ctrt")
+            else:
+                return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+            
+            d['stock_price'] = stock_price
+            d['flunctation_rate'] = flunctation_rate
+        return Response(data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
         user = request.user
