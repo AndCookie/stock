@@ -1,11 +1,3 @@
-export interface IDaily {
-  date: string;
-  price: number;
-  change: number;
-  rate: number;
-  volume: number;
-}
-
 export interface IItem {
   company: string;
   amount: number;
