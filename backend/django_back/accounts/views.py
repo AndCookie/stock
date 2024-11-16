@@ -6,6 +6,7 @@ from .models import FavoriteStock, Balance, Position
 from .serializers import PositionSerializer, PositionSaveSerializer
 from stocks.views import get_real_headers
 import os, requests
+from pprint import pprint
 
 state = os.environ.get("STATE")
 BASE_URL = 'http://localhost:8000/api/accounts/'
@@ -17,28 +18,30 @@ def favorite_stock(request):
     if request.method == 'GET':
         user = request.user
         favorite_stocks = FavoriteStock.objects.filter(user=user)
-        data = [{"stock_code": stock.stock_code} for stock in favorite_stocks]
-        
+        print(favorite_stocks)
         url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
         headers = get_real_headers('FHKST11300006', "P")
         params = {}
-        for index, d in enumerate(data):
-            params[f"fid_cond_mrkt_div_code_{index}"] = "J"
-            params[f"fid_input_iscd_{index}"] = d['stock_code']
+        for index, stock in enumerate(favorite_stocks):
+            params[f"fid_cond_mrkt_div_code_{index+1}"] = "J"
+            params[f"fid_input_iscd_{index+1}"] = stock.stock_code
         response =  requests.get(url, headers=headers, params=params)
-            
+
+        data = []
         if response.status_code == 200:
             outputs = response.json()['output']
             for index, output in enumerate(outputs):
-                stock_price = output.get("inter2_prpr")
-                flunctation_rate = output.get("prdy_ctrt")
-                data[index]['stock_price'] = stock_price
-                data[index]['flunctation_rate'] = flunctation_rate
-        else:   
+                data.append({
+                    'stock_code': output.get("inter_shrn_iscd"), 
+                    'stock_name': output.get("inter_kor_isnm"),
+                    'stock_price': output.get("inter2_prpr"),
+                    'fluctuation_rate': output.get("prdy_ctrt"),
+                    'fluctuation_difference': output.get("inter2_prdy_vrss"),
+                })
+        else:
+            pprint(response.json())
             return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
             
-        d['stock_price'] = stock_price
-        d['flunctation_rate'] = flunctation_rate
         return Response(data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
