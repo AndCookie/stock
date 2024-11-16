@@ -1,10 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './Favorite.module.css';
 import { useFavoriteStore } from '../../../store/useFavoriteStore';
 import { COLORS } from '../../../common/utils';
 
 const Favorites = () => {
   const { favoriteData, fetchFavoriteData } = useFavoriteStore();
+  const [isEdit, setIsEdit] = useState(false);
+
+  const handleEdit = () => {
+    if (!isEdit) {
+      setIsEdit(true);
+    } else {
+      setIsEdit(false);
+    }
+  };
+
+  // const handleDelete = () => {
+
+  // }
 
   useEffect(() => {
     fetchFavoriteData();
@@ -21,7 +34,7 @@ const Favorites = () => {
           </div>
           추가하기
         </div>
-        <div>편집</div>
+        <div onClick={handleEdit}>편집</div>
         {/* get 요청에서 종목코드, 시장가, 등락률 보내준다고 가정하고 코드 작성 */}
         {favoriteData.map((stock, index) => (
           <div key={index} className={styles.stockItem}>
@@ -60,7 +73,7 @@ const Favorites = () => {
                 </span>
               </div>
             </div>
-            <div>삭제</div>
+            {isEdit ? <div>삭제</div> : ''}
           </div>
         ))}
       </div>
