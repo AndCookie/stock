@@ -38,29 +38,7 @@
   min-width: 350px;
 }
 
-.search {
-  width: 100%;
-  padding: 10px 20px 10px 50px; /* 왼쪽에 아이콘 공간 확보 */
-  border-radius: 30px; /* 둥근 모서리 */
-  border: none;
-  background-color: #2e2e2e; /* 배경색 */
-  color: #b3b3b3; /* 글자 색 */
-  font-size: 1rem;
-}
-
-.search::placeholder {
-  color: #b3b3b3; /* 플레이스홀더 글자 색 */
-}
-
-.searchIcon {
-  position: absolute;
-  left: 15px; /* input 내부의 왼쪽 위치 */
-  transform: translateY(-50%);
-  color: #b3b3b3; /* 아이콘 색상 */
-  font-size: 1.2rem;
-  top: 20px;
-}
-
+/* 아이콘 */
 .icons {
   grid-column: span 3; /* 3칸 차지 */
   gap: 20px;

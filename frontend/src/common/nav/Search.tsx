@@ -1,14 +1,13 @@
 import { FormEvent } from 'react';
 import useInput from '../hooks/useInput';
-import styles from './Nav.module.css';
+import styles from './Search.module.css';
 import { fetchSearch } from './actions';
-import useDropdown from '../hooks/useDropdown';
-import Dropdown from '../components/dropdown/DropDown';
+import Dropdown from '../components/DropDown/DropDown';
 import { FaSearch } from 'react-icons/fa';
+import useDropdown from '../hooks/useDropdown';
 
 const Search = () => {
-  const { inputValue, handleChange } = useInput('');
-
+  const { inputValue, setInputValue, handleChange } = useInput(''); // setInputValue 추가
   const {
     handleDropDownKeyDown,
     isFocus,
@@ -16,17 +15,17 @@ const Search = () => {
     dropDownList,
     setDropDownItemIndex,
     dropDownItemIndex,
-  } = useDropdown(inputValue);
+  } = useDropdown(inputValue, setInputValue); // setInputValue 전달
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res = await fetchSearch(inputValue);
     console.log('Fetch Search Result:', res);
     if (res) {
-      // TODO: navigate로 이동
       console.log(res);
     }
   };
+
   return (
     <div>
       <form onSubmit={handleSubmit} data-id="searchForm">

@@ -4,7 +4,7 @@
   width: 100%;
   color: #fff;
   display: flex;
-  padding: 7px 0;
+  padding: 5px 0;
   z-index: 1000;
   background-color: black;
 }
@@ -17,13 +17,21 @@
 }
 
 .indexItem {
-  margin-right: 50px;
+  margin-right: 40px;
   border-radius: 5px;
   font-size: 11px;
-  width: 155px;
+  min-width: 160px;
+  padding: 1px 10px;
+  gap: 10px;
   display: flex;
   justify-content: space-between;
   /* border: 1px solid green; */
+}
+
+.indexItem:hover {
+  background-color: #242424;
+  border-radius: 50px;
+  cursor: pointer;
 }
 
 .subKey {
@@ -35,11 +43,11 @@
 }
 
 .positive {
-  color: #FF4F4F;
+  color: #ff4f4f;
 }
 
 .negative {
-  color: #4881FF;
+  color: #4881ff;
 }
 
 @keyframes scrollLeft {

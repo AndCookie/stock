@@ -54,11 +54,11 @@ const Indicators: React.FC = () => {
     const dataElements = indices.map((index, i) => (
       <IndicatorCard key={i} indexTypeId={Math.floor(i / 2)} index={index} />
     ));
-    
+
     const duplicatedElements = indices.map((index, i) => (
       <IndicatorCard key={`indicator-${i}`} indexTypeId={Math.floor(i / 2)} index={index} />
     ));
-  
+
     setFormattedData([...dataElements, ...duplicatedElements]);
   }, []);
 
