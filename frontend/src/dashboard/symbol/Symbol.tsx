@@ -15,7 +15,8 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
-  const name = stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : "";
+  const name =
+    stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
   const { industry, companyDetail, favorite } = {
     industry: 'IT',
     companyDetail: '반도체와반도체장비',
@@ -44,7 +45,10 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)
     );
     setRenderedChangeRate(
-      ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) - Number(yesterdayStockData)) / Number(yesterdayStockData)) * 100
+      ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) -
+        Number(yesterdayStockData)) /
+        Number(yesterdayStockData)) *
+        100
     );
   }, [minuteStockData, yesterdayStockData]);
 
@@ -64,7 +68,10 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
     setRenderedValue(Number(tradingData.STCK_PRPR));
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
-    setRenderedChangeRate(((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) * 100);
+    setRenderedChangeRate(
+      ((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) *
+        100
+    );
   }, [tradingData]);
 
   // TODO: 비즈니스 로직이니 분리하세요
@@ -111,7 +118,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       <div className={styles.rightSection}>
         <div
           className={styles.price}
-          style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
+          // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
         >
           {Number(renderedValue.toFixed(2)).toLocaleString()}원
         </div>

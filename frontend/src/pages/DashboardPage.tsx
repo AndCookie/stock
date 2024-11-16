@@ -18,13 +18,13 @@ import { useParams } from 'react-router-dom';
 import GridLayout, { Layout } from 'react-grid-layout';
 
 // 위젯 임포트
-import Chart from "../dashboard/chart/Chart";
-import Info from "../dashboard/info/Info";
-import OrderBook from "../dashboard/orderBook/OrderBook";
-import Symbol from "../dashboard/symbol/Symbol";
-import Trading from "../dashboard/trading/Trading";
-import TradingTrend from "../dashboard/tradingTrend/TradingTrend";
-import TradingVolume from "../dashboard/tradingVolume/TradingVolume";
+import Chart from '../dashboard/chart/Chart';
+import Info from '../dashboard/info/Info';
+import OrderBook from '../dashboard/orderBook/OrderBook';
+import Symbol from '../dashboard/symbol/Symbol';
+import Trading from '../dashboard/trading/Trading';
+import TradingTrend from '../dashboard/tradingTrend/TradingTrend';
+import TradingVolume from '../dashboard/tradingVolume/TradingVolume';
 
 // 훅 임포트
 import useWindowSize from './hooks/useWindowSize';
@@ -40,10 +40,14 @@ import { IWidgetComponentProps } from '../common/definitions';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import styles from './DashboardPage.module.css';
-import { AiOutlineClose, AiOutlineCheck } from "react-icons/ai"; // X / 체크 아이콘
+import { AiOutlineClose, AiOutlineCheck } from 'react-icons/ai'; // X / 체크 아이콘
 
 // 위젯 구성 객체 (이름, 컴포넌트, 순서 정보 포함)
-const widgetConfig: { id: string; name: string; component: React.ComponentType<IWidgetComponentProps> }[] = [
+const widgetConfig: {
+  id: string;
+  name: string;
+  component: React.ComponentType<IWidgetComponentProps>;
+}[] = [
   { id: 'symbolWidget', name: '개요', component: Symbol },
   { id: 'chartWidget', name: '차트', component: Chart },
   { id: 'orderBookWidget', name: '호가', component: OrderBook },
@@ -54,7 +58,16 @@ const widgetConfig: { id: string; name: string; component: React.ComponentType<I
 ];
 
 const DashboardPage = () => {
-  const { dailyPastStockData, pastStockData, fetchDailyPastStockData, fetchPastStockData, fetchYesterdayStockData, clearDailyPastStockData, clearPastStockData, clearYesterdayStockData } = usePastStockStore();
+  const {
+    dailyPastStockData,
+    pastStockData,
+    fetchDailyPastStockData,
+    fetchPastStockData,
+    fetchYesterdayStockData,
+    clearDailyPastStockData,
+    clearPastStockData,
+    clearYesterdayStockData,
+  } = usePastStockStore();
   const { minuteStockData, fetchMinuteStockData } = useMinuteStockStore();
   const { indexData, fetchIndexData } = useIndexStore();
 
@@ -64,12 +77,12 @@ const DashboardPage = () => {
     if (!stockCode) return;
 
     fetchDailyPastStockData(stockCode);
-    fetchPastStockData(stockCode, "M");
+    fetchPastStockData(stockCode, 'M');
     fetchMinuteStockData(stockCode);
     fetchIndexData();
 
     // 웹 소켓 종목코드 전송
-    sendMessage({ "stock_code": stockCode });
+    sendMessage({ stock_code: stockCode });
 
     return () => {
       clearDailyPastStockData();
@@ -77,11 +90,11 @@ const DashboardPage = () => {
       clearYesterdayStockData();
 
       sendMessage({
-        "stock_code": stockCode,
-        "exit": "True",
-      })
-    }
-  }, [stockCode])
+        stock_code: stockCode,
+        exit: 'True',
+      });
+    };
+  }, [stockCode]);
 
   useEffect(() => {
     if (dailyPastStockData) {
@@ -89,7 +102,7 @@ const DashboardPage = () => {
     } else if (pastStockData) {
       fetchYesterdayStockData();
     }
-  }, [dailyPastStockData, pastStockData])
+  }, [dailyPastStockData, pastStockData]);
 
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
 
@@ -128,19 +141,15 @@ const DashboardPage = () => {
   const maxCols = 12;
 
   // 드래그 종료 시 & 크기 조정 완료 시 호출되는 함수
-  const handleLayoutChange = (
-    layout: Layout[],
-    oldItem: Layout,
-    newItem: Layout
-  ) => {
+  const handleLayoutChange = (layout: Layout[], oldItem: Layout, newItem: Layout) => {
     // 모든 아이템을 순회하며, 각 item의 y + h가 maxRows를 초과하는지 확인
-    const exceedsMaxRows = layout.some(item => item.y + item.h > maxRows);
+    const exceedsMaxRows = layout.some((item) => item.y + item.h > maxRows);
 
     // maxRows를 초과하면 드래그 제한
     if (exceedsMaxRows) {
       // 이전 위치로 복원
-      setLayout(prevLayout =>
-        prevLayout.map(item =>
+      setLayout((prevLayout) =>
+        prevLayout.map((item) =>
           item.i === newItem.i
             ? { ...item, x: oldItem.x, y: oldItem.y } // 원래 위치로 복원
             : item
@@ -148,7 +157,7 @@ const DashboardPage = () => {
       );
 
       // 강제 리렌더링을 위해 key 값 업데이트
-      setForceRerenderKey(prevKey => prevKey + 1);
+      setForceRerenderKey((prevKey) => prevKey + 1);
     } else {
       setLayout(layout); // 문제 없으면 위치를 업데이트
     }
@@ -174,7 +183,7 @@ const DashboardPage = () => {
       for (let x = 0; x < maxCols - 2; x++) {
         let flag = true;
         for (let t = 0; t < 5; t++) {
-          if (arr[y + t].slice(x, x + 3).some(value => value !== 0)) {
+          if (arr[y + t].slice(x, x + 3).some((value) => value !== 0)) {
             flag = false;
             break;
           }
@@ -193,15 +202,15 @@ const DashboardPage = () => {
       const newPos = findNewPos();
       // 만약 newPos[0] == -1이거나 newPos[1] == -1이면
       if (newPos[0] === -1 || newPos[1] === -1) {
-        alert("위젯을 추가할 수 없습니다.");
+        alert('위젯을 추가할 수 없습니다.');
       } else {
         // 아니면 위젯 가시성 상태 업데이트
-        setIsWidgetVisible(prev => ({ ...prev, [widgetId]: true }));
+        setIsWidgetVisible((prev) => ({ ...prev, [widgetId]: true }));
         // 그리고 새 위치에 위젯 추가
-        setLayout(prev => [...prev, { i: widgetId, x: newPos[0], y: newPos[1], w: 3, h: 5 }]);
+        setLayout((prev) => [...prev, { i: widgetId, x: newPos[0], y: newPos[1], w: 3, h: 5 }]);
       }
       // 강제 리렌더링을 위해 key 값 업데이트
-      setForceRerenderKey(prevKey => prevKey + 1);
+      setForceRerenderKey((prevKey) => prevKey + 1);
       toggleModal();
     }
   };
@@ -209,9 +218,9 @@ const DashboardPage = () => {
   // 위젯을 숨기는 함수
   const handleRemoveWidget = (widgetId: string) => {
     // 위젯 가시성 상태 업데이트
-    setIsWidgetVisible(prev => ({ ...prev, [widgetId]: false }));
+    setIsWidgetVisible((prev) => ({ ...prev, [widgetId]: false }));
     // 레이아웃에서 위젯 제거
-    setLayout(prev => prev.filter(item => item.i !== widgetId));
+    setLayout((prev) => prev.filter((item) => item.i !== widgetId));
   };
 
   const toggleWidgetVisibility = (widgetId: string) => {
@@ -234,7 +243,7 @@ const DashboardPage = () => {
       <div className={styles.addButton}>
         <button onClick={toggleModal} className={styles.addBtn}>
           화면 편집
-          <span style={{ fontSize: "10px", marginLeft: "5px" }}>▼</span>
+          <span style={{ fontSize: '10px', marginLeft: '5px' }}>▼</span>
         </button>
       </div>
 
@@ -243,12 +252,9 @@ const DashboardPage = () => {
           {/* 모달 창 */}
           {showModal && (
             <div className={styles.modalOverlay} onClick={toggleModal}>
-              <div
-                className={styles.modalContent}
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <button className="closeButton" onClick={toggleModal}>
-                  <AiOutlineClose size={20} style={{ fill: 'black' }} />
+                  <AiOutlineClose size={20} style={{ fill: 'grey' }} />
                 </button>
                 {/* <h3 className={styles.modalTitle}>위젯 추가/숨김</h3> */}
                 {/* 위젯 리스트: 각 위젯의 가시성 여부에 따라 추가 또는 숨김 버튼 표시 */}
@@ -256,14 +262,17 @@ const DashboardPage = () => {
                   {widgetConfig.map(({ id, name }) => (
                     <li
                       key={id}
-                      className={`${styles.widgetItem} ${isWidgetVisible[id] ? styles.widgetItemSelected : styles.widgetItemUnselected
-                        }`}
+                      className={`${styles.widgetItem} ${
+                        isWidgetVisible[id]
+                          ? styles.widgetItemSelected
+                          : styles.widgetItemUnselected
+                      }`}
                       onClick={() => toggleWidgetVisibility(id)}
                     >
                       <AiOutlineCheck
                         className={styles.checkIcon}
                         size={20}
-                        style={{ fill: isWidgetVisible[id] ? '#7B00F7' : 'grey' }}
+                        style={{ fill: isWidgetVisible[id] ? '#B469FF' : '#686868' }}
                       />
                       {name}
                     </li>
@@ -300,32 +309,34 @@ const DashboardPage = () => {
             useCSSTransforms={true}
           >
             {/* 가시성 상태에 따라 위젯을 조건부로 렌더링 */}
-            {widgetConfig.map(({ id, component: Component }) =>
-              isWidgetVisible[id] && (
-                <div key={id} className={styles.widget}>
-                  {/* X 버튼 및 동적 위젯 컴포넌트 렌더링 */}
-                  <button className="closeButton"
-                    onMouseDown={(event) => {
-                      event.stopPropagation();
-                      setIsDraggable(false);
-                    }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleRemoveWidget(id);
-                      setIsDraggable(true);
-                    }}
-                  >
-                    <AiOutlineClose size={15} style={{ fill: 'grey' }} />
-                  </button>
-                  <Component setIsDraggable={setIsDraggable} />
-                </div>
-              )
+            {widgetConfig.map(
+              ({ id, component: Component }) =>
+                isWidgetVisible[id] && (
+                  <div key={id} className={styles.widget}>
+                    {/* X 버튼 및 동적 위젯 컴포넌트 렌더링 */}
+                    <button
+                      className="closeButton"
+                      onMouseDown={(event) => {
+                        event.stopPropagation();
+                        setIsDraggable(false);
+                      }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleRemoveWidget(id);
+                        setIsDraggable(true);
+                      }}
+                    >
+                      <AiOutlineClose size={15} style={{ fill: 'grey' }} />
+                    </button>
+                    <Component setIsDraggable={setIsDraggable} />
+                  </div>
+                )
             )}
           </GridLayout>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default DashboardPage;

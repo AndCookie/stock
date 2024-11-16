@@ -13,12 +13,11 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 const HomePage: React.FC = () => {
-
   const { indexData, fetchIndexData } = useIndexStore();
 
   useEffect(() => {
     fetchIndexData();
-  }, [])
+  }, []);
 
   if (!indexData) return <div />;
 
