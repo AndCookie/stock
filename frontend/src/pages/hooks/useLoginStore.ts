@@ -18,6 +18,7 @@ export const useLoginStore = create<ILoginState>((set) => ({
       set(() => ({
         loginToken: response.data.key,
       }));
+      console.log('로그인 성공!: ', response.data);
     } catch (error) {
       console.log(error);
     }

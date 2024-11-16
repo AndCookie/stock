@@ -1,4 +1,4 @@
 export interface ILoginState {
-    loginToken: string
-    
+  loginToken: string;
+  login: () => Promise<void>;
 }
