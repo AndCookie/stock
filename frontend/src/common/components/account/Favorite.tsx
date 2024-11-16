@@ -5,6 +5,8 @@ import { COLORS } from '../../../common/utils';
 
 const Favorites = () => {
   const { favoriteData, fetchFavoriteData } = useFavoriteStore();
+  const postFavoriteData = useFavoriteStore((state) => state.postFavoriteData);
+  const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
   const [isEdit, setIsEdit] = useState(false);
 
   const handleEdit = () => {
@@ -15,9 +17,10 @@ const Favorites = () => {
     }
   };
 
-  // const handleDelete = () => {
-
-  // }
+  const handleDelete = (stockCode: string) => (e: React.MouseEvent<HTMLDivElement>) => {
+    deleteFavoriteData(stockCode);
+    fetchFavoriteData()
+  };
 
   useEffect(() => {
     fetchFavoriteData();
@@ -42,7 +45,7 @@ const Favorites = () => {
               <span className={styles.stockName}>{stock.stock_name}</span>
             </div>
             <div className={styles.stockDetails}>
-              <div className={styles.stockPrice}>{stock.stock_price.toLocaleString()}원</div>
+              <div className={styles.stockPrice}>{Number(stock.stock_price).toLocaleString()}원</div>
               <div className={styles.stockChange}>
                 <span
                   style={{
@@ -73,7 +76,7 @@ const Favorites = () => {
                 </span>
               </div>
             </div>
-            {isEdit ? <div>삭제</div> : ''}
+            {isEdit ? <div onClick={handleDelete(stock.stock_code)}>삭제</div> : ''}
           </div>
         ))}
       </div>
