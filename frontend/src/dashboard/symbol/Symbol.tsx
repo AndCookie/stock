@@ -12,6 +12,8 @@ import styles from './Symbol.module.css';
 import { COLORS } from '../../common/utils';
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
+  // return <div />;
+
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
