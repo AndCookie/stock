@@ -33,7 +33,6 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
 
   const favoriteData = useFavoriteStore((state) => state.favoriteData);
-  const fetchFavoriteData = useFavoriteStore((state) => state.fetchFavoriteData);
   const postFavoriteData = useFavoriteStore((state) => state.postFavoriteData);
   const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
 
