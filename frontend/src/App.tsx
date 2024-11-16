@@ -1,11 +1,11 @@
-import styles from "./App.module.css";
+import styles from './App.module.css';
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
 
-import Nav from "./common/nav/Nav";
-import HomePage from "./pages/HomePage";
-import DashboardPage from "./pages/DashboardPage";
-import MarketPage from "./pages/MarketPage";
+import Nav from './common/nav/Nav';
+import HomePage from './pages/HomePage';
+import DashboardPage from './pages/DashboardPage';
+import MarketPage from './pages/MarketPage';
 import Rolling from './common/rolling/Rolling';
 import './index.css';
 

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 import codeToName from '../../assets/codeToName.json';
 import nameToCode from '../../assets/nameToCode.json';
 
 const kospi200Companies = Object.values(codeToName);
 
-const useDropdown = (inputValue: string) => {
+const useDropdown = (
+  inputValue: string,
+  setInputValue: (value: string) => void // 검색창 초기화를 위한 setter 전달
+) => {
   const navigate = useNavigate();
   const [dropDownList, setDropDownList] = useState(kospi200Companies);
   const [dropDownItemIndex, setDropDownItemIndex] = useState(-1);
@@ -51,8 +53,10 @@ const useDropdown = (inputValue: string) => {
       const keyword = dropDownList[dropDownItemIndex]
         ? dropDownList[dropDownItemIndex]
         : inputValue;
-        
+
       navigate(`/dashboard/${nameToCode[keyword as keyof typeof nameToCode]}`);
+      setInputValue(''); // 검색창 초기화
+      setIsFocus(false); // 드롭다운 닫기
     }
   };
 
@@ -67,6 +71,8 @@ const useDropdown = (inputValue: string) => {
 
   const handleClickDropDownList = (dropDownItem: string) => {
     navigate(`/dashboard/${nameToCode[dropDownItem as keyof typeof nameToCode]}`);
+    setInputValue(''); // 검색창 초기화
+    setIsFocus(false); // 드롭다운 닫기
   };
 
   useEffect(() => {

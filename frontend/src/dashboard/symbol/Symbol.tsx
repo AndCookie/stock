@@ -116,7 +116,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       <div className={styles.rightSection}>
         <div
           className={styles.price}
-          style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
+          // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
         >
           {Number(renderedValue.toFixed(2)).toLocaleString()}원
         </div>
