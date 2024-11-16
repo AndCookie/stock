@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { create } from 'zustand';
-import { ILoginState } from './definition';
+import { ILoginState } from './definitions';
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 

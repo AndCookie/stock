@@ -82,7 +82,7 @@ export interface IStandardHistoryState {
   fetchStandardHistoryData: () => Promise<void>;
 }
 
-export interface IScheduledHistoryData{
+export interface IScheduledHistoryData {
   pdno: string; // 종목코드
   prdt_name: string; // 종목명
   sll_buy_dvsn_cd: string; // 구매/판매
@@ -219,4 +219,9 @@ export interface ISocketStore {
   setKosdaqData: (data: IIndicatorData) => void;
   setOrderBookData: (data: IOrderBookData) => void;
   setTradingData: (data: ITradingData) => void;
+}
+
+export interface ILoginState {
+  loginToken: string;
+  login: () => Promise<void>;
 }

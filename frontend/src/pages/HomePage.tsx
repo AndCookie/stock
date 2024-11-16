@@ -7,7 +7,7 @@ import StockRanking from '../home/stockRanking/StockRanking';
 // import Advice from '../home/advice/Advice';
 // import AiNews from '../home/aiNews/AiNews';
 import { useIndexStore } from '../store/useIndexStore';
-import { useLoginStore } from './hooks/useLoginStore';
+import { useLoginStore } from '../store/useLoginStore';
 
 import styles from './HomePage.module.css';
 import 'slick-carousel/slick/slick.css';
