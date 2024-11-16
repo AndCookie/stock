@@ -163,8 +163,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'modumotu',
         'USER' : 'root',
-        'PASSWORD' : os.getenv("MYSQL_PASSWORD"),
-        # 'HOST' : '127.0.0.1',
+        'PASSWORD' : "*ty101204",
         'HOST' : 'k11a204.p.ssafy.io',
         'PORT' : '3306',
     }
