@@ -604,48 +604,19 @@ def holdings(request):
 
     stock_codes = [holding["stock_code"] for holding in holdings]
 
-    current_prices = asyncio.run(fetch_current_prices(stock_codes))
+    # current_prices = asyncio.run(fetch_current_prices(stock_codes))  # 이거 다른 api로 수정할 것
 
     response_data = [
         {
             "stock_code": holding["stock_code"],
             "total_amount": holding["total_amount"],
             "average_price": holding["average_price"],
-            "current_price": current_prices.get(holding["stock_code"]),
+            # "current_price": current_prices.get(holding["stock_code"]),
         }
         for holding in holdings
     ]
 
     return Response(response_data, status=status.HTTP_200_OK)
-
-# Fetch 주식 현재가 비동기 요청
-async def fetch_current_prices(stock_codes):
-    semaphore = asyncio.Semaphore(10)  # 최대 동시 요청 제한
-    async with httpx.AsyncClient() as client:
-        tasks = [get_stock_price(client, stock_code, semaphore) for stock_code in stock_codes]
-        responses = await asyncio.gather(*tasks)
-        return {stock_code: price for stock_code, price in responses if price is not None}
-
-async def get_stock_price(client, stock_code, semaphore):
-    async with semaphore:  # 세마포어로 요청 동시성 제어
-        url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-price"
-        headers = get_paper_headers('FHKST01010100')
-        params = {
-            "FID_COND_MRKT_DIV_CODE": "J",
-            "FID_INPUT_ISCD": stock_code,
-        }
-
-        try:
-            response = await client.get(url, headers=headers, params=params)
-            if response.status_code == 200:
-                data = response.json()
-                price = data.get('output', {}).get('stck_prpr')  # 현재가
-                return stock_code, price
-            else:
-                print(f"Failed to fetch price for {stock_code}: {response.status_code}")
-        except Exception as e:
-            print(f"Error fetching price for {stock_code}: {e}")
-        return stock_code, None
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -725,6 +696,39 @@ def information(request):
 @api_view(['GET'])
 def disclosure(request):
     stock_code = request.GET.get('stock_code')
+    
+    cache_key = f"stock_news:{stock_code}"
+    end_date = date.today()
+    start_date = end_date - timedelta(days=90)
+
+    # Redis에서 기존 데이터를 가져오기
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    existing_dates = {json.loads(item)["data_dt"] for item in indicator_data}
+    
+    # current_date = end_date - timedelta(days=1)
+    current_date = end_date  # 당일 일봉
+    while current_date >= start_date:
+        current_date_str = current_date.strftime("%Y%m%d")
+        # 누락된 날짜에 대해 데이터 요청 및 저장
+        if current_date == end_date:  # 오늘 데이터는 무조건 가져오게
+            fetch_and_save_stock_news(current_date_str, stock_code)
+        elif current_date_str not in existing_dates:
+            fetch_and_save_stock_news(current_date_str, stock_code)
+        else:
+            break
+
+        current_date -= timedelta(days=1)
+        time.sleep(0.3)
+
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    all_data = [json.loads(item) for item in indicator_data]
+    
+    return Response(all_data, status=status.HTTP_200_OK)
+
+def fetch_and_save_stock_news(date_str, stock_code):
+    print(f'{stock_code}의 {date_str}의 뉴스 가져옴')
+    url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
+    
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/news-title"
     headers = get_real_headers('FHKST01011800', "P")
     params = {
@@ -732,25 +736,30 @@ def disclosure(request):
         "FID_COND_MRKT_CLS_CODE": "", 
         "FID_INPUT_ISCD": stock_code,
         "FID_TITL_CNTT": "", 
-        "FID_INPUT_DATE_1": "", 
+        "FID_INPUT_DATE_1": date_str,
         "FID_INPUT_HOUR_1": "", 
         "FID_RANK_SORT_CLS_CODE": "", 
         "FID_INPUT_SRNO": "", 
     }
-    response =  requests.get(url, headers=headers, params=params)
+    response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
-        outputs = response.json()['output']
-        data = []
-        for output in outputs:
-            data.append({
-                "hts_pbnt_titl_cntt": output.get('hts_pbnt_titl_cntt'), 
-                "dorg": output.get('dorg'), 
-                "data_dt": output.get('data_dt'), 
-            })
-        return Response(data, status=status.HTTP_200_OK)
+        response_data = response.json()
+        cache_key = f"stock_news:{stock_code}"
+        
+        pipe = redis_client.pipeline()
+        for daily_data in response_data['output']:
+            timestamp = datetime.strptime(daily_data['data_dt'] + daily_data['data_tm'], "%Y%m%d%H%M%S").timestamp()
+            data = {
+                "hts_pbnt_titl_cntt": daily_data.get('hts_pbnt_titl_cntt'), 
+                "dorg": daily_data.get('dorg'), 
+                "data_dt": daily_data.get('data_dt'), 
+            }
+            pipe.zadd(cache_key, {json.dumps(data): timestamp})
+
+        pipe.execute()
     else:
-        print(response.json())
-        return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
+        print(f"Failed to fetch news for {stock_code} on {stock_code}: {response.status_code}")
+    return None
 
 # 실전 투자 헤더 생성 함수
 def get_real_headers(tr_id, custtype=""):
