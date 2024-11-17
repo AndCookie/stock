@@ -76,10 +76,13 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
   // TODO: 비즈니스 로직이니 분리하세요
   const toggleFavorite = () => {
-    if (!stockCode) return;
-
     // TODO: post 요청을 통해 서버 상태 업데이트
     setIsFavorite((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (!stockCode) return;
+    
     if (!isFavorite) {
       sendMessage({
         stock_code: stockCode,
@@ -94,7 +97,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       deleteFavoriteData(stockCode);
       fetchFavoriteData();
     }
-  };
+  }, [isFavorite])
 
   if (!renderedChangeValue) return <div />;
 
