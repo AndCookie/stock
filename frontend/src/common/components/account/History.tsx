@@ -1,27 +1,31 @@
 // 주문내역
 
-import { useState } from "react";
-import StandardHistory from "./history/StandardHistory";
-import ScheduledHistory from "./history/ScheduledHistory";
-import styles from "./History.module.css";
+import { useState } from 'react';
+import StandardHistory from './history/StandardHistory';
+import ScheduledHistory from './history/ScheduledHistory';
+import styles from './History.module.css';
 
-const TABS = [
-  { label: "일반 주문", component: <StandardHistory /> },
-  { label: "조건 주문", component: <ScheduledHistory /> }
-]
+const TABS = (isMyPage?: boolean) => [
+  { label: '일반 주문', component: <StandardHistory isMyPage={isMyPage} /> },
+  { label: '조건 주문', component: <ScheduledHistory /> },
+];
 
-const History = () => {
+interface HistoryProps {
+  isMyPage?: boolean; // isMyPage prop 추가
+}
+
+const History: React.FC<HistoryProps> = ({ isMyPage }) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
-  return(
+  return (
     <div className={styles.container}>
       {/* 탭 */}
       <div className="categoryTabs">
-        {TABS.map((tab, index) => (
+        {TABS(isMyPage).map((tab, index) => (
           <button
             key={index}
             className={`tabButton ${styles.tabButton}
-              ${selectedTab === index ? "activeTab" : ""}`}
+              ${selectedTab === index ? 'activeTab' : ''}`}
             onClick={() => {
               setSelectedTab(index);
             }}
@@ -31,9 +35,7 @@ const History = () => {
         ))}
       </div>
       {/* 선택된 탭의 컴포넌트 렌더링 */}
-      <div className={`content ${styles.content}`}>
-        {TABS[selectedTab].component}
-      </div>
+      <div className={`content ${styles.content}`}>{TABS(isMyPage)[selectedTab].component}</div>
     </div>
   );
 };

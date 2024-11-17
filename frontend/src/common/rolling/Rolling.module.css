@@ -1,6 +1,7 @@
 .rolling {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   color: #fff;
   display: flex;
@@ -14,23 +15,33 @@
   flex-direction: row;
   white-space: nowrap;
   animation: scrollLeft 60s linear infinite;
+  animation-play-state: running;
+}
+
+.pause {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  animation: scrollLeft 60s linear infinite;
+  animation-play-state: paused;
 }
 
 .indexItem {
   margin-right: 40px;
   border-radius: 5px;
   font-size: 11px;
-  min-width: 160px;
+  width: 200px;
+  min-width: 200px;
   padding: 1px 10px;
-  gap: 10px;
+  gap: 5px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   /* border: 1px solid green; */
 }
 
 .indexItem:hover {
   background-color: #242424;
-  border-radius: 50px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
