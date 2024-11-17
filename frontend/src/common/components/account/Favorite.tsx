@@ -22,7 +22,7 @@ const Favorites = () => {
     }
   };
 
-  const handleDelete = (stockCode: string) => (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleDelete = (stockCode: string) => (_: React.MouseEvent<HTMLDivElement>) => {
     sendMessage({
       stock_code: stockCode,
       exit: "True"

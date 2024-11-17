@@ -12,9 +12,9 @@ const Rolling = () => {
   const { kospiData, kosdaqData } = useSocketStore();
 
   const [formattedData, setFormattedData] = useState<JSX.Element[] | null>(null);
+  const [isHovered, setIsHovered] = useState(false); // 애니메이션 상태 제어
 
   const navigate = useNavigate();
-
 
   useEffect(() => {
     if (!indexData) return;
@@ -23,27 +23,43 @@ const Rolling = () => {
       return Object.entries(indices as Record<string, IIndexEntry[]>).map(([subKey, data]) => {
         const previous = data[data.length - 2];
         let current;
-        if (kospiData && subKey === "코스피") {
+        if (kospiData && subKey === '코스피') {
           current = kospiData;
-        } else if (kosdaqData && subKey === "코스닥") {
+        } else if (kosdaqData && subKey === '코스닥') {
           current = kosdaqData;
         } else {
           current = data[data.length - 1];
           // console.log(current);
         }
 
-        const previousValue = Number(previous.bstp_nmix_prpr ? previous.bstp_nmix_prpr : previous.ovrs_nmix_prpr);
-        const currentValue = Number(typeof current !== "object" ? current : "bstp_nmix_prpr" in current ? current.bstp_nmix_prpr : "ovrs_nmix_prpr" in current ? current.ovrs_nmix_prpr : "0");
+        const previousValue = Number(
+          previous.bstp_nmix_prpr ? previous.bstp_nmix_prpr : previous.ovrs_nmix_prpr
+        );
+        const currentValue = Number(
+          typeof current !== 'object'
+            ? current
+            : 'bstp_nmix_prpr' in current
+            ? current.bstp_nmix_prpr
+            : 'ovrs_nmix_prpr' in current
+            ? current.ovrs_nmix_prpr
+            : '0'
+        );
 
         const change = currentValue - previousValue;
         const changeClass = change >= 0 ? styles.positive : styles.negative;
 
         return (
-          <div key={`${key}-${subKey}`} className={styles.indexItem} onClick={() => navigate(`/market/${index}`)}>
+          <div
+            key={`${key}-${subKey}`}
+            className={styles.indexItem}
+            onClick={() => navigate(`/market/${index}`)}
+          >
             <span className={styles.subKey}>{subKey}</span>
             <span className={styles.value}>{Number(currentValue.toFixed(2)).toLocaleString()}</span>
             <span className={changeClass}>
-              {change >= 0 ? " +" : ""}{Number(change.toFixed(2)).toLocaleString()} ({Number(((change / previousValue) * 100).toFixed(2)).toLocaleString()}%)
+              {change >= 0 ? ' +' : ''}
+              {Number(change.toFixed(2)).toLocaleString()} (
+              {Number(((change / previousValue) * 100).toFixed(2)).toLocaleString()}%)
             </span>
           </div>
         );
@@ -59,7 +75,11 @@ const Rolling = () => {
 
   return (
     <div className={styles.rolling}>
-      <div className={styles.inner}>
+      <div
+        className={`${isHovered ? styles.pause : styles.inner}`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {formattedData}
         {formattedData}
       </div>

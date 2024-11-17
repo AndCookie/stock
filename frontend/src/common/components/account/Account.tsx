@@ -1,24 +1,25 @@
-import { useState, CSSProperties } from "react";
-import Balance from "./Balance";
-import History from "./History";
-import Favorites from "./Favorite";
-import styles from "./Account.module.css";
+import { useState, CSSProperties } from 'react';
+import Balance from './Balance';
+import History from './History';
+import Favorites from './Favorite';
+import styles from './Account.module.css';
 
 interface AccountProps {
   contentStyle?: CSSProperties;
+  isMyPage?: boolean;
 }
 
-const Account: React.FC<AccountProps> = ({ contentStyle }) => {
-  const [selectedCategory, setSelectedCategory] = useState("보유 종목");
+const Account: React.FC<AccountProps> = ({ contentStyle, isMyPage }) => {
+  const [selectedCategory, setSelectedCategory] = useState('보유 종목');
 
-  const categories = ["보유 종목", "주문 내역", "관심 종목"];
+  const categories = ['보유 종목', '주문 내역', '관심 종목'];
 
   const renderContent = () => {
-    if (selectedCategory === "보유 종목") {
+    if (selectedCategory === '보유 종목') {
       return <Balance />;
-    } else if (selectedCategory === "주문 내역") {
-      return <History />;
-    } else if (selectedCategory === "관심 종목") {
+    } else if (selectedCategory === '주문 내역') {
+      return <History isMyPage={isMyPage} />;
+    } else if (selectedCategory === '관심 종목') {
       return <Favorites />;
     }
   };
@@ -29,9 +30,7 @@ const Account: React.FC<AccountProps> = ({ contentStyle }) => {
         {categories.map((category) => (
           <button
             key={category}
-            className={`${"tabButton"} ${
-              selectedCategory === category ? "activeTab" : ""
-            }`}
+            className={`${'tabButton'} ${selectedCategory === category ? 'activeTab' : ''}`}
             onClick={() => setSelectedCategory(category)}
           >
             {category}
