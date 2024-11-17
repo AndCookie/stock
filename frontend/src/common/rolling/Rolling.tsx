@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useIndexStore } from '../../store/useIndexStore';
 import useSocketStore from '../../store/useSocketStore';
@@ -12,10 +13,13 @@ const Rolling = () => {
 
   const [formattedData, setFormattedData] = useState<JSX.Element[] | null>(null);
 
+  const navigate = useNavigate();
+
+
   useEffect(() => {
     if (!indexData) return;
 
-    const updatedData = Object.entries(indexData).flatMap(([key, indices]) => {
+    const updatedData = Object.entries(indexData).flatMap(([key, indices], index) => {
       return Object.entries(indices as Record<string, IIndexEntry[]>).map(([subKey, data]) => {
         const previous = data[data.length - 2];
         let current;
@@ -35,7 +39,7 @@ const Rolling = () => {
         const changeClass = change >= 0 ? styles.positive : styles.negative;
 
         return (
-          <div key={`${key}-${subKey}`} className={styles.indexItem}>
+          <div key={`${key}-${subKey}`} className={styles.indexItem} onClick={() => navigate(`/market/${index}`)}>
             <span className={styles.subKey}>{subKey}</span>
             <span className={styles.value}>{Number(currentValue.toFixed(2)).toLocaleString()}</span>
             <span className={changeClass}>
