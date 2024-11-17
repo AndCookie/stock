@@ -96,7 +96,7 @@ export interface IScheduledHistoryState {
   fetchScheduledHistoryData: () => Promise<void>;
 }
 
-interface IFavoriteData {
+export interface IFavoriteData {
   stock_code: string;
   stock_name: string;
   stock_price: string;
@@ -219,11 +219,13 @@ export interface ITradingData {
 }
 
 export interface ISocketStore {
+  stockCode: string | null;
   kospiData: IIndicatorData | null;
   kosdaqData: IIndicatorData | null;
   orderBookData: IOrderBookData | null;
   tradingData: ITradingData | null;
 
+  setStockCode: (data: string) => void;
   setKospiData: (data: IIndicatorData) => void;
   setKosdaqData: (data: IIndicatorData) => void;
   setOrderBookData: (data: IOrderBookData) => void;
