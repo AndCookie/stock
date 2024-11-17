@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import fetchTrader from "./hooks/fetchTrader";
+import fetchTraderTrend from "./hooks/fetchTraderTrend";
 import { ITrader } from "./definitions";
 
 import styles from "./TradingTrend.module.css";
@@ -17,7 +17,7 @@ const Trader = () => {
 
     const fetchData = async () => {
       try {
-        const data = await fetchTrader(stockCode);
+        const data = await fetchTraderTrend("trader", stockCode);
         setRenderedTraderData(data);
       } catch (error) {
         console.error(error);

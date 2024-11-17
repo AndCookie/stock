@@ -79,5 +79,5 @@ export interface IInvestor {
   date: string;
   foreigner: number;
   corporate: number;
-  individual: number;
+  individual: number:
 }
