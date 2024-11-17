@@ -657,16 +657,19 @@ def trend(request):
             "fid_input_iscd": stock_code,
         }
         response =  requests.get(url, headers=headers, params=params)
+        data = []
         if response.status_code == 200:
-            output = response.json()['output'][0]
-            data = {
-                "prsn_ntby_qty": output.get("prsn_ntby_qty"), 
-                "frgn_ntby_qty": output.get("frgn_ntby_qty"), 
-                "orgn_ntby_qty": output.get("orgn_ntby_qty"), 
-                "prsn_ntby_tr_pbmn": output.get("prsn_ntby_tr_pbmn"), 
-                "frgn_ntby_tr_pbmn": output.get("frgn_ntby_tr_pbmn"), 
-                "orgn_ntby_tr_pbmn": output.get("orgn_ntby_tr_pbmn"), 
-            }
+            outputs = response.json()['output']
+            for output in outputs:    
+                data.append({
+                    "stck_bsop_date": output.get("stck_bsop_date"), 
+                    "prsn_ntby_qty": output.get("prsn_ntby_qty"), 
+                    "frgn_ntby_qty": output.get("frgn_ntby_qty"), 
+                    "orgn_ntby_qty": output.get("orgn_ntby_qty"), 
+                    "prsn_ntby_tr_pbmn": output.get("prsn_ntby_tr_pbmn"), 
+                    "frgn_ntby_tr_pbmn": output.get("frgn_ntby_tr_pbmn"), 
+                    "orgn_ntby_tr_pbmn": output.get("orgn_ntby_tr_pbmn"), 
+                })
             return Response(data, status=status.HTTP_200_OK)
         else:
             print(response.json())
