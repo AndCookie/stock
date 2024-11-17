@@ -568,7 +568,7 @@ def orders(request):
         else:
             print(response.json())
             return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
-
+    
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def holdings(request):
