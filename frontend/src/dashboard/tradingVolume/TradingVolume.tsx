@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import useSocketStore from '../../store/useSocketStore';
 import { ITradingData } from '../../store/definitions';
 
-import styles from './TradingVolume.module.css'
+import styles from './TradingVolume.module.css';
 
 const TradingVolume: React.FC = () => {
   const [renderedTradingData, setRenderedTradingData] = useState<ITradingData[]>([]);
@@ -19,13 +19,11 @@ const TradingVolume: React.FC = () => {
     });
   }, [tradingData]);
 
-  if (!renderedTradingData) return <div />
+  if (!renderedTradingData) return <div />;
 
   return (
     <div className={styles.container}>
-      <div className={styles.categoryTabs}>
-        시세
-      </div>
+      <div className={styles.categoryTabs}>시세</div>
 
       <div className={styles.content}>
         <table className={styles.tradingTable}>
@@ -43,13 +41,22 @@ const TradingVolume: React.FC = () => {
                 <td className={styles.tradePrice}>{Number(data.STCK_PRPR).toLocaleString()}</td>
                 <td
                   className={styles.tradeVolume}
-                  style={{ color: data.CCLD_DVSN === 1 ? '#FF4F4F' : data.CCLD_DVSN === 5 ? '#4881FF' : 'inherit' }}
+                  style={{
+                    color:
+                      data.CCLD_DVSN === 1
+                        ? '#FF4F4F'
+                        : data.CCLD_DVSN === 5
+                        ? '#4881FF'
+                        : '#26d4a5',
+                  }}
                 >
                   {Number(data.CNTG_VOL).toLocaleString()}
                 </td>
                 <td className={styles.acmlVolume}>{Number(data.ACML_VOL).toLocaleString()}</td>
                 <td className={styles.tradeTime}>
-                  {data.STCK_CNTG_HOUR.toString().slice(0, 2)}:{data.STCK_CNTG_HOUR.toString().slice(2, 4)}:{data.STCK_CNTG_HOUR.toString().slice(4, 6)}
+                  {data.STCK_CNTG_HOUR.toString().slice(0, 2)}:
+                  {data.STCK_CNTG_HOUR.toString().slice(2, 4)}:
+                  {data.STCK_CNTG_HOUR.toString().slice(4, 6)}
                 </td>
               </tr>
             ))}

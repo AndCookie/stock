@@ -36,29 +36,49 @@
   border-radius: 8px;
   display: flex;
   flex-direction: row;
-  align-items: space-between;
+  align-items: center;
   justify-content: space-around;
   min-width: 270px !important;
   height: 120px;
-  margin: 0 20px;
+  margin: 0 10px;
   color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border: 2px solid #444;
   cursor: pointer;
 }
 
-.textInfo,
+/* .textInfo,
 .imageInfo {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid burlywood; */
-}
+} */
 
 .textInfo {
-  width: 120px;
-  margin: 10px;
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  max-width: 40%;
+  padding: 10px 0 10px 5px;
+  box-sizing: border-box;
+}
+
+.imageInfo {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  max-width: 40%;
+  padding: 0;
+  height: 100%;
+  box-sizing: border-box;
+  /* border: 1px solid blue; */
 }
 
 .title {
@@ -90,9 +110,4 @@
 .percentage {
   font-size: 14px;
   font-weight: 500;
-}
-
-.imageInfo {
-  width: 130px;
-  margin: auto 10px auto 5px;
 }

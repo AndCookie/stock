@@ -1,15 +1,21 @@
-import { useState, useEffect } from "react";
-import { useStandardHistoryStore } from "../../../../store/useHistoryStore";
-import { IStandardHistoryData } from "../../../../store/definitions";
-import styles from "../History.module.css";
+import { useState, useEffect } from 'react';
+import { useStandardHistoryStore } from '../../../../store/useHistoryStore';
+import { IStandardHistoryData } from '../../../../store/definitions';
+import styles from '../History.module.css';
 
-const StandardHistory = () => {
-  const filter = "ALL";
+interface StandardHistoryProps {
+  isMyPage?: boolean; // 추가된 prop
+}
+
+const StandardHistory: React.FC<StandardHistoryProps> = ({ isMyPage }) => {
+  const filter = 'ALL';
   const today = new Date();
   const initialYear = today.getFullYear();
   const initialMonth = today.getMonth() + 1;
   const { standardHistoryData, fetchStandardHistoryData } = useStandardHistoryStore();
-  const [filteredHistoryData, setFilteredHistoryData] = useState<IStandardHistoryData[] | null>(null);
+  const [filteredHistoryData, setFilteredHistoryData] = useState<IStandardHistoryData[] | null>(
+    null
+  );
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -38,7 +44,7 @@ const StandardHistory = () => {
     const lastDates: [number, number][] = [];
     let year = initialYear;
     let month = initialMonth;
-    
+
     // 60개월이 너무 많으면 아래에 i < 60을 조정하면 됩니다.
     for (let i = 0; i < 60; i++) {
       lastDates.push([year, month]);
@@ -48,7 +54,7 @@ const StandardHistory = () => {
         year -= 1;
       }
     }
-    
+
     return lastDates;
   };
 
@@ -60,13 +66,11 @@ const StandardHistory = () => {
 
   useEffect(() => {
     if (standardHistoryData) {
-      console.log("무야호", standardHistoryData)
-      if (filter === "ALL") {
+      console.log('무야호', standardHistoryData);
+      if (filter === 'ALL') {
         setFilteredHistoryData(standardHistoryData);
       } else {
-        setFilteredHistoryData(
-          standardHistoryData.filter(({ pdno }) => pdno === filter)
-        );
+        setFilteredHistoryData(standardHistoryData.filter(({ pdno }) => pdno === filter));
       }
       setSelectedYear(initialYear);
       setSelectedMonth(initialMonth);
@@ -77,40 +81,51 @@ const StandardHistory = () => {
   const filteredByDate = (filteredHistoryData || []).filter(({ ord_dt }) => {
     const orderYear = ord_dt.slice(0, 4);
     const orderMonth = ord_dt.slice(4, 6);
-    return (
-      parseInt(orderYear) === selectedYear &&
-      parseInt(orderMonth) === selectedMonth
-    );
+    return parseInt(orderYear) === selectedYear && parseInt(orderMonth) === selectedMonth;
   });
-  const completedAndCancelledHistoryData = filteredByDate.filter((order) => order.mode === "completed" || order.mode === "cancelled")
-  const pendingHistoryData = filteredByDate.filter((order) => order.mode === "pending")
+  const completedAndCancelledHistoryData = filteredByDate.filter(
+    (order) => order.mode === 'completed' || order.mode === 'cancelled'
+  );
+  const pendingHistoryData = filteredByDate.filter((order) => order.mode === 'pending');
   const last60Months = getLast60Months();
 
   const renderHistoryData = (historyData: IStandardHistoryData[]) =>
     historyData.length > 0 ? (
       historyData.map((order, index) => (
-        <div key={index} className={styles.order}>
-          <span className={styles.date}>{formatDate(order.ord_dt)}</span>
-          <div className={styles.orderInfo}>
+        <div key={index} className={`${isMyPage ? styles.orderModal : styles.order}`}>
+          <span className={`${isMyPage ? styles.dateModal : styles.date}`}>
+            {formatDate(order.ord_dt)}
+          </span>
+          <div className={`${isMyPage ? styles.orderInfoModal : styles.orderInfo}`}>
             <div className={styles.name}>{order.prdt_name}</div>
             <div className={styles.orderDetail}>
               <span
-                className={`${styles.status} ${order.sll_buy_dvsn_cd === "BUY"
-                  ? styles["status-buy"]
-                  : styles["status-sell"]
-                  }`}
+                className={`${isMyPage ? styles.statusModal : styles.status} ${
+                  order.mode === 'cancelled'
+                    ? styles['status-cancelled']
+                    : order.mode === 'pending'
+                    ? styles['status-pending']
+                    : order.sll_buy_dvsn_cd === 'BUY'
+                    ? styles['status-buy']
+                    : styles['status-sell']
+                }`}
               >
-                {order.sll_buy_dvsn_cd === "BUY" ? "구매" : "판매"}
-                {" "}
-                {order.mode === "completed" ? "완료" : order.mode === "pending" ? "대기" : "취소"}
-              </span>{" "}
-              · <span className={styles.shares}>{order.ord_qty}주</span>
+                {order.sll_buy_dvsn_cd === 'BUY' ? '구매' : '판매'}{' '}
+                {order.mode === 'completed' ? '완료' : order.mode === 'pending' ? '대기' : '취소'}
+              </span>{' '}
+              ·{' '}
+              <span className={`${isMyPage ? styles.sharesModal : styles.shares}`}>
+                {order.ord_qty}주
+              </span>
             </div>
           </div>
-          {order.mode === "cancelled" ? (
-            <span className={styles.price}></span>
+          {order.mode === 'cancelled' ? (
+            <div className={styles.price}></div>
           ) : (
-            <span className={styles.price}>주당 {order.avg_prvs.toLocaleString()}원</span>
+            <div className={`${styles.price} ${isMyPage ? styles.priceModal : ''}`}>
+              <span className={styles.priceTerm}>주당</span> {isMyPage && <br />}
+              {order.avg_prvs.toLocaleString()}원
+            </div>
           )}
         </div>
       ))
@@ -118,12 +133,12 @@ const StandardHistory = () => {
       <p className={styles.emptyMessage}>주문내역이 없습니다</p>
     );
 
-  return(
+  return (
     <div>
       <div className={styles.dateDropdown}>
         <button className={styles.filterButton} onClick={toggleDropdown}>
-          {selectedDate || "날짜 선택"}{" "}
-          <span className={styles.arrow}>{isDropdownOpen ? "▲" : "▼"}</span>
+          {selectedDate || '날짜 선택'}{' '}
+          <span className={styles.arrow}>{isDropdownOpen ? '▲' : '▼'}</span>
         </button>
         {isDropdownOpen && (
           <div className={styles.dropdownContent}>
@@ -151,4 +166,4 @@ const StandardHistory = () => {
   );
 };
 
-export default StandardHistory
+export default StandardHistory;
