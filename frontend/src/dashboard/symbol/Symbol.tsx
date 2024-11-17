@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import codeToName from '../../assets/codeToName.json';
 import { usePastStockStore } from '../../store/usePastStockStore';
 import { useMinuteStockStore } from '../../store/useMinuteStockStore';
-import useSocketStore from '../../store/useSocketStore';
+import useSocketStore, { sendMessage } from '../../store/useSocketStore';
 import { useFavoriteStore } from '../../store/useFavoriteStore';
 
 import { IWidgetComponentProps } from '../../common/definitions';
@@ -34,6 +34,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
 
   const favoriteData = useFavoriteStore((state) => state.favoriteData);
+  const fetchFavoriteData = useFavoriteStore((state) => state.fetchFavoriteData);
   const postFavoriteData = useFavoriteStore((state) => state.postFavoriteData);
   const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
 
@@ -48,7 +49,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) -
         Number(yesterdayStockData)) /
         Number(yesterdayStockData)) *
-        100
+      100
     );
   }, [minuteStockData, yesterdayStockData]);
 
@@ -69,7 +70,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
     setRenderedChangeRate(
       ((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) *
-        100
+      100
     );
   }, [tradingData]);
 
@@ -80,9 +81,18 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     // TODO: post 요청을 통해 서버 상태 업데이트
     setIsFavorite((prev) => !prev);
     if (!isFavorite) {
+      sendMessage({
+        stock_code: stockCode,
+      })
       postFavoriteData(stockCode);
+      fetchFavoriteData();
     } else {
+      sendMessage({
+        stock_code: stockCode,
+        exit: "True",
+      })
       deleteFavoriteData(stockCode);
+      fetchFavoriteData();
     }
   };
 
@@ -117,14 +127,14 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       <div className={styles.rightSection}>
         <div
           className={styles.price}
-          // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
+        // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
         >
-          {Number(renderedValue.toFixed(2)).toLocaleString()}원
+          {Number(renderedValue.toFixed(0)).toLocaleString()}원
         </div>
         <div className={`${styles.change}`}>
           <span style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}>
             {renderedChangeValue >= 0 ? '+' : ''}
-            {Number(renderedChangeValue.toFixed(2)).toLocaleString()}원
+            {Number(renderedChangeValue.toFixed(0)).toLocaleString()}원
           </span>
           <span style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}>
             ({renderedChangeRate >= 0 ? '+' : ''}

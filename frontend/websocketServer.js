@@ -100,16 +100,61 @@ const sendData = (ws, data) => {
   }
 };
 
+const wsConnections = {};
+const activeStockCodes = {};
+
+function startBaseInterval() {
+  setInterval(() => {
+    Object.values(wsConnections).forEach((ws) => {
+      sendData(ws, fakeKospiData());
+      sendData(ws, fakeKosdaqData());
+    });
+  }, 5000);
+}
+
 socket.on('connection', (ws) => {
-  const intervalId = setInterval(() => {
-    sendData(ws, fakeKospiData());
-    sendData(ws, fakeKosdaqData());
-    sendData(ws, fakeTradingData());
-    sendData(ws, fakeOrderBookData());
-  }, 1000);
+  wsConnections[ws] = ws;
+
+  startBaseInterval();
+
+  ws.on('message', (message) => {
+    try {
+      const parsedMessage = JSON.parse(message);
+
+      if (parsedMessage.stock_code) {
+        const stockCode = parsedMessage.stock_code;
+
+        if (!activeStockCodes[stockCode]) {
+          activeStockCodes[stockCode] = setInterval(() => {
+            const tradingData = { stock_code: stockCode, ...fakeTradingData() };
+            const orderBookData = { stock_code: stockCode, ...fakeOrderBookData() };
+
+            sendData(ws, tradingData);
+            sendData(ws, orderBookData);
+          }, 1000);
+        }
+      }
+
+      if (parsedMessage.exit && parsedMessage.stock_code) {
+        const stockCodeToExit = parsedMessage.stock_code;
+
+        if (activeStockCodes[stockCodeToExit]) {
+          clearInterval(activeStockCodes[stockCodeToExit]);
+          delete activeStockCodes[stockCodeToExit];
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
   ws.on('close', () => {
-    clearInterval(intervalId);
+    delete wsConnections[ws];
+
+    Object.keys(activeStockCodes).forEach((stockCode) => {
+      clearInterval(activeStockCodes[stockCode]);
+      delete activeStockCodes[stockCode];
+    });
   });
 
   ws.on('error', (error) => {
