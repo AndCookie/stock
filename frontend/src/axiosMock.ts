@@ -5,50 +5,83 @@ const mock = new AxiosMockAdapter(axios);
 
 const BASEURL = "http://localhost:3000/api/v1/";
 
-// home-indicators
-const fakeIndexData = () => {
-  const startDate = new Date("2024-07-01");
-  const endDate = new Date("2024-10-30");
+// indicators
+function fakeIndicatorData() {
+  const data = [];
+  const start = new Date("2024-01-01");
+  const end = new Date(new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split("T")[0]);
 
-  const fakeData = [];
+  const currentDate = start;
+  let previousValue = 1000;
 
-  const currentDate = new Date(startDate);
-  let indexValue = 3000;
+  while (currentDate <= end) {
+    const stck_bsop_date = currentDate.toISOString().split("T")[0].replace(/-/g, "");
 
-  while (currentDate <= endDate) {
-    const dailyChangeRate = (Math.random() - 0.5) * 0.01;
-    indexValue = parseFloat((indexValue * (1 + dailyChangeRate)).toFixed(2));
+    const changeFactor = Math.random() * 0.04 - 0.02; // -2% ~ +2% 변동
+    const bstp_nmix_prpr = (previousValue * (1 + changeFactor)).toFixed(2);
 
-    fakeData.push({
-      time: currentDate.toISOString().split("T")[0],
-      value: indexValue,
+    data.push({
+      stck_bsop_date,
+      bstp_nmix_prpr: parseFloat(bstp_nmix_prpr).toString(),
     });
 
+    previousValue = parseFloat(bstp_nmix_prpr);
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  return fakeData;
-};
+  return data;
+}
 
-const indexData = {
-  국내: {
-    코스피: fakeIndexData(),
-    코스닥: fakeIndexData(),
-  },
-  해외: {
-    다우존스: fakeIndexData(),
-    나스닥: fakeIndexData(),
-  },
-  환율: {
-    "원/달러": fakeIndexData(),
-    "엔/달러": fakeIndexData(),
-  },
-  원자재: {
-    WTI: fakeIndexData(),
-    금: fakeIndexData(),
-  },
-};
+mock.onGet(BASEURL + "stocks/kospi/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/kosdaq/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/nasdaq/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/dji/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/yen-dollar/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/won-dollar/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/wti/").reply(200, fakeIndicatorData());
+mock.onGet(BASEURL + "stocks/gold/").reply(200, fakeIndicatorData());
 
-mock.onGet(BASEURL + "index-detail").reply(200, indexData);
+// home-stockRanking
+function fakeStockRankingData() {
+  const stockNames = ["삼성전자", "LG전자", "카카오", "NAVER", "셀트리온", "삼성SDI", "현대모비스"];
+  const stockCodeList = ["005930", "066570", "035720", "035420", "068270", "006400", "012330"]
+
+  const data = stockNames.map((name, index) => {
+    const mksc_shrn_iscd = stockCodeList[index];
+    const stck_prpr = Math.floor(Math.random() * 50000) + 30000;
+    const prdy_vrss = Math.floor(Math.random() * 2000) - 1000;
+    const prdy_ctrt = ((prdy_vrss / stck_prpr) * 100).toFixed(2);
+    const prdy_vrss_sign = prdy_vrss >= 0 ? "5" : "1";
+
+    return {
+      hts_kor_isnm: name,
+      mksc_shrn_iscd: mksc_shrn_iscd,
+      data_rank: (index + 1).toString(),
+      stck_prpr: stck_prpr.toString(),
+      prdy_vrss: prdy_vrss.toString(),
+      prdy_vrss_sign,
+      prdy_ctrt,
+      acml_vol: (Math.floor(Math.random() * 1000000) + 100000).toString(),
+      prdy_vol: (Math.floor(Math.random() * 1000000) + 100000).toString(),
+      lstn_stcn: (Math.floor(Math.random() * 5000000) + 1000000).toString(),
+      avrg_vol: (Math.floor(Math.random() * 100000) + 10000).toString(),
+      n_befr_clpr_vrss_prpr_rate: ((Math.random() * 2 - 1).toFixed(2)).toString(),
+      vol_intr: (Math.random() * 100).toFixed(2),
+      vol_tnrt: (Math.random() * 0.5).toFixed(2),
+      nday_vol_tnrt: (Math.random() * 0.5).toFixed(2),
+      avrg_tr_pbmn: (Math.floor(Math.random() * 100000000) + 10000000).toString(),
+      tr_pbmn_tnrt: (Math.random() * 0.5).toFixed(2),
+      nday_tr_pbmn_tnrt: (Math.random() * 0.5).toFixed(2),
+      acml_tr_pbmn: (Math.floor(Math.random() * 1000000000) + 100000000).toString(),
+    };
+  });
+
+  return data;
+}
+
+mock.onGet(BASEURL + "stocks/volume-ranking/").reply(200, fakeStockRankingData());
+mock.onGet(BASEURL + "stocks/amount-ranking/").reply(200, fakeStockRankingData());
+mock.onGet(BASEURL + "stocks/advance-ranking/").reply(200, fakeStockRankingData());
+mock.onGet(BASEURL + "stocks/decline-ranking/").reply(200, fakeStockRankingData());
 
 // home-aiNews
 mock.onGet(BASEURL + "ai-news").reply(200, [
@@ -111,84 +144,125 @@ mock.onGet(BASEURL + "account/balance").reply(200, {
   ],
 });
 
-// home-account-history
-mock.onGet(BASEURL + "account/history").reply(200, [
-  {
-    date: "2024-06-16",
-    name: "카카오",
-    status: "구매완료",
-    shares: 1,
-    price: 60000,
+// home-account-history 일반주문
+mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
+  { // 체결 지정가 매수
+    odno: "0001569139", // 주문번호
+    pdno: "009150", // 종목코드
+    prdt_name: "삼성전기", // 종목명
+    sll_buy_dvsn_cd: "BUY", // 구매/판매
+    ord_dt: "20240101", // 주문일자
+    ord_tmd: "131438", // 주문시간
+    ord_qty: "90", // 주문수량
+    tot_ccld_qty: "90", // 총체결수량
+    cncl_cfrm_qty: "0", // 취소확인수량
+    rmn_qty: "0", // 잔여수량
+    ord_unpr: "140000", // 주문단가
+    avg_prvs: "140000", // 체결평균가
   },
-  {
-    date: "2024-06-16",
-    name: "카카오",
-    status: "판매완료",
-    shares: 1,
-    price: 60000,
+  { // 체결 시장가 매수
+    odno: "0001569140",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20240101",
+    ord_tmd: "142042",
+    ord_qty: "50",
+    tot_ccld_qty: "50",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "150000", // 참고 시장가가 150500일 때 25주, 시장가가 149500일 때 25주 체결되면 평단이 150000임
   },
-  {
-    date: "2024-07-01",
-    name: "삼성전자",
-    status: "구매완료",
-    shares: 3,
-    price: 50000,
+  { // 체결 지정가 매도
+    odno: "0001569141",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_dt: "20240201",
+    ord_tmd: "100128",
+    ord_qty: "60",
+    tot_ccld_qty: "60",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "170000",
+    avg_prvs: "170000",
   },
-  {
-    date: "2024-07-11",
-    name: "삼성전자",
-    status: "판매완료",
-    shares: 3,
-    price: 50000,
+  { // 체결 시장가 매도
+    odno: "0001569142",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_dt: "20240301",
+    ord_tmd: "093850",
+    ord_qty: "80",
+    tot_ccld_qty: "80",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "160000",
   },
-  {
-    date: "2024-08-08",
-    name: "피엔티",
-    status: "구매완료",
-    shares: 19,
-    price: 52500,
+  { // 취소
+    odno: "0001569143",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241010",
+    ord_tmd: "130303",
+    ord_qty: "80",
+    tot_ccld_qty: "0",
+    cncl_cfrm_qty: "80",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "180000",
   },
-  {
-    date: "2024-08-08",
-    name: "피엔티",
-    status: "판매완료",
-    shares: 19,
-    price: 52500,
+  { // 미체결
+    odno: "0001569144",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241010",
+    ord_tmd: "130504",
+    ord_qty: "80",
+    tot_ccld_qty: "40",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "40",
+    ord_unpr: "0",
+    avg_prvs: "180000",
   },
-  {
-    date: "2024-09-09",
-    name: "한진자동차",
-    status: "구매대기",
-    shares: 9,
-    price: 90000,
+  { // 체결 시장가 매도
+    odno: "0001569145",
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241020",
+    ord_tmd: "093850",
+    ord_qty: "80",
+    tot_ccld_qty: "80",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "160000",
   },
-  {
-    date: "2024-10-10",
-    name: "우진전자",
-    status: "판매대기",
-    shares: 10,
-    price: 100000,
+]);
+
+// home-account-history 조건주문
+mock.onGet(BASEURL + "stocks/history/scheduled").reply(200, [
+  { // 지정가 조건주문
+    pdno: "009150", // 종목코드
+    prdt_name: "삼성전기", // 종목명
+    sll_buy_dvsn_cd: "SELL", // 구매/판매
+    ord_qty: "200", // 주문수량
+    ord_unpr: "120000", // 주문단가
+    tar_pr: "120000", // 감시가격
   },
-  {
-    date: "2024-11-11",
-    name: "병주증권",
-    status: "구매완료",
-    shares: 11,
-    price: 100000,
-  },
-  {
-    date: "2024-11-15",
-    name: "광영오버시스리미티드",
-    status: "판매대기",
-    shares: 11,
-    price: 1111111,
-  },
-  {
-    date: "2024-11-24",
-    name: "태완엘레베이터",
-    status: "판매완료",
-    shares: 24,
-    price: 1124124,
+  { // 시장가 조건주문
+    pdno: "009150",
+    prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_qty: "100",
+    ord_unpr: "0",
+    tar_pr: "130000",
   },
 ]);
 
@@ -300,69 +374,85 @@ mock.onGet(BASEURL + "info/1/disclosure").reply(200, [
 ]);
 
 // dashboard-chart
-const fakeStockData = () => {
-  const fakeData = [];
+function fakeStockData() {
+  const data = [];
+  const start = new Date("2020-01-01");
+  const end = new Date(new Date().toISOString().split('T')[0]);
 
-  const startDate = new Date("2024-07-01");
-  const endDate = new Date("2024-10-30");
+  let lastClosePrice = 50000;
 
-  const currentDate = new Date(startDate);
-  let previousClose = 50000;
+  for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
+    const closePrice = Math.max(10000, lastClosePrice + Math.floor(Math.random() * 1000 - 500));
+    const openPrice = closePrice + Math.floor(Math.random() * 200 - 100);
+    const highPrice = Math.max(openPrice, closePrice) + Math.floor(Math.random() * 200);
+    const lowPrice = Math.min(openPrice, closePrice) - Math.floor(Math.random() * 200);
+    const dailyVolume = Math.floor(Math.random() * 1000000 + 500000)
 
-  while (currentDate <= endDate) {
-    const open = parseFloat(
-      (previousClose * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
-    );
-    const high = parseFloat((open * (1 + Math.random() * 0.02)).toFixed(2));
-    const low = parseFloat((open * (1 - Math.random() * 0.02)).toFixed(2));
-    const close = parseFloat(
-      (open * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)
-    );
-
-    fakeData.push({
-      time: currentDate.toISOString().split("T")[0],
-      open,
-      high,
-      low,
-      close,
+    data.push({
+      stck_bsop_date: date.toISOString().split('T')[0].replace(/-/g, ''),
+      stck_clpr: closePrice.toString(),
+      stck_oprc: openPrice.toString(),
+      stck_hgpr: highPrice.toString(),
+      stck_lwpr: lowPrice.toString(),
+      acml_vol: dailyVolume.toString(),
+      acml_tr_pbmn: (dailyVolume * closePrice).toString(),
+      flng_cls_code: "00",
+      prtt_rate: "0.00",
+      mod_yn: "N",
+      prdy_vrss_sign: Math.random() > 0.5 ? "1" : "2",
+      prdy_vrss: Math.floor(Math.random() * 500).toString(),
+      revl_issu_reas: "-",
     });
 
-    previousClose = close;
-    currentDate.setDate(currentDate.getDate() + 1);
+    lastClosePrice = closePrice;
   }
+  return data;
+}
 
-  return fakeData;
-};
+mock.onGet(BASEURL + "stocks/stock-price/").reply(200, fakeStockData());
 
-const fakeVolumeData = () => {
-  const fakeData = [];
+// dashboard-tradingVolume
+function fakeMinuteData() {
+  const data = [];
+  const now = new Date();
+  const today = now.toISOString().split("T")[0].replace(/-/g, "");
 
-  const startDate = new Date("2024-07-01");
-  const endDate = new Date("2024-10-30");
+  const startTime = new Date();
+  startTime.setHours(0, 0, 0, 0);
 
-  const currentDate = new Date(startDate);
-  const minVolume = 1000000;
-  const maxVolume = 5000000;
+  while (startTime <= now) {
+    const hour = startTime.toTimeString().split(" ")[0].replace(/:/g, "").substring(0, 6);
 
-  while (currentDate <= endDate) {
-    const volume = Math.floor(
-      Math.random() * (maxVolume - minVolume) + minVolume
-    );
+    const randomPrice = (base: number) => (base + Math.floor(Math.random() * 100 - 50)).toString();
 
-    fakeData.push({
-      time: currentDate.toISOString().split("T")[0],
-      value: volume,
+    const basePrice = 58000;
+    const openPrice = randomPrice(basePrice);
+    const highPrice = randomPrice(basePrice + 50);
+    const lowPrice = randomPrice(basePrice - 50);
+    const currentPrice = randomPrice(basePrice);
+    const volume = (1000 + Math.floor(Math.random() * 5000)).toString();
+    const totalVolume = (Math.floor(Math.random() * 1e9)).toString();
+
+    data.push({
+      stck_bsop_date: today,
+      stck_cntg_hour: hour,
+      stck_prpr: currentPrice,
+      stck_oprc: openPrice,
+      stck_hgpr: highPrice,
+      stck_lwpr: lowPrice,
+      cntg_vol: volume,
+      acml_tr_pbmn: totalVolume,
     });
 
-    currentDate.setDate(currentDate.getDate() + 1);
+    startTime.setMinutes(startTime.getMinutes() + 1);
   }
 
-  return fakeData;
-};
+  return data;
+}
 
-mock.onGet(BASEURL + "stockDetail").reply(200, fakeStockData());
-mock.onGet(BASEURL + "volumeDetail").reply(200, fakeVolumeData());
+mock.onGet(BASEURL + "stocks/minute-price/").reply(200, fakeMinuteData());
 
+// dashboard-tradingTrend-daily
 const fakeDailyData = () => {
   const data = [];
   const today = new Date();
@@ -386,7 +476,7 @@ const fakeDailyData = () => {
 
   return data;
 };
-// dashboard-tradingTrend-daily
+
 mock.onGet(BASEURL + "trend/1/daily").reply(200, fakeDailyData());
 
 // dashboad-tradingTrend-trader
@@ -487,3 +577,9 @@ mock.onGet(BASEURL + "search").reply(200, {
 });
 
 export default mock;
+
+// dashboard-trading-order
+mock.onPost(BASEURL + "stocks/order/").reply(config => {
+  const orderData = JSON.parse(config.data);
+  return [200, { message: "Order placed successfully", orderData }]
+})

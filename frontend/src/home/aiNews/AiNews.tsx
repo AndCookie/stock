@@ -2,7 +2,7 @@ import { useState } from "react";
 import NewsCard from "./NewsCard";
 import NewsModal from "./NewsModal";
 import { INews } from "./definitions";
-import useFetch from "../../common/useFetch";
+import useFetch from "../../common/hooks/useFetch";
 import styles from './AiNews.module.css';
 
 

@@ -1,18 +1,21 @@
-// 거래동향
+import { useEffect, useState } from "react";
+import { usePastStockStore } from "../../store/usePastStockStore";
 
-import useFetch from "../../common/useFetch";
-import { IDaily } from "./definitions";
 import styles from "./TradingTrend.module.css";
+import { IStockData } from "../../store/definitions";
 
 const Daily = () => {
-  // TODO: companyId 설정
-  const companyId = 1;
-  const { data, loading, error } = useFetch<IDaily[]>(
-    `trend/${companyId}/daily`
-  );
+  const { dailyPastStockData } = usePastStockStore();
+  const [renderedDailyPastStockData, setRenderedDailyPastStockData] = useState<IStockData[] | null>(null);
 
-  if (loading) return <p>loading...</p>;
-  if (error) return <p>error</p>;
+  useEffect(() => {
+    if (!dailyPastStockData) return;
+
+    setRenderedDailyPastStockData([...dailyPastStockData].reverse());
+  }, [dailyPastStockData])
+
+  if (!renderedDailyPastStockData) return <div />;
+
   return (
     <div className={styles.subContent}>
       <table>
@@ -26,22 +29,22 @@ const Daily = () => {
           </tr>
         </thead>
         <tbody>
-          {data &&
-            data.map((item, index) => (
-              <tr key={index}>
-                <td>{item.date}</td>
-                <td className={item.change > 0 ? styles.positive : styles.negative}>
-                  {item.price.toLocaleString()}
-                </td>
-                <td className={item.change > 0 ? styles.positive : styles.negative}>
-                  {item.change > 0 ? `▲ ${item.change.toLocaleString()}` : `▼ ${Math.abs(item.change).toLocaleString()}`}
-                </td>
-                <td className={item.rate > 0 ? styles.positive : styles.negative}>
-                  {item.rate > 0 ? `+${item.rate.toLocaleString()}%` : `${item.rate.toLocaleString()}%`}
-                </td>
-                <td>{item.volume.toLocaleString()}</td>
-              </tr>
-            ))}
+          {renderedDailyPastStockData.map((item, index) => (
+            <tr key={index}>
+              <td>{item.stck_bsop_date.slice(0, 4)}-{item.stck_bsop_date.slice(4, 6)}-{item.stck_bsop_date.slice(6, 8)}</td>
+              <td className={Number(item.prdy_vrss) >= 0 ? styles.positive : styles.negative}>
+                {Number(item.stck_clpr).toLocaleString()}
+              </td>
+              <td className={Number(item.prdy_vrss) >= 0 ? styles.positive : styles.negative}>
+                {Number(item.prdy_vrss) >= 0 ? `▲ ${Number(item.prdy_vrss).toLocaleString()}` : `▼ ${Math.abs(Number(item.prdy_vrss)).toLocaleString()}`}
+              </td>
+              {index < renderedDailyPastStockData.length - 1 && (
+                <td className={Number(item.prdy_vrss) >= 0 ? styles.positive : styles.negative}>
+                  {Number(item.prdy_vrss) / Number(renderedDailyPastStockData[index + 1].stck_clpr) > 0 ? "+" : ""}{(Number(item.prdy_vrss) / Number(renderedDailyPastStockData[index + 1].stck_clpr) * 100).toFixed(2)}%
+                </td>)}
+              <td>{Number(item.acml_vol).toLocaleString()}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

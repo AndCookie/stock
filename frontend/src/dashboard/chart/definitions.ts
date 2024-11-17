@@ -1,13 +1,13 @@
-export interface IStockData {
+export interface IChartStockData {
   time: string;
   open: number;
+  close: number;
   high: number;
   low: number;
-  close: number;
 }
 
-export interface IVolumeData {
+export interface IChartVolumeData {
   time: string;
   value: number;
-  color?: string;
+  color: string;
 }

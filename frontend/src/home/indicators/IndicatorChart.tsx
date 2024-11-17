@@ -1,17 +1,22 @@
-// import { useEffect, useRef } from "react";
-import { Line } from "react-chartjs-2";
-import { IIndicatorCardProps } from "./definitions";
-import { useIndexStore } from "../../store/useIndexStore";
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from "chart.js";
+import { Line } from 'react-chartjs-2';
+import { IIndicatorCardProps } from './definitions';
+import { useIndexStore } from '../../store/useIndexStore';
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js';
+import { IIndexEntry } from '../../store/definitions';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
 const IndicatorChart = ({ indexTypeId, index, color }: IIndicatorCardProps) => {
   const { indexData } = useIndexStore();
 
-  const indexTypes = ["국내", "해외", "환율", "원자재"];
-  const indexList = indexData![indexTypes[indexTypeId]][index];
-  const indexValues = indexList.map(item => item.value);
+  const indexTypes = ['국내', '해외', '환율', '원자재'] as const;
+  const indexList = (indexData![indexTypes[indexTypeId]] as Record<string, IIndexEntry[] | null>)[
+    index
+  ]!.slice(0, 100);
+
+  const indexValues = indexList.map((item) =>
+    item.bstp_nmix_prpr ? item.bstp_nmix_prpr : item.ovrs_nmix_prpr
+  );
 
   const data = {
     labels: indexValues.map((_, i) => i),
@@ -19,7 +24,7 @@ const IndicatorChart = ({ indexTypeId, index, color }: IIndicatorCardProps) => {
       {
         data: indexValues,
         borderColor: color,
-        backgroundColor: "#2b2b2b",
+        backgroundColor: '#2b2b2b',
         borderWidth: 1,
         pointRadius: 0,
       },
