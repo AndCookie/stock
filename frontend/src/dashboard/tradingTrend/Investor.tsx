@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import fetchTraderTrend from "./hooks/fetchTraderTrend";
 import { IInvestor } from "./definitions";
 
-import styles from "./TradingTrend.module.css";
+// import styles from "./TradingTrend.module.css";
 
 const Investor = () => {
   const { stockCode } = useParams();
