@@ -713,10 +713,9 @@ def all_time_rankings(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-def trend(request):
-    data_type = request.GET.get('data_type')
+def trend(request, keyword):
     stock_code = request.GET.get('stock_code')
-    if data_type == 'trader':
+    if keyword == 'trader':
         url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-member"
         headers = get_paper_headers('FHKST01010600')
         params = {
@@ -729,7 +728,7 @@ def trend(request):
         else:
             print(response.json())
             return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
-    elif data_type == 'investor':
+    elif keyword == 'investor':
         url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/inquire-investor"
         headers = get_paper_headers('FHKST01010900')
         params = {
