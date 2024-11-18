@@ -75,12 +75,15 @@ export interface IStandardHistoryData {
   ord_unpr: number; // 주문단가
   avg_prvs: number; // 체결평균가
   mode: string; // 모드 (프론트에서 처리)
+  originalIndex?: number; // 삭제 로직
 }
 
 export interface IStandardHistoryState {
   standardHistoryData: IStandardHistoryData[] | null;
+  deleteStandardArray: number[];
   getLoginToken: () => string;
   fetchStandardHistoryData: () => Promise<void>;
+  deleteStandardHistoryData: (order_number: string) => Promise<void>;
 }
 
 export interface IScheduledHistoryData {
@@ -94,6 +97,7 @@ export interface IScheduledHistoryData {
 
 export interface IScheduledHistoryState {
   scheduledHistoryData: IScheduledHistoryData[] | null;
+  deleteScheduledArray: number[];
   getLoginToken: () => string;
   fetchScheduledHistoryData: () => Promise<void>;
 }
