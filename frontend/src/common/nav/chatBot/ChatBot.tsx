@@ -1,18 +1,18 @@
 import React, { useEffect, useRef } from "react";
 import "../modal.css";
-import useChatBot from "./useChatBot";
+import fetchChatBot from "./fetchChatBot";
 import styles from './ChatBot.module.css';
+import { useLoginStore } from "../../../store/useLoginStore";
 
-// closeModal의 타입을 명시한 인터페이스
 interface ModalComponentProps {
   closeModal: () => void;
 }
 
 const ChatBot: React.FC<ModalComponentProps> = ({ closeModal }) => {
-  const { chat, sendChat, newchat, setNewchat, loading } = useChatBot();
+  const { loginToken } = useLoginStore();
+  const { chat, sendChat, newchat, setNewchat, loading } = fetchChatBot(loginToken);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // useEffect를 사용하여 새 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
   useEffect(() => {
     chatContainerRef.current?.scrollTo({
       top: chatContainerRef.current.scrollHeight,
@@ -20,7 +20,6 @@ const ChatBot: React.FC<ModalComponentProps> = ({ closeModal }) => {
     });
   }, [chat]);
 
-  // 엔터 키를 감지하여 메시지 전송
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !loading && newchat.trim()) {
       e.preventDefault();
@@ -55,7 +54,7 @@ const ChatBot: React.FC<ModalComponentProps> = ({ closeModal }) => {
               placeholder="메시지를 입력하세요"
               value={newchat}
               onChange={(e) => setNewchat(e.target.value)}
-              onKeyDown={handleKeyDown} // 엔터 키 감지 이벤트 추가
+              onKeyDown={handleKeyDown}
             />
             <button
               className={styles.sendButton}

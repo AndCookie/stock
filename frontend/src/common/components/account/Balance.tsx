@@ -18,8 +18,6 @@ const Balance = () => {
   useEffect(() => {
     if (!balanceData) return;
 
-    console.log(balanceData)
-
     setAverageTotalPrice(balanceData.holdings.reduce((total: number, item: IHolding) => {
       return total + item.average_price * item.total_amount;
     }, 0))
