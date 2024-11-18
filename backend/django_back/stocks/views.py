@@ -404,11 +404,12 @@ def rankings(rank_type):
         headers = get_real_headers('FHPST01700000', 'P')
     return requests.get(url, headers=headers, params=params)
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def orders(request):
     if request.method == 'GET':
         user = request.user
+        history_type = request.GET.get('history_type')
         incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).order_by('-execution_date', '-execution_time')
         for stock_data in incomplete_data:
             execution_date = stock_data.execution_date.strftime("%Y%m%d")
@@ -444,9 +445,20 @@ def orders(request):
                 print(response.json())
                 return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
             time.sleep(0.5)
-        all_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
-        serializer = StockDataSerializer(instance=all_data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        if not history_type:
+            all_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
+
+            serializer = StockDataSerializer(instance=all_data, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif history_type == 'standard':
+            all_data = StockData.objects.filter(user=user).exclude(order_type="02").order_by('-execution_date', '-execution_time')
+            response_data = []
+            for data in all_data:
+                pass
+            pass
+        elif history_type == 'scheduled':
+            pass
             
     if request.method == 'POST':
         user = request.user
@@ -561,10 +573,10 @@ def orders(request):
                         stock_data.delete()
                     # 일부 취소면 값만 변경
                     else:
-                        stock_data.amount -= amount
+                        stock_data.amount -= int(amount)
+                        stock_data.cancel_amount += int(amount)
                         stock_data.save()
-                    
-                    return Response(response_data, status=status.HTTP_200_OK)
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
             print(response.json())
             return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
@@ -573,9 +585,10 @@ def orders(request):
 @permission_classes([IsAuthenticated])
 def holdings(request):
     user = request.user
-
+    all_data = StockData.objects.filter(user=user)
+    balance = all_data.aggregate(total_price=Sum('price'))['total_price'] or 0
     holdings = (
-        StockData.objects.filter(user=user).exclude(price=0)
+        StockData.objects.filter(user=user).filter(remain_amount=0)
         .values('stock_code')
         .annotate(
             total_amount=Sum('amount'),  # 보유 수량 합계
@@ -588,7 +601,7 @@ def holdings(request):
     )
     
     if not holdings:
-        return Response([], status=status.HTTP_200_OK)
+        return Response({"balance": 5000000 - balance}, status=status.HTTP_200_OK)
 
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
     headers = get_real_headers('FHKST11300006', "P")
@@ -598,20 +611,23 @@ def holdings(request):
         params[f"fid_input_iscd_{index+1}"] = holding["stock_code"]
     response =  requests.get(url, headers=headers, params=params)
 
-    response_data = [
-        {
-            "stock_code": holding["stock_code"],
-            "total_amount": holding["total_amount"],
-            "average_price": holding["average_price"],
-        }
-        for holding in holdings
-    ]
+    response_data = {
+        "holdings": [
+            {
+                "stock_code": holding["stock_code"],
+                "total_amount": holding["total_amount"],
+                "average_price": holding["average_price"],
+            }
+            for holding in holdings
+        ], 
+        "balance": 5000000 - balance
+    }
     
     if response.status_code == 200:
         outputs = response.json()['output']
         for index, output in enumerate(outputs):
-            response_data[index]['stock_name'] = output.get("inter_kor_isnm")
-            response_data[index]['current_price'] = output.get("inter2_prpr")
+            response_data["holdings"][index]['stock_name'] = output.get("inter_kor_isnm")
+            response_data["holdings"][index]['current_price'] = output.get("inter2_prpr")
     else:
         print(response.json())
         return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
