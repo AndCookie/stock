@@ -94,8 +94,10 @@ export interface IScheduledHistoryData {
 
 export interface IScheduledHistoryState {
   scheduledHistoryData: IScheduledHistoryData[] | null;
+  deleteArray: number[]
   getLoginToken: () => string;
   fetchScheduledHistoryData: () => Promise<void>;
+  deleteScheduledHistoryData: (order_number: string) => Promise<void>;
 }
 
 export interface IFavoriteData {
