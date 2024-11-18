@@ -91,6 +91,7 @@ LOGIN_REDIRECT_URL = '/'
 INSTALLED_APPS = [
     'accounts',
     'stocks', 
+    'chatbot', 
     'channels', 
     'rest_framework',
     'rest_framework.authtoken',
