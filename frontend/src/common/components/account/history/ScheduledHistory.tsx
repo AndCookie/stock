@@ -22,6 +22,7 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
   const deleteScheduledHistoryData = (index: number) => {
     if (!deleteArray.includes(index)) {
       deleteArray.push(index);
+      fetchScheduledHistoryData();
     }
     console.log(deleteArray);
   };
@@ -41,10 +42,10 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
         setFilteredHistoryData(scheduledHistoryData.filter(({ pdno }) => pdno === filter));
       }
     }
-  }, [scheduledHistoryData, deleteArray]);
+  }, [scheduledHistoryData]);
 
   const renderHistoryData = (historyData: IScheduledHistoryData[]) =>
-    historyData.length > 0 ? (
+    historyData.length - deleteArray.length > 0 ? (
       historyData.map((order, index) =>
         !deleteArray.includes(index) ? (
           <div key={index}>
@@ -72,7 +73,7 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
     <div>
       <div className="content">
         <div className="section">
-          <div className="title">조건 현황 {filteredHistoryData.length}건</div>
+          <div className="title">조건 현황 {filteredHistoryData.length - deleteArray.length}건</div>
           {renderHistoryData(filteredHistoryData)}
         </div>
       </div>
