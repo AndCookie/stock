@@ -462,6 +462,25 @@ def orders(request):
         elif history_type == 'standard':
             all_data = StockData.objects.filter(user=user).exclude(order_type="02").order_by('-execution_date', '-execution_time')
             serializer = StockDataSerializer(instance=all_data, many=True)
+            response_data = {[
+                
+            ]}
+            '''
+            {
+                "order_number": "46509",
+                "stock_code": "005930",
+                "execution_date": "2024-11-18",
+                "execution_time": "13:01:53",
+                "amount": -50,
+                "real_amount": 0,
+                "cancel_amount": 0,
+                "remain_amount": 0,
+                "price": -2829000,
+                "real_price": 0.0,
+                "target_price": 0,
+                "order_type": "01"
+            }
+            '''
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif history_type == 'scheduled':
             all_data = StockData.objects.filter(user=user).filter(order_type="02").order_by('-execution_date', '-execution_time')
