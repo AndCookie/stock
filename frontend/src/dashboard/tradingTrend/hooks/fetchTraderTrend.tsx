@@ -4,9 +4,8 @@ const BASEURL = import.meta.env.VITE_LOCAL_BASEURL;
 
 const fetchTraderTrend = async (keyword: string, stockCode: string) => {
   try {
-    const response = await axios.get(BASEURL + 'stocks/trend/', {
+    const response = await axios.get(BASEURL + `stocks/trend/${keyword}`, {
       params: {
-        data_type: keyword,
         stock_code: stockCode,
       }
     });
