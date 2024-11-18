@@ -328,7 +328,17 @@ def fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_c
             if not daily_data.get("stck_bsop_date"):
                 break
             timestamp = datetime.strptime(daily_data['stck_bsop_date'], "%Y%m%d").timestamp()
-            pipe.zadd(cache_key, {json.dumps(daily_data): timestamp})
+            data = {
+                "stck_bsop_date": daily_data.get("stck_bsop_date"), 
+                "stck_clpr": daily_data.get("stck_clpr"), 
+                "stck_oprc": daily_data.get("stck_oprc"), 
+                "stck_hgpr": daily_data.get("stck_hgpr"), 
+                "stck_lwpr": daily_data.get("stck_lwpr"), 
+                "acml_vol": daily_data.get("acml_vol"), 
+                "prdy_vrss_sign": daily_data.get("prdy_vrss_sign"), 
+                "prdy_vrss": daily_data.get("prdy_vrss"), 
+            }
+            pipe.zadd(cache_key, {json.dumps(data): timestamp})
 
         pipe.execute()
         while response_data['output2'] and "stck_bsop_date" not in response_data['output2'][-1]:
