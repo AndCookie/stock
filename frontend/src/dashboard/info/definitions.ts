@@ -9,9 +9,10 @@ export interface ICompanyData {
 
 // 필요시에는 뉴스랑 공시 분리할 것
 export interface ICompanyNewsDisclosure {
-  id: number;
-  title: string;
-  created_at: string; // 날짜 형식이라면 Date
-  author: string;
-  url: string;
+  // HTS 공시 제목 내용
+  hts_pbnt_titl_cntt: string;
+  // 자료원
+  dorg: string;
+  // 일자
+  data_dt: string;
 }
