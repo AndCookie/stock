@@ -276,7 +276,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                         "stock_code": stock_code,
                         "trading": {
                             "STCK_CNTG_HOUR": f"{random.randint(9, 15)}:{random.randint(0, 59)}:{random.randint(0, 59)}",
-                            "STCK_PRPR": "100",
+                            "STCK_PRPR": f"{random.randint(50, 150)}",
                             "CNTG_VOL": "100",
                             "ACML_VOL": "100",
                             "CTTR": f"{random.uniform(0.1, 2.0):.2f}"
@@ -288,7 +288,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                         "stock_code": stock_code,
                         "trading": {
                             "STCK_CNTG_HOUR": f"{random.randint(9, 15)}:{random.randint(0, 59)}:{random.randint(0, 59)}",
-                            "STCK_PRPR": "100000",
+                            "STCK_PRPR": f"{random.randint(90000, 150000)}",
                             "CNTG_VOL": "100000",
                             "ACML_VOL": "100000",
                             "CTTR": f"{random.uniform(0.1, 2.0):.2f}",
