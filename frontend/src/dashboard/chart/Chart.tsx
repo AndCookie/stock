@@ -22,7 +22,7 @@ const Chart = () => {
   const [chartStockData, setChartStockData] = useState<IChartStockData[] | null>(null);
   const [chartVolumeData, setChartVolumeData] = useState<IChartVolumeData[] | null>(null);
 
-  const [selectedPeriodCode, setSelectedPeriodCode] = useState('M');
+  const [selectedPeriodCode, setSelectedPeriodCode] = useState('D');
 
   const { stockCode } = useParams();
 
