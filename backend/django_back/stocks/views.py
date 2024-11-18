@@ -480,9 +480,9 @@ def orders(request):
         elif history_type == 'standard':
             all_data = StockData.objects.filter(user=user).exclude(order_type="02").order_by('-execution_date', '-execution_time')
             serializer = StockDataSerializer(instance=all_data, many=True)
-            response_data = {[
+            response_data = [{
                 
-            ]}
+            }]
             '''
             {
                 "order_number": "46509",
