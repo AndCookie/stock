@@ -122,7 +122,7 @@ const OrderBook: React.FC = () => {
                     {renderedTradingData.map((data, index) => (
                       <div key={`info-${index}`} className={styles.bidDetail}>
                         <span className={styles.bidVol}>
-                          {Number(data.STCK_PRPR).toLocaleString()}
+                          {Number(Math.round(data.STCK_PRPR)).toLocaleString()}
                         </span>
                         <span className={styles.bidQty} style={{
                           color: data.CCLD_DVSN === 1 ? '#CF5055' :
