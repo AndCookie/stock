@@ -15,16 +15,16 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
   console.log('Temp', isMyPage);
   console.log('Temp', isDetailPage);
 
-  const { scheduledHistoryData, fetchScheduledHistoryData, deleteArray } =
+  const { scheduledHistoryData, fetchScheduledHistoryData, deleteScheduledArray } =
     useScheduledHistoryStore();
   const [filteredHistoryData, setFilteredHistoryData] = useState<IScheduledHistoryData[]>([]);
 
   const deleteScheduledHistoryData = (index: number) => {
-    if (!deleteArray.includes(index)) {
-      deleteArray.push(index);
+    if (!deleteScheduledArray.includes(index)) {
+      deleteScheduledArray.push(index);
       fetchScheduledHistoryData();
     }
-    console.log(deleteArray);
+    console.log(deleteScheduledArray);
   };
 
   useEffect(() => {
@@ -45,9 +45,9 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
   }, [scheduledHistoryData]);
 
   const renderHistoryData = (historyData: IScheduledHistoryData[]) =>
-    historyData.length - deleteArray.length > 0 ? (
+    historyData.length - deleteScheduledArray.length > 0 ? (
       historyData.map((order, index) =>
-        !deleteArray.includes(index) ? (
+        !deleteScheduledArray.includes(index) ? (
           <div key={index}>
             <span>{order.prdt_name}</span>
             <span>
@@ -73,7 +73,7 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
     <div>
       <div className="content">
         <div className="section">
-          <div className="title">조건 현황 {filteredHistoryData.length - deleteArray.length}건</div>
+          <div className="title">조건 현황 {filteredHistoryData.length - deleteScheduledArray.length}건</div>
           {renderHistoryData(filteredHistoryData)}
         </div>
       </div>
