@@ -4,18 +4,15 @@ import styles from './Nav.module.css';
 
 import member from '../../assets/images/member.png';
 import chatBot from '../../assets/images/chatBot.png';
-import heatMap from '../../assets/images/heatMap.png';
 
 import MyPage from './myPage/myPage';
 import ChatBot from './chatBot/ChatBot';
-import HeatMap from './heatMap/HeatMap';
 import Search from './Search';
 
 const MODAL_COMPONENTS: {
   [key: string]: React.ComponentType<{ closeModal: () => void }>;
 } = {
   chatBot: ChatBot,
-  heatMap: HeatMap,
   myPage: MyPage,
 };
 
@@ -43,12 +40,6 @@ const Nav: React.FC = () => {
             alt="chatBot"
             onClick={handleOpenModal('chatBot')}
           />
-          {/* <img
-            className={styles.icon2}
-            src={heatMap}
-            alt="heatMap"
-            onClick={handleOpenModal('heatMap')}
-          /> */}
           <img
             className={styles.icon3}
             src={member}
