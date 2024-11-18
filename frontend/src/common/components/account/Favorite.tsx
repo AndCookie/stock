@@ -37,16 +37,12 @@ const Favorites = () => {
     setRenderedFavoriteDataList(favoriteData);
   }, [favoriteData])
 
-  // useEffect(() => {
-  //   console.log(renderedFavoriteDataList)
-  // }, [renderedFavoriteDataList])
-
   useEffect(() => {
     if (!renderedFavoriteDataList || !stockCodeData || !tradingData) return;
 
     setRenderedFavoriteDataList((prevList) => {
       const updateList = prevList!.map((stock) => {
-        if (stock.stock_code === stockCodeData) {
+        if (stock.stock_code == stockCodeData) {
           const previousPrice = Number(stock.stock_price) - Number(stock.fluctuation_difference);
           const fluctuationDifference = Number(tradingData.STCK_PRPR) - previousPrice;
           const fluctuationRate = (fluctuationDifference / previousPrice) * 100;
@@ -62,7 +58,7 @@ const Favorites = () => {
       });
       return updateList;
     })
-  }, [stockCodeData])
+  }, [renderedFavoriteDataList, stockCodeData, tradingData])
 
   if (!renderedFavoriteDataList || renderedFavoriteDataList.length === 0 || renderedFavoriteDataList[0].stock_code === "") return <div />;
 

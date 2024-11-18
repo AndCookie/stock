@@ -11,15 +11,14 @@ const TradingVolume: React.FC = () => {
   const { stockCodeData, tradingData } = useSocketStore();
   const [renderedTradingData, setRenderedTradingData] = useState<ITradingData[]>([]);
 
-
   useEffect(() => {
-    if (!tradingData || stockCode !== stockCodeData) return;
+    if (!tradingData || stockCode != stockCodeData) return;
 
     setRenderedTradingData((prevData) => {
       const updatedData = [...prevData, tradingData];
       return updatedData.sort((a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR));
     });
-  }, [tradingData]);
+  }, [stockCode, stockCodeData, tradingData]);
 
   if (!renderedTradingData) return <div />;
 

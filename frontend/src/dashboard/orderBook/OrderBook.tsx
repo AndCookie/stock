@@ -36,7 +36,7 @@ const OrderBook: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (!tradingData || stockCodeData !== stockCode) return;
+    if (!tradingData || stockCodeData != stockCode) return;
 
     setQuantity(Number(tradingData!.ACML_VOL));
     setMaxPrice(Number(tradingData.STCK_PRPR) > maxPrice ? Number(tradingData.STCK_PRPR) : maxPrice);
@@ -50,7 +50,7 @@ const OrderBook: React.FC = () => {
       // 최신 10개 데이터 유지
       return updatedData.slice(0, 20);
     });
-  }, [tradingData])
+  }, [stockCode, stockCodeData, tradingData])
 
   // 스크롤을 중간 위치로 설정
   const scrollFlag = useRef(false);

@@ -10,6 +10,8 @@ import { COLORS } from '../../common/utils';
 import { IChartStockData, IChartVolumeData } from './definitions';
 
 const Chart = () => {
+  // return <div />;
+
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const histogramSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
@@ -171,9 +173,7 @@ const Chart = () => {
         ? COLORS.positive
         : COLORS.negative;
     histogramSeriesRef.current.update(realtimeVolumeData);
-  }, [tradingData, chartStockData]);
-
-  // return <div />;
+  }, [stockCode, stockCodeData, tradingData, chartStockData, chartVolumeData]);
 
   return (
     <>
