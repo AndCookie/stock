@@ -4,4 +4,9 @@ from rest_framework import serializers
 class MessageSaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        field = '__all__'
+        exclude = ['created_at']
+        
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['role', 'content']
