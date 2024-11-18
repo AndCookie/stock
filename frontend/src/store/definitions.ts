@@ -236,3 +236,14 @@ export interface ILoginState {
   loginToken: string;
   login: () => Promise<void>;
 }
+
+export interface IDisclosureData {
+  hts_pbnt_titl_cntt: string;
+  dorg: string;
+  data_dt: string;
+}
+
+export interface IDisclosureState {
+  disclosureData: IDisclosureData[] | null;
+  fetchDisclosureData: (stockCode: string) => Promise<void>;
+}
