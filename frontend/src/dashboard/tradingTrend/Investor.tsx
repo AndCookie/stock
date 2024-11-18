@@ -43,7 +43,7 @@ const Investor = () => {
           </tr>
         </thead>
         <tbody>
-          {renderedInvestorData.slice(1, renderedInvestorData.length).map((item, index) => (
+          {renderedInvestorData.map((item, index) => (
               <tr key={index}>
                 <td>{item.stck_bsop_date.slice(0, 4)}-{item.stck_bsop_date.slice(4, 6)}-{item.stck_bsop_date.slice(6, 8)}</td>
                 <td className={Number(item.frgn_ntby_qty) >= 0 ? styles.positive : styles.negative}>
