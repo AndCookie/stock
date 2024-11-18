@@ -9,7 +9,7 @@ export const postMessage = async (message: string) => {
     });
     return res.data.message;
   } catch (error) {
-    console.log(error);
-    return false;
+    console.log("서버 오류:", error);
+    return "죄송합니다. 서버와 연결되지 않았습니다.";
   }
 };

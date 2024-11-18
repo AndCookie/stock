@@ -4,7 +4,7 @@ import { postMessage } from "./actions";
 const useChatBot = () => {
   const [chat, setChat] = useState([
     {
-      message: "안녕하세요! 저는 챗봇입니다. 무엇을 도와드릴까요?",
+      message: "안녕하세요! 저는 AI챗봇입니다. 무엇을 도와드릴까요?",
       role: "gpt",
     },
   ]);
@@ -12,18 +12,23 @@ const useChatBot = () => {
   const [loading, setLoading] = useState(false);
 
   const sendChat = async (message: string) => {
-    if (message.length == 0) return;
+    if (message.length === 0) return;
     setLoading(true);
 
+    setChat((prevChat) => [...prevChat, { message, role: "me" }]);
+
     try {
-      const res = await postMessage(message);
+      const response = await postMessage(message);
       setChat((prevChat) => [
         ...prevChat,
-        { message: message, role: "me" },
-        { message: res, role: "gpt" },
+        { message: response, role: "gpt" },
       ]);
     } catch (error) {
       console.error("메시지 전송 실패:", error);
+      setChat((prevChat) => [
+        ...prevChat,
+        { message: "오류가 발생했습니다. 다시 시도해주세요.", role: "gpt" },
+      ]);
     } finally {
       setLoading(false);
       setNewchat("");
