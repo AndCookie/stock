@@ -4,8 +4,6 @@ import Indicators from '../home/indicators/Indicators';
 import Account from '../home/account/HomeAccount';
 import UserRanking from '../home/userRanking/UserRanking';
 import StockRanking from '../home/stockRanking/StockRanking';
-// import Advice from '../home/advice/Advice';
-// import AiNews from '../home/aiNews/AiNews';
 import { useIndexStore } from '../store/useIndexStore';
 import { useLoginStore } from '../store/useLoginStore';
 import { useFavoriteStore } from '../store/useFavoriteStore';
@@ -53,11 +51,6 @@ const HomePage: React.FC = () => {
         <UserRanking />
         <StockRanking />
       </section>
-
-      {/* <section className={styles.bottomContent}>
-        <Advice />
-        <AiNews />
-      </section> */}
     </>
   );
 };
