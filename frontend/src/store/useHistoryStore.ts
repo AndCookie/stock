@@ -9,6 +9,8 @@ const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 export const useStandardHistoryStore = create<IStandardHistoryState>((set, get) => ({
   standardHistoryData: null,
 
+  deleteStandardArray: [],
+
   getLoginToken: () => useLoginStore.getState().loginToken,
 
   fetchStandardHistoryData: async () => {
@@ -23,6 +25,8 @@ export const useStandardHistoryStore = create<IStandardHistoryState>((set, get) 
           history_type: 'standard',
         },
       });
+
+      console.log(response.data)
 
       const formattedData = response.data.map((item: any) => {
         let mode = '';
@@ -59,6 +63,27 @@ export const useStandardHistoryStore = create<IStandardHistoryState>((set, get) 
       }));
     } catch (error) {
       console.log(error);
+    }
+  },
+
+  deleteStandardHistoryData: async (order_number) => {
+    const loginToken = get().getLoginToken();
+
+    try {
+      const response = await axios.put(
+        `${baseURL}stocks/orders/`,
+        { order_number, amount: '0', price: '0' },
+        {
+          headers: {
+            Authorization: `Token ${loginToken}`,
+          },
+        }
+      );
+
+      console.log('Success :', response.data);
+    } catch (error) {
+      console.log(error);
+      console.log('주문', order_number)
     }
   },
 }));
@@ -104,26 +129,5 @@ export const useScheduledHistoryStore = create<IScheduledHistoryState>((set, get
     }
   },
 
-  deleteArray: [],
-
-  deleteScheduledHistoryData: async (order_number) => {
-    const loginToken = get().getLoginToken();
-
-    try {
-      const response = await axios.put(`${baseURL}stocks/orders/`, {
-        headers: {
-          Authorization: `Token ${loginToken}`,
-        },
-        params: {
-          order_number,
-          amount: '0',
-          price: '0',
-        },
-      });
-
-      console.log('Success :', response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  },
+  deleteScheduledArray: [],
 }));
