@@ -24,7 +24,7 @@ const OrderButton: React.FC<IOrderButtonProps> = ({ mode, trackedPrice, price, q
 
   // 판매 가능 수량 계산
   const availableShares = mode === "SELL" && balanceData
-  ? balanceData.holdings.find(holding => holding.name === stockName)?.shares || 0
+  ? balanceData.holdings.find(holding => holding.stock_name === stockName)?.total_amount || 0
   : 0;
 
   const isDisabled = 

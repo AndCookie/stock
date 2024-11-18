@@ -40,23 +40,23 @@ export interface IIndexState {
 
 // type of Balance
 export interface IHolding {
-  name: string;
-  shares: number;
-  currentValue: number;
-  prevValue: number;
-  currentEstimatedValue: number;
-  prevEstimatedValue: number;
+  stock_code: string;
+  total_amount: number;
+  average_price: number;
+  stock_name: string;
+  current_price: string;
+  difference: string;
+  percentage: string;
 }
 
 export interface IBalanceData {
-  balance: number;
-  currentValue: number;
-  prevValue: number;
   holdings: IHolding[];
+  balance: number;
 }
 
 export interface IBalanceState {
   balanceData: IBalanceData | null;
+  getLoginToken: () => string;
   fetchBalanceData: () => Promise<void>;
 }
 
