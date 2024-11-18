@@ -62,13 +62,14 @@ def indicators(indicator):
     start_date = end_date - timedelta(days=3*365)  # 약 3년 전
 
     # Redis에서 기존 데이터를 가져오기
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
     end_date_str = end_date.strftime("%Y%m%d")
-    if end_date_str in existing_dates:
-        existing_dates.remove(end_date_str)
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["stck_bsop_date"] == end_date_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
+    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
     
-    current_date = end_date  # 이대로 한번의 요청은 가나?확인 필요
+    current_date = end_date
     while current_date >= start_date:
         end_date_str = current_date.strftime("%Y%m%d")
         start_date_str = (current_date - timedelta(weeks=12)).strftime("%Y%m%d")
@@ -199,9 +200,13 @@ def minute_price(request):
     
     cache_key = f"stock_min_data:{stock_code}"
     today_str = date.today().strftime("%Y%m%d")
+    end_time_str = end_time.strftime("%H%M") + "00"
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["stck_cntg_hour"] == end_time_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 지금 데이터 삭제
 
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    all_data = []
     existing_times = set()
 
     # 오늘 날짜 데이터 필터링 및 Redis에서 오래된 데이터 삭제
@@ -210,7 +215,6 @@ def minute_price(request):
         if data.get("stck_bsop_date") != today_str:
             redis_client.zrem(cache_key, value)  # 오늘 데이터가 아닌 경우 삭제
         else:
-            all_data.append(data)  # 오늘 데이터만 유지
             existing_times.add(data["stck_cntg_hour"])  # 오늘 데이터의 시간 기록
 
     # 누락된 시간대 확인 및 요청
@@ -218,7 +222,7 @@ def minute_price(request):
     while current_time >= start_time:
         time_str = current_time.strftime("%H%M") + "00"
         
-        if time_str not in existing_times or current_time == end_time:  # 적어도 한번은 실행하도록
+        if time_str not in existing_times:
             fetch_and_save_stock_minute_data(stock_code, time_str)
         
         current_time -= timedelta(minutes=30)
@@ -266,21 +270,26 @@ def stock_price(request):
     end_date = date.today()
     start_date = end_date - timedelta(days=100*365)  # 약 100년 전
     start_date_str = start_date.strftime("%Y%m%d")
-
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
     
-    # current_date = end_date - timedelta(days=1)
-    current_date = end_date  # 당일 일봉 
+    end_date_str = end_date.strftime("%Y%m%d")
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["stck_bsop_date"] == end_date_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
+    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}    
+    
+    current_date = end_date
     while current_date >= start_date:
         end_date_str = current_date.strftime("%Y%m%d")
         
-        if end_date_str not in existing_dates or current_date == end_date:
+        if end_date_str not in existing_dates:
             response_data = fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_code)
             if response_data:
                 last_date = response_data[-1]["stck_bsop_date"]
                 # 마지막 날짜 기준으로 업데이트 및 존재 확인
                 current_date = datetime.strptime(last_date, "%Y%m%d").date()
+                if current_date.strftime("%Y%m%d") in existing_dates:
+                    break
             else:
                 break
         else:
@@ -404,11 +413,12 @@ def rankings(rank_type):
         headers = get_real_headers('FHPST01700000', 'P')
     return requests.get(url, headers=headers, params=params)
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def orders(request):
     if request.method == 'GET':
         user = request.user
+        history_type = request.GET.get('history_type')
         incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).order_by('-execution_date', '-execution_time')
         for stock_data in incomplete_data:
             execution_date = stock_data.execution_date.strftime("%Y%m%d")
@@ -444,9 +454,20 @@ def orders(request):
                 print(response.json())
                 return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
             time.sleep(0.5)
-        all_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
-        serializer = StockDataSerializer(instance=all_data, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            
+        if not history_type:
+            all_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
+
+            serializer = StockDataSerializer(instance=all_data, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif history_type == 'standard':
+            all_data = StockData.objects.filter(user=user).exclude(order_type="02").order_by('-execution_date', '-execution_time')
+            response_data = []
+            for data in all_data:
+                pass
+            pass
+        elif history_type == 'scheduled':
+            pass
             
     if request.method == 'POST':
         user = request.user
@@ -561,10 +582,10 @@ def orders(request):
                         stock_data.delete()
                     # 일부 취소면 값만 변경
                     else:
-                        stock_data.amount -= amount
+                        stock_data.amount -= int(amount)
+                        stock_data.cancel_amount += int(amount)
                         stock_data.save()
-                    
-                    return Response(response_data, status=status.HTTP_200_OK)
+            return Response(response_data, status=status.HTTP_200_OK)
         else:
             print(response.json())
             return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
@@ -573,9 +594,10 @@ def orders(request):
 @permission_classes([IsAuthenticated])
 def holdings(request):
     user = request.user
-
+    all_data = StockData.objects.filter(user=user)
+    balance = all_data.aggregate(total_price=Sum('price'))['total_price'] or 0
     holdings = (
-        StockData.objects.filter(user=user).exclude(price=0)
+        StockData.objects.filter(user=user).filter(remain_amount=0)
         .values('stock_code')
         .annotate(
             total_amount=Sum('amount'),  # 보유 수량 합계
@@ -588,7 +610,7 @@ def holdings(request):
     )
     
     if not holdings:
-        return Response([], status=status.HTTP_200_OK)
+        return Response({"balance": 5000000 - balance}, status=status.HTTP_200_OK)
 
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
     headers = get_real_headers('FHKST11300006', "P")
@@ -598,20 +620,23 @@ def holdings(request):
         params[f"fid_input_iscd_{index+1}"] = holding["stock_code"]
     response =  requests.get(url, headers=headers, params=params)
 
-    response_data = [
-        {
-            "stock_code": holding["stock_code"],
-            "total_amount": holding["total_amount"],
-            "average_price": holding["average_price"],
-        }
-        for holding in holdings
-    ]
+    response_data = {
+        "holdings": [
+            {
+                "stock_code": holding["stock_code"],
+                "total_amount": holding["total_amount"],
+                "average_price": holding["average_price"],
+            }
+            for holding in holdings
+        ], 
+        "balance": 5000000 - balance
+    }
     
     if response.status_code == 200:
         outputs = response.json()['output']
         for index, output in enumerate(outputs):
-            response_data[index]['stock_name'] = output.get("inter_kor_isnm")
-            response_data[index]['current_price'] = output.get("inter2_prpr")
+            response_data["holdings"][index]['stock_name'] = output.get("inter_kor_isnm")
+            response_data["holdings"][index]['current_price'] = output.get("inter2_prpr")
     else:
         print(response.json())
         return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
@@ -704,12 +729,14 @@ def disclosure(request):
     end_date = date.today()
     start_date = end_date - timedelta(days=90)
 
-    # Redis에서 기존 데이터를 가져오기
+    end_date_str = end_date.strftime("%Y%m%d")
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["data_dt"] == end_date_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
     existing_dates = {json.loads(item)["data_dt"] for item in indicator_data}
     
-    # current_date = end_date - timedelta(days=1)
-    current_date = end_date  # 당일 일봉
+    current_date = end_date
     while current_date >= start_date:
         current_date_str = current_date.strftime("%Y%m%d")
         # 누락된 날짜에 대해 데이터 요청 및 저장

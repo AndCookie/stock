@@ -50,9 +50,11 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             for favorite_stock in favorite_stocks:
                 stock_code = favorite_stock.stock_code
                 if stock_code in KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'] or stock_code in KISWebSocketConsumer.tasks[self.channel_name]['favorite_stocks']:
+                    await self.send(json.dumps({"message": f"{stock_code} WebSocket connection already established"}))
                     continue
                 KISWebSocketConsumer.tasks[self.channel_name]['favorite_stocks'].add(stock_code)
                 await self.request_to_kis("1", "H0STASP0", stock_code)  # 주식 체결 실시간 등록
+                await self.send(json.dumps({"message": f"{stock_code} WebSocket connection established"}))
             return
 
         if exit_request:
@@ -61,6 +63,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                 KISWebSocketConsumer.tasks[self.channel_name]['subscribed_stocks'].remove(stock_code)
                 await self.request_to_kis("2", "H0STASP0", stock_code)  # 주식 체결 실시간 해제
                 await self.request_to_kis("2", "H0STCNT0", stock_code)  # 주식 호가 실시간 해제
+                await self.send(json.dumps({"message": f"{stock_code} WebSocket connection stopped"}))
             return
 
         if stock_code:
@@ -71,6 +74,11 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             if KISWebSocketConsumer.kis_socket:
                 await self.request_to_kis("1", "H0STASP0", stock_code)  # 주식 체결 실시간 등록
                 await self.request_to_kis("1", "H0STCNT0", stock_code)  # 주식 호가 실시간 등록
+                await self.send(json.dumps({"message": f"{stock_code} WebSocket connection stopped"}))
+            else:
+                await self.send(json.dumps({"message": f"KIS WebSocket connection is strange..."}))
+
+
 
     async def connect_to_kis(self):
         try:
