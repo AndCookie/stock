@@ -210,6 +210,7 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
               </div>
             </>
           ) : (
+            // isDetailPage이 true일 때
             <>
               <div className={styles.content}>
                 <div className={styles.section}>

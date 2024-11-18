@@ -573,7 +573,7 @@ mock.onGet(BASEURL + 'search').reply(200, {
 export default mock;
 
 // dashboard-trading-order
-mock.onPost(BASEURL + 'stocks/order/').reply((config) => {
+mock.onPost(BASEURL + 'stocks/orders/').reply((config) => {
   const orderData = JSON.parse(config.data);
   return [200, { message: "Order placed successfully", orderData }];
 });

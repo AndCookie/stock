@@ -8,7 +8,7 @@ import styles from "./History.module.css";
 const History: React.FC<{ filter?: string; isMyPage?: boolean }> = ({ filter = "ALL", isMyPage = false }) => {
   const TABS = [
     { label: "일반 주문", component: <StandardHistory filter={filter} isMyPage={isMyPage} /> },
-    { label: "조건 주문", component: <ScheduledHistory filter={filter} /> }
+    { label: "조건 주문", component: <ScheduledHistory filter={filter} isMyPage={isMyPage} /> }
   ];
 
   const [selectedTab, setSelectedTab] = useState(0);

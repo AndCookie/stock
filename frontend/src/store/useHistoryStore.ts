@@ -2,14 +2,25 @@ import axios from "axios";
 import { create } from "zustand";
 import { IScheduledHistoryState, IStandardHistoryState } from "./definitions";
 import codeToName from "../assets/codeToName.json";
+import { useLoginStore } from "./useLoginStore";
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-export const useStandardHistoryStore = create<IStandardHistoryState>((set) => ({
+export const useStandardHistoryStore = create<IStandardHistoryState>((set, get) => ({
   standardHistoryData: null,
+
+  getLoginToken: () => useLoginStore.getState().loginToken,
+
   fetchStandardHistoryData: async () => {
+    const loginToken = get().getLoginToken();
+
     try {
-      const response = await axios.get(baseURL + "stocks/history/standard");
+      const response = await axios.get(`${baseURL}stocks/history/standard`, {
+        headers: {
+          Authorization: `Token ${loginToken}`,
+        },
+      });
+
       const formattedData = response.data.map((item: any) => {
         let mode = "";
         if (item.rmn_qty === "0") {
@@ -46,11 +57,21 @@ export const useStandardHistoryStore = create<IStandardHistoryState>((set) => ({
   },
 }));
 
-export const useScheduledHistoryStore = create<IScheduledHistoryState>((set) => ({
+export const useScheduledHistoryStore = create<IScheduledHistoryState>((set, get) => ({
   scheduledHistoryData: null,
+
+  getLoginToken: () => useLoginStore.getState().loginToken,
+
   fetchScheduledHistoryData: async () => {
+    const loginToken = get().getLoginToken();
+
     try {
-      const response = await axios.get(baseURL + "stocks/history/scheduled");
+      const response = await axios.get(`${baseURL}stocks/history/scheduled`, {
+        headers: {
+          Authorization: `Token ${loginToken}`,
+        },
+      });
+
       const formattedData = response.data.map((item: any) => {
         const prdt_name = item.pdno && item.pdno in codeToName ? codeToName[item.pdno as keyof typeof codeToName] : "";
 
