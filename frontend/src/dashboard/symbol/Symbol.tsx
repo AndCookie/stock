@@ -12,8 +12,6 @@ import styles from './Symbol.module.css';
 import { COLORS } from '../../common/utils';
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
-  // return <div />;
-
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
@@ -26,7 +24,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
 
   const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
-  const { tradingData } = useSocketStore();
+  const { stockCodeData, tradingData } = useSocketStore();
 
   const [renderedValue, setRenderedValue] = useState(0);
   const [renderedChangeValue, setRenderedChangeValue] = useState(0);
@@ -64,7 +62,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   }, [favoriteData, stockCode]);
 
   useEffect(() => {
-    if (!tradingData) return;
+    if (!tradingData || stockCode !== stockCodeData) return;
 
     setRenderedValue(Number(tradingData.STCK_PRPR));
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
