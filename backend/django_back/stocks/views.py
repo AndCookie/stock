@@ -62,13 +62,14 @@ def indicators(indicator):
     start_date = end_date - timedelta(days=3*365)  # 약 3년 전
 
     # Redis에서 기존 데이터를 가져오기
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
     end_date_str = end_date.strftime("%Y%m%d")
-    if end_date_str in existing_dates:
-        existing_dates.remove(end_date_str)
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["stck_bsop_date"] == end_date_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
+    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
     
-    current_date = end_date  # 이대로 한번의 요청은 가나?확인 필요
+    current_date = end_date
     while current_date >= start_date:
         end_date_str = current_date.strftime("%Y%m%d")
         start_date_str = (current_date - timedelta(weeks=12)).strftime("%Y%m%d")
@@ -199,9 +200,13 @@ def minute_price(request):
     
     cache_key = f"stock_min_data:{stock_code}"
     today_str = date.today().strftime("%Y%m%d")
+    end_time_str = end_time.strftime("%H%M") + "00"
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["stck_cntg_hour"] == end_time_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 지금 데이터 삭제
 
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    all_data = []
     existing_times = set()
 
     # 오늘 날짜 데이터 필터링 및 Redis에서 오래된 데이터 삭제
@@ -210,7 +215,6 @@ def minute_price(request):
         if data.get("stck_bsop_date") != today_str:
             redis_client.zrem(cache_key, value)  # 오늘 데이터가 아닌 경우 삭제
         else:
-            all_data.append(data)  # 오늘 데이터만 유지
             existing_times.add(data["stck_cntg_hour"])  # 오늘 데이터의 시간 기록
 
     # 누락된 시간대 확인 및 요청
@@ -218,7 +222,7 @@ def minute_price(request):
     while current_time >= start_time:
         time_str = current_time.strftime("%H%M") + "00"
         
-        if time_str not in existing_times or current_time == end_time:  # 적어도 한번은 실행하도록
+        if time_str not in existing_times:
             fetch_and_save_stock_minute_data(stock_code, time_str)
         
         current_time -= timedelta(minutes=30)
@@ -266,21 +270,26 @@ def stock_price(request):
     end_date = date.today()
     start_date = end_date - timedelta(days=100*365)  # 약 100년 전
     start_date_str = start_date.strftime("%Y%m%d")
-
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}
     
-    # current_date = end_date - timedelta(days=1)
-    current_date = end_date  # 당일 일봉 
+    end_date_str = end_date.strftime("%Y%m%d")
+    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["stck_bsop_date"] == end_date_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
+    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}    
+    
+    current_date = end_date
     while current_date >= start_date:
         end_date_str = current_date.strftime("%Y%m%d")
         
-        if end_date_str not in existing_dates or current_date == end_date:
+        if end_date_str not in existing_dates:
             response_data = fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_code)
             if response_data:
                 last_date = response_data[-1]["stck_bsop_date"]
                 # 마지막 날짜 기준으로 업데이트 및 존재 확인
                 current_date = datetime.strptime(last_date, "%Y%m%d").date()
+                if current_date.strftime("%Y%m%d") in existing_dates:
+                    break
             else:
                 break
         else:
@@ -720,12 +729,14 @@ def disclosure(request):
     end_date = date.today()
     start_date = end_date - timedelta(days=90)
 
-    # Redis에서 기존 데이터를 가져오기
+    end_date_str = end_date.strftime("%Y%m%d")
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while indicator_data and json.loads(indicator_data[-1])["data_dt"] == end_date_str:
+        value = indicator_data.pop()
+        redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
     existing_dates = {json.loads(item)["data_dt"] for item in indicator_data}
     
-    # current_date = end_date - timedelta(days=1)
-    current_date = end_date  # 당일 일봉
+    current_date = end_date
     while current_date >= start_date:
         current_date_str = current_date.strftime("%Y%m%d")
         # 누락된 날짜에 대해 데이터 요청 및 저장
