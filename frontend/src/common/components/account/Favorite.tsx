@@ -58,7 +58,7 @@ const Favorites = () => {
       });
       return updateList;
     })
-  }, [renderedFavoriteDataList, stockCodeData, tradingData])
+  }, [stockCodeData, tradingData])
 
   if (!renderedFavoriteDataList || renderedFavoriteDataList.length === 0 || renderedFavoriteDataList[0].stock_code === "") return <div />;
 
