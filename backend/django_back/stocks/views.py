@@ -268,7 +268,7 @@ def stock_price(request):
     cache_key = f"stock_{period_code}_data:{stock_code}"
     
     end_date = date.today()
-    start_date = end_date - timedelta(days=100*365)  # 약 100년 전
+    start_date = end_date - timedelta(days=5 * 365)  # 5년 전
     start_date_str = start_date.strftime("%Y%m%d")
     
     end_date_str = end_date.strftime("%Y%m%d")
