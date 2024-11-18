@@ -1,31 +1,22 @@
 // 뉴스
+import { useDisclosure } from '../../store/useDisclosure';
+import { ICompanyNewsDisclosure } from './definitions';
+import Item from './Item';
+import styles from './Info.module.css';
 
-import useFetch from "../../common/hooks/useFetch";
-import Item from "./Item";
-import { ICompanyNewsDisclosure } from "./definitions";
-import styles from "./Info.module.css";
-
-const News = () => {
-  const companyId = 1;
-  const { data, loading, error } = useFetch<ICompanyNewsDisclosure[]>(
-    `info/${companyId}/news`
-  );
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading data.</p>;
+const News: React.FC<ICompanyNewsDisclosure> = () => {
+  const { disclosureData } = useDisclosure();
 
   return (
     <div className={styles.subContent}>
-      {data ? (
+      {disclosureData ? (
         <div className={styles.newsContainer}>
-          {data.map((news, idx) => (
+          {disclosureData.map((news, idx) => (
             <div className={styles.newsItem} key={idx}>
               <Item
-                main={news.title}
-                date={news.created_at}
-                sub={news.author}
-                url={news.url}
-                isNews={true} // 뉴스이므로 true 설정
+                hts_pbnt_titl_cntt={news.hts_pbnt_titl_cntt}
+                dorg={news.dorg}
+                data_dt={news.data_dt}
               />
             </div>
           ))}
