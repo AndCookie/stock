@@ -32,10 +32,10 @@ const Daily = () => {
           {renderedDailyPastStockData.map((item, index) => (
             <tr key={index}>
               <td>{item.stck_bsop_date.slice(0, 4)}-{item.stck_bsop_date.slice(4, 6)}-{item.stck_bsop_date.slice(6, 8)}</td>
-              <td className={Number(item.prdy_vrss) >= 0 ? styles.positive : styles.negative}>
+              <td className={`${styles.tdPrice} ${Number(item.prdy_vrss) >= 0 ? styles.positive : styles.negative}`}>
                 {Number(item.stck_clpr).toLocaleString()}
               </td>
-              <td className={Number(item.prdy_vrss) >= 0 ? styles.positive : styles.negative}>
+              <td className={`${styles.tdChange} ${Number(item.prdy_vrss) >= 0 ? styles.positive : styles.negative}`}>
                 {Number(item.prdy_vrss) >= 0 ? `▲ ${Number(item.prdy_vrss).toLocaleString()}` : `▼ ${Math.abs(Number(item.prdy_vrss)).toLocaleString()}`}
               </td>
               {index < renderedDailyPastStockData.length - 1 && (

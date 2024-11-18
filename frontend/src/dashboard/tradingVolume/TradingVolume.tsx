@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import useSocketStore from '../../store/useSocketStore';
 import { ITradingData } from '../../store/definitions';
@@ -6,18 +7,18 @@ import { ITradingData } from '../../store/definitions';
 import styles from './TradingVolume.module.css';
 
 const TradingVolume: React.FC = () => {
+  const { stockCode } = useParams();
+  const { stockCodeData, tradingData } = useSocketStore();
   const [renderedTradingData, setRenderedTradingData] = useState<ITradingData[]>([]);
 
-  const { tradingData } = useSocketStore();
-
   useEffect(() => {
-    if (!tradingData) return;
+    if (!tradingData || stockCode != stockCodeData) return;
 
     setRenderedTradingData((prevData) => {
       const updatedData = [...prevData, tradingData];
       return updatedData.sort((a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR));
     });
-  }, [tradingData]);
+  }, [stockCode, stockCodeData, tradingData]);
 
   if (!renderedTradingData) return <div />;
 
@@ -44,10 +45,10 @@ const TradingVolume: React.FC = () => {
                   style={{
                     color:
                       data.CCLD_DVSN === 1
-                        ? '#FF4F4F'
+                        ? '#CF5055'
                         : data.CCLD_DVSN === 5
                         ? '#4881FF'
-                        : '#26d4a5',
+                        : '#1EA083',
                   }}
                 >
                   {Number(data.CNTG_VOL).toLocaleString()}

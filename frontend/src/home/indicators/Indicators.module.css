@@ -1,7 +1,7 @@
 /* 주요 지표 영역 */
 .marqueeContainer {
   grid-column: span 12;
-  margin: 50px 0px;
+  margin: 30px 0px;
   padding: 0px;
   /* border: 1px solid white; */
 }

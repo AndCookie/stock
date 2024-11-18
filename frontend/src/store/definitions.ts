@@ -219,20 +219,39 @@ export interface ITradingData {
 }
 
 export interface ISocketStore {
-  stockCode: string | null;
+  stockCodeData: string | null;
   kospiData: IIndicatorData | null;
   kosdaqData: IIndicatorData | null;
   orderBookData: IOrderBookData | null;
   tradingData: ITradingData | null;
 
-  setStockCode: (data: string) => void;
+  setStockCodeData: (data: string) => void;
   setKospiData: (data: IIndicatorData) => void;
   setKosdaqData: (data: IIndicatorData) => void;
   setOrderBookData: (data: IOrderBookData) => void;
   setTradingData: (data: ITradingData) => void;
 }
 
+import { Layout } from 'react-grid-layout';
+
+export interface IWidgetPositionState {
+  widgetPosition: Layout[];
+  fetchWidgetPosition: () => Promise<void>;
+  postWidgetPosition: (layout: Layout[]) => Promise<void>;
+}
+
 export interface ILoginState {
   loginToken: string;
   login: () => Promise<void>;
+}
+
+export interface IDisclosureData {
+  hts_pbnt_titl_cntt: string;
+  dorg: string;
+  data_dt: string;
+}
+
+export interface IDisclosureState {
+  disclosureData: IDisclosureData[] | null;
+  fetchDisclosureData: (stockCode: string) => Promise<void>;
 }

@@ -4,12 +4,7 @@ import History from './History';
 import Favorites from './Favorite';
 import styles from './Account.module.css';
 
-interface AccountProps {
-  contentStyle?: CSSProperties;
-  isMyPage?: boolean;
-}
-
-const Account: React.FC<AccountProps> = ({ contentStyle, isMyPage }) => {
+const Account: React.FC<{ contentStyle?: CSSProperties; isMyPage?: boolean }> = ({ contentStyle, isMyPage }) => {
   const [selectedCategory, setSelectedCategory] = useState('보유 종목');
 
   const categories = ['보유 종목', '주문 내역', '관심 종목'];

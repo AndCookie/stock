@@ -81,7 +81,8 @@ tr:hover {
 }
 
 .thChange {
-  min-width: 50px;
+  min-width: 70px;
+  /* border: 1px solid blue; */
 }
 
 .thRate {
@@ -90,6 +91,17 @@ tr:hover {
 
 .thVolume {
   min-width: 70px;
+}
+
+.tdPrice {
+  /* border: 1px solid blue; */
+  padding: 0px 20px 0px 20px;
+}
+
+.tdChange {
+  /* border: 1px solid blue; */
+  text-align: left;
+  padding: 0px 0px 0px 20px;
 }
 
 .positive {

@@ -10,12 +10,14 @@ import { COLORS } from '../../common/utils';
 import { IChartStockData, IChartVolumeData } from './definitions';
 
 const Chart = () => {
+  // return <div />;
+
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const histogramSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
 
   const { pastStockData, fetchPastStockData } = usePastStockStore();
-  const { tradingData } = useSocketStore();
+  const { stockCodeData, tradingData } = useSocketStore();
 
   const [chartStockData, setChartStockData] = useState<IChartStockData[] | null>(null);
   const [chartVolumeData, setChartVolumeData] = useState<IChartVolumeData[] | null>(null);
@@ -154,14 +156,8 @@ const Chart = () => {
 
   // tradingData 업데이트
   useEffect(() => {
-    if (
-      !candlestickSeriesRef.current ||
-      !histogramSeriesRef.current ||
-      !tradingData ||
-      !chartStockData ||
-      !chartVolumeData
-    )
-      return;
+    if (!candlestickSeriesRef.current || !histogramSeriesRef.current || !tradingData || !chartStockData || !chartVolumeData) return;
+    if (stockCode !== stockCodeData) return;
 
     const realtimeStockData = chartStockData[chartStockData.length - 1];
     realtimeStockData.close = Number(tradingData.STCK_PRPR);
@@ -177,7 +173,7 @@ const Chart = () => {
         ? COLORS.positive
         : COLORS.negative;
     histogramSeriesRef.current.update(realtimeVolumeData);
-  }, [tradingData, chartStockData]);
+  }, [stockCode, stockCodeData, tradingData, chartStockData, chartVolumeData]);
 
   return (
     <>

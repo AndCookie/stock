@@ -8,8 +8,8 @@ import { IWidgetComponentProps } from "../../common/definitions";
 import styles from "./TradingTrend.module.css";
 
 const TABS = [
-  { label: "거래동향", component: <Daily /> },
   { label: "거래원", component: <Trader /> },
+  { label: "거래동향", component: <Daily /> },
   { label: "투자자", component: <Investor /> },
 ];
 

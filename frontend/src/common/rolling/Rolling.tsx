@@ -12,7 +12,7 @@ const Rolling = () => {
   const { kospiData, kosdaqData } = useSocketStore();
 
   const [formattedData, setFormattedData] = useState<JSX.Element[] | null>(null);
-  const [isHovered, setIsHovered] = useState(false); // 애니메이션 상태 제어
+  const [isPaused, setIsPaused] = useState(false); // 전체 애니메이션 상태
 
   const navigate = useNavigate();
 
@@ -52,6 +52,8 @@ const Rolling = () => {
           <div
             key={`${key}-${subKey}`}
             className={styles.indexItem}
+            onMouseEnter={() => setIsPaused(true)} // 마우스가 `indexItem`에 들어오면 멈춤
+            onMouseLeave={() => setIsPaused(false)} // 마우스가 나가면 실행
             onClick={() => navigate(`/market/${index}`)}
           >
             <span className={styles.subKey}>{subKey}</span>
@@ -76,11 +78,8 @@ const Rolling = () => {
   return (
     <div className={styles.rolling}>
       <div
-        className={`${isHovered ? styles.pause : styles.inner}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        className={`${styles.inner} ${isPaused ? styles.paused : ''}`} // 상태에 따라 클래스 변경
       >
-        {formattedData}
         {formattedData}
       </div>
     </div>

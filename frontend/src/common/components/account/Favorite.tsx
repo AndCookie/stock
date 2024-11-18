@@ -9,7 +9,7 @@ const Favorites = () => {
   const { favoriteData, fetchFavoriteData } = useFavoriteStore();
   // const postFavoriteData = useFavoriteStore((state) => state.postFavoriteData);
   const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
-  const { stockCode, tradingData } = useSocketStore();
+  const { stockCodeData, tradingData } = useSocketStore();
   const [isEdit, setIsEdit] = useState(false);
 
   const [renderedFavoriteDataList, setRenderedFavoriteDataList] = useState<IFavoriteData[] | null>(null);
@@ -37,16 +37,12 @@ const Favorites = () => {
     setRenderedFavoriteDataList(favoriteData);
   }, [favoriteData])
 
-  // useEffect(() => {
-  //   console.log(renderedFavoriteDataList)
-  // }, [renderedFavoriteDataList])
-
   useEffect(() => {
-    if (!renderedFavoriteDataList || !stockCode || !tradingData) return;
+    if (!renderedFavoriteDataList || !stockCodeData || !tradingData) return;
 
     setRenderedFavoriteDataList((prevList) => {
       const updateList = prevList!.map((stock) => {
-        if (stock.stock_code === stockCode) {
+        if (stock.stock_code == stockCodeData) {
           const previousPrice = Number(stock.stock_price) - Number(stock.fluctuation_difference);
           const fluctuationDifference = Number(tradingData.STCK_PRPR) - previousPrice;
           const fluctuationRate = (fluctuationDifference / previousPrice) * 100;
@@ -62,7 +58,7 @@ const Favorites = () => {
       });
       return updateList;
     })
-  }, [stockCode])
+  }, [renderedFavoriteDataList, stockCodeData, tradingData])
 
   if (!renderedFavoriteDataList || renderedFavoriteDataList.length === 0 || renderedFavoriteDataList[0].stock_code === "") return <div />;
 
