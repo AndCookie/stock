@@ -179,6 +179,8 @@ const Chart = () => {
     histogramSeriesRef.current.update(realtimeVolumeData);
   }, [tradingData, chartStockData]);
 
+  // return <div />;
+
   return (
     <>
       <div

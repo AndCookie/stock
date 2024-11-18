@@ -76,8 +76,11 @@ export interface ITrader {
 }
 
 export interface IInvestor {
-  date: string;
-  foreigner: number;
-  corporate: number;
-  individual: number;
+  frgn_ntby_qty: string;
+  frgn_ntby_tr_pbmn: string;
+  orgn_ntby_qty: string;
+  orgn_ntby_tr_pbmn: string
+  prsn_ntby_qty: string;
+  prsn_ntby_tr_pbmn: string;
+  stck_bsop_date: string;
 }
