@@ -1,10 +1,10 @@
 import React from "react";
 
-const ScheduledHistory: React.FC<{ filter: string }> = ({ filter }) => {
+const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filter, isMyPage }) => {
+  const isDetailPage = filter !== "ALL";
   return(
     <div>
-      ScheduledHistory
-      {filter}
+      
     </div>
   );
 };
