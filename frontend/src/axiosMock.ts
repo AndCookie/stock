@@ -144,133 +144,124 @@ mock.onGet(BASEURL + 'account/balance').reply(200, {
 });
 
 // home-account-history 일반주문
-mock.onGet(BASEURL + 'stocks/history/standard').reply(200, [
-  {
-    // 체결 지정가 매수
-    odno: '0001569139', // 주문번호
-    pdno: '009150', // 종목코드
-    prdt_name: '삼성전기', // 종목명
-    sll_buy_dvsn_cd: 'BUY', // 구매/판매
-    ord_dt: '20240101', // 주문일자
-    ord_tmd: '131438', // 주문시간
-    ord_qty: '90', // 주문수량
-    tot_ccld_qty: '90', // 총체결수량
-    cncl_cfrm_qty: '0', // 취소확인수량
-    rmn_qty: '0', // 잔여수량
-    ord_unpr: '140000', // 주문단가
-    avg_prvs: '140000', // 체결평균가
+mock.onGet(BASEURL + "stocks/history/standard").reply(200, [
+  { // 체결 지정가 매수
+    odno: "0001569139", // 주문번호
+    pdno: "009150", // 종목코드
+    // prdt_name: "삼성전기", // 종목명
+    sll_buy_dvsn_cd: "BUY", // 구매/판매
+    ord_dt: "20240101", // 주문일자
+    ord_tmd: "131438", // 주문시간
+    ord_qty: "90", // 주문수량
+    tot_ccld_qty: "90", // 총체결수량
+    cncl_cfrm_qty: "0", // 취소확인수량
+    rmn_qty: "0", // 잔여수량
+    ord_unpr: "140000", // 주문단가
+    avg_prvs: "140000", // 체결평균가
   },
-  {
-    // 체결 시장가 매수
-    odno: '0001569140',
-    pdno: '009150',
-    prdt_name: '삼성전기',
-    sll_buy_dvsn_cd: 'BUY',
-    ord_dt: '20240101',
-    ord_tmd: '142042',
-    ord_qty: '50',
-    tot_ccld_qty: '50',
-    cncl_cfrm_qty: '0',
-    rmn_qty: '0',
-    ord_unpr: '0',
-    avg_prvs: '150000', // 참고 시장가가 150500일 때 25주, 시장가가 149500일 때 25주 체결되면 평단이 150000임
+  { // 체결 시장가 매수
+    odno: "0001569140",
+    pdno: "009150",
+    // prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20240101",
+    ord_tmd: "142042",
+    ord_qty: "50",
+    tot_ccld_qty: "50",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "150000", // 참고 시장가가 150500일 때 25주, 시장가가 149500일 때 25주 체결되면 평단이 150000임
   },
-  {
-    // 체결 지정가 매도
-    odno: '0001569141',
-    pdno: '009150',
-    prdt_name: '삼성전기',
-    sll_buy_dvsn_cd: 'SELL',
-    ord_dt: '20240201',
-    ord_tmd: '100128',
-    ord_qty: '60',
-    tot_ccld_qty: '60',
-    cncl_cfrm_qty: '0',
-    rmn_qty: '0',
-    ord_unpr: '170000',
-    avg_prvs: '170000',
+  { // 체결 지정가 매도
+    odno: "0001569141",
+    pdno: "009150",
+    // prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_dt: "20240201",
+    ord_tmd: "100128",
+    ord_qty: "60",
+    tot_ccld_qty: "60",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "170000",
+    avg_prvs: "170000",
   },
-  {
-    // 체결 시장가 매도
-    odno: '0001569142',
-    pdno: '009150',
-    prdt_name: '삼성전기',
-    sll_buy_dvsn_cd: 'SELL',
-    ord_dt: '20240301',
-    ord_tmd: '093850',
-    ord_qty: '80',
-    tot_ccld_qty: '80',
-    cncl_cfrm_qty: '0',
-    rmn_qty: '0',
-    ord_unpr: '0',
-    avg_prvs: '160000',
+  { // 체결 시장가 매도
+    odno: "0001569142",
+    pdno: "009150",
+    // prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_dt: "20240301",
+    ord_tmd: "093850",
+    ord_qty: "80",
+    tot_ccld_qty: "80",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "160000",
   },
-  {
-    // 취소
-    odno: '0001569143',
-    pdno: '009150',
-    prdt_name: '삼성전기',
-    sll_buy_dvsn_cd: 'BUY',
-    ord_dt: '20241010',
-    ord_tmd: '130303',
-    ord_qty: '80',
-    tot_ccld_qty: '0',
-    cncl_cfrm_qty: '80',
-    rmn_qty: '0',
-    ord_unpr: '0',
-    avg_prvs: '180000',
+  { // 취소
+    odno: "0001569143",
+    pdno: "009150",
+    // prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241010",
+    ord_tmd: "130303",
+    ord_qty: "80",
+    tot_ccld_qty: "0",
+    cncl_cfrm_qty: "80",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "180000",
   },
-  {
-    // 미체결
-    odno: '0001569144',
-    pdno: '009150',
-    prdt_name: '삼성전기',
-    sll_buy_dvsn_cd: 'BUY',
-    ord_dt: '20241010',
-    ord_tmd: '130504',
-    ord_qty: '80',
-    tot_ccld_qty: '40',
-    cncl_cfrm_qty: '0',
-    rmn_qty: '40',
-    ord_unpr: '0',
-    avg_prvs: '180000',
+  { // 미체결
+    odno: "0001569144",
+    pdno: "009150",
+    // prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241010",
+    ord_tmd: "130504",
+    ord_qty: "80",
+    tot_ccld_qty: "40",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "40",
+    ord_unpr: "0",
+    avg_prvs: "180000",
   },
-  {
-    // 체결 시장가 매도
-    odno: '0001569145',
-    pdno: '009150',
-    prdt_name: '삼성전기',
-    sll_buy_dvsn_cd: 'BUY',
-    ord_dt: '20241020',
-    ord_tmd: '093850',
-    ord_qty: '80',
-    tot_ccld_qty: '80',
-    cncl_cfrm_qty: '0',
-    rmn_qty: '0',
-    ord_unpr: '0',
-    avg_prvs: '160000',
+  { // 체결 시장가 매도
+    odno: "0001569145",
+    pdno: "009150",
+    // prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "BUY",
+    ord_dt: "20241020",
+    ord_tmd: "093850",
+    ord_qty: "80",
+    tot_ccld_qty: "80",
+    cncl_cfrm_qty: "0",
+    rmn_qty: "0",
+    ord_unpr: "0",
+    avg_prvs: "160000",
   },
 ]);
 
 // home-account-history 조건주문
-mock.onGet(BASEURL + 'stocks/history/scheduled').reply(200, [
-  {
-    // 지정가 조건주문
-    pdno: '009150', // 종목코드
-    prdt_name: '삼성전기', // 종목명
-    sll_buy_dvsn_cd: 'SELL', // 구매/판매
-    ord_qty: '200', // 주문수량
-    ord_unpr: '120000', // 주문단가
-    tar_pr: '120000', // 감시가격
+mock.onGet(BASEURL + "stocks/history/scheduled").reply(200, [
+  { // 지정가 조건주문
+    pdno: "009150", // 종목코드
+    // prdt_name: "삼성전기", // 종목명
+    sll_buy_dvsn_cd: "SELL", // 구매/판매
+    ord_qty: "200", // 주문수량
+    ord_unpr: "120000", // 주문단가
+    tar_pr: "120000", // 감시가격
   },
-  {
-    // 시장가 조건주문
-    pdno: '009150',
-    prdt_name: '삼성전기',
-    sll_buy_dvsn_cd: 'SELL',
-    ord_qty: '100',
-    ord_unpr: '0',
-    tar_pr: '130000',
+  { // 시장가 조건주문
+    pdno: "009150",
+    // prdt_name: "삼성전기",
+    sll_buy_dvsn_cd: "SELL",
+    ord_qty: "100",
+    ord_unpr: "0",
+    tar_pr: "130000",
   },
 ]);
 
@@ -584,5 +575,18 @@ export default mock;
 // dashboard-trading-order
 mock.onPost(BASEURL + 'stocks/order/').reply((config) => {
   const orderData = JSON.parse(config.data);
-  return [200, { message: 'Order placed successfully', orderData }];
+  return [200, { message: "Order placed successfully", orderData }];
+});
+
+// dashboard 위젯
+mock.onGet(BASEURL + "accounts/position/").reply(200, {
+  "layout": [
+    { "widget": "chartWidget", "x": 0, "y": 2, "w": 6, "h": 8 },
+    { "widget": "infoWidget", "x": 0, "y": 10, "w": 3, "h": 6 },
+    { "widget": "orderBookWidget", "x": 6, "y": 0, "w": 3, "h": 16 },
+    { "widget": "symbolWidget", "x": 0, "y": 0, "w": 6, "h": 2 },
+    { "widget": "tradingWidget", "x": 9, "y": 5, "w": 3, "h": 11 },
+    { "widget": "tradingTrendWidget", "x": 3, "y": 10, "w": 3, "h": 6 },
+    { "widget": "tradingVolumeWidget", "x": 9, "y": 0, "w": 3, "h": 5 }
+  ]
 });

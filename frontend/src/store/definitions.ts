@@ -232,6 +232,14 @@ export interface ISocketStore {
   setTradingData: (data: ITradingData) => void;
 }
 
+import { Layout } from 'react-grid-layout';
+
+export interface IWidgetPositionState {
+  widgetPosition: Layout[];
+  fetchWidgetPosition: () => Promise<void>;
+  postWidgetPosition: (layout: Layout[]) => Promise<void>;
+}
+
 export interface ILoginState {
   loginToken: string;
   login: () => Promise<void>;

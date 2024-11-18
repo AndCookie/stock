@@ -1,4 +1,6 @@
 import React, { useEffect } from "react"
+import { useParams } from "react-router-dom";
+import codeToName from "../../../assets/codeToName.json";
 import { IOrderButtonProps } from "../definitions"
 import styles from "./OrderButton.module.css";
 import { useBalanceStore } from "../../../store/useBalanceStore";
@@ -13,18 +15,17 @@ const OrderButton: React.FC<IOrderButtonProps> = ({ mode, trackedPrice, price, q
   const totalPrice = price * finalQuantity
   const totalUpperPrice = maxAskPrice * finalQuantity
   const totalLowerPrice = minBidPrice * finalQuantity
-  // TODO 종목 코드 연결
-  const stockCode = "137400";
+  const { stockCode } = useParams();
+  const stockName = stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : "";
 
   useEffect(() => {
     fetchBalanceData();
   }, [])
 
   // 판매 가능 수량 계산
-  // TODO 종목 이름 연결
   const availableShares = mode === "SELL" && balanceData
-  ? balanceData.holdings.find(holding => holding.name === "피엔티")?.shares || 0
-  : null;
+  ? balanceData.holdings.find(holding => holding.name === stockName)?.shares || 0
+  : 0;
 
   const isDisabled = 
     finalQuantity === 0 || // 수량이 0이거나
@@ -74,7 +75,13 @@ const OrderButton: React.FC<IOrderButtonProps> = ({ mode, trackedPrice, price, q
           onMouseDown={(event) => {
             event.stopPropagation(); // 클릭 시 드래그 방지
           }}
-          onClick={() => placeOrder({ stockCode, mode, trackedPrice, price, finalQuantity })}
+          onClick={() => {
+            if (stockCode) {
+              placeOrder({ stockCode, mode, trackedPrice, price, finalQuantity });
+            } else {
+              console.error("Stock code is undefined. Cannot place order.");
+            }
+          }}
         >
           {mode === "BUY" ? "구 매 하 기" : "판 매 하 기"}
         </button>
