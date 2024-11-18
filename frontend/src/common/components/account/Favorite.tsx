@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Favorite.module.css';
 import { useFavoriteStore } from '../../../store/useFavoriteStore';
 import useSocketStore, { sendMessage } from '../../../store/useSocketStore';
@@ -13,6 +14,8 @@ const Favorites = () => {
   const [isEdit, setIsEdit] = useState(false);
 
   const [renderedFavoriteDataList, setRenderedFavoriteDataList] = useState<IFavoriteData[] | null>(null);
+
+  const navigate = useNavigate();
 
   const handleEdit = () => {
     setIsEdit((prev) => !prev); // 상태를 반전
@@ -76,7 +79,7 @@ const Favorites = () => {
         </div>
         {/* get 요청에서 종목코드, 시장가, 등락률 보내준다고 가정하고 코드 작성 */}
         {renderedFavoriteDataList.map((stock, index) => (
-          <div key={index} className={styles.stockItem}>
+          <div key={index} className={styles.stockItem} onClick={() => navigate(`dashboard/${stock.stock_code}`)}>
             <div className={styles.stockInfo}>
               <span className={styles.stockName}>{stock.stock_name}</span>
             </div>
