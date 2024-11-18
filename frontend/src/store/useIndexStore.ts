@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { IIndexState } from "./definitions";
+import { IIndexEntry, IIndexState } from "./definitions";
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
@@ -20,6 +20,11 @@ export const useIndexStore = create<IIndexState>((set) => ({
         axios.get(baseURL + "stocks/gold/"),
       ]);
 
+      const filteredNasdaqData = nasdaqResponse.data.reduce((acc: Record<string, IIndexEntry>, item: IIndexEntry) => {
+        acc[item.stck_bsop_date] = item;
+        return acc;
+      }, {});
+      const uniqueNasdaqData: IIndexEntry[] = Object.values(filteredNasdaqData);
       const indexData = {
         "국내": {
           "코스피": kospiResponse.data,
@@ -27,7 +32,7 @@ export const useIndexStore = create<IIndexState>((set) => ({
         },
         "해외": {
           "다우존스": djiResponse.data,
-          "나스닥": nasdaqResponse.data,
+          "나스닥": uniqueNasdaqData,
         },
         "환율": {
           "원/달러": wondollarResponse.data,
