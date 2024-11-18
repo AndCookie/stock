@@ -1,28 +1,58 @@
-// 거래원
-import useFetch from "../../common/hooks/useFetch";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+import fetchTraderTrend from "./hooks/fetchTraderTrend";
 import { ITrader } from "./definitions";
+
 import styles from "./TradingTrend.module.css";
 
 const Trader = () => {
-  // TODO: companyId
-  const companyId = 1;
-  const { data, loading, error } = useFetch<ITrader>(
-    `trend/${companyId}/trader`
-  );
+  const { stockCode } = useParams();
+  const [renderedTraderData, setRenderedTraderData] = useState<ITrader | null>(null);
+  const [maxSell, setMaxSell] = useState(0);
+  const [maxBuy, setMaxBuy] = useState(0);
 
-  // 데이터 확인을 위해 추가
-  console.log("Fetched data:", data);
+  useEffect(() => {
+    if (!stockCode) return;
 
-  if (loading) return <p>loading...</p>;
-  if (error) return <p>error</p>;
+    const fetchData = async () => {
+      try {
+        const data = await fetchTraderTrend("trader", stockCode);
+        setRenderedTraderData(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  const maxSellAmount = Math.max(...(data?.sell.map(item => item.amount) || [0]));
-  const maxBuyAmount = Math.max(...(data?.buy.map(item => item.amount) || [0]));
+    fetchData()
+  }, [stockCode])
+
+  useEffect(() => {
+    if (!renderedTraderData) return;
+
+    setMaxSell(Math.max(
+      Number(renderedTraderData.total_seln_qty1),
+      Number(renderedTraderData.total_seln_qty2),
+      Number(renderedTraderData.total_seln_qty3),
+      Number(renderedTraderData.total_seln_qty4),
+      Number(renderedTraderData.total_seln_qty5)
+    ));
+    setMaxBuy(Math.max(
+      Number(renderedTraderData.total_shnu_qty1),
+      Number(renderedTraderData.total_shnu_qty2),
+      Number(renderedTraderData.total_shnu_qty3),
+      Number(renderedTraderData.total_shnu_qty4),
+      Number(renderedTraderData.total_shnu_qty5)
+    ));
+
+  }, [renderedTraderData])
+
+  if (!renderedTraderData) return <div />;
 
   return (
     <div className={styles.subContent}>
       <table className={styles.traderTable}>
-      <thead>
+        <thead>
           <tr>
             <th className={styles.thDiff}>증감</th>
             <th colSpan={2} className={styles.thAmount}>매도상위</th>
@@ -31,49 +61,48 @@ const Trader = () => {
           </tr>
         </thead>
         <tbody>
-          {data &&
-            Array.from({ length: 5 }).map((_, index) => (
-              <tr key={index}>
-                {/* 매도 */}
-                <td className={styles.sellDiff}>{data.sell[index].diff.toLocaleString()}</td>
-                <td colSpan={2} className={styles.barCell}>
-                  <div
-                    className={styles.sellBar}
-                    style={{
-                      width: `${(data.sell[index].amount / maxSellAmount) * 100}%`,
-                    }}
-                  ></div>
-                  <div className={styles.barText}>
-                    <span>{data.sell[index].amount.toLocaleString()}</span>
-                    <span className={styles.company}>{data.sell[index].company}</span>
-                  </div>
-                </td>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <tr key={index}>
+              {/* 매도 */}
+              <td className={styles.sellDiff}>{Number(renderedTraderData[`seln_qty_icdc${index + 1}`]).toLocaleString()}</td>
+              <td colSpan={2} className={styles.barCell}>
+                <div
+                  className={styles.sellBar}
+                  style={{
+                    width: `${(Number(renderedTraderData[`total_seln_qty${index + 1}`]) / maxSell) * 100}%`,
+                  }}
+                ></div>
+                <div className={styles.barText}>
+                  <span>{Number(renderedTraderData[`total_seln_qty${index + 1}`]).toLocaleString()}</span>
+                  <span className={styles.company}>{renderedTraderData[`seln_mbcr_name${index + 1}`]}</span>
+                </div>
+              </td>
 
-                {/* 매수 */}
-                <td colSpan={2} className={styles.barCell}>
-                  <div
-                    className={styles.buyBar}
-                    style={{
-                      width: `${(data.buy[index].amount / maxBuyAmount) * 100}%`,
-                    }}
-                  ></div>
-                  <div className={styles.barText}>
-                    <span className={styles.company}>{data.buy[index].company}</span>
-                    <span>{data.buy[index].amount.toLocaleString()}</span>
-                  </div>
-                </td>
-                <td className={styles.buyDiff}>{data.buy[index].diff.toLocaleString()}</td>
-              </tr>
-            ))}
+              {/* 매수 */}
+              <td colSpan={2} className={styles.barCell}>
+                <div
+                  className={styles.buyBar}
+                  style={{
+                    width: `${(Number(renderedTraderData[`total_shnu_qty${index + 1}`]) / maxBuy) * 100}%`,
+                  }}
+                ></div>
+                <div className={styles.barText}>
+                  <span className={styles.company}>{renderedTraderData[`shnu_mbcr_name${index + 1}`]}</span>
+                  <span>{Number(renderedTraderData[`total_shnu_qty${index + 1}`]).toLocaleString()}</span>
+                </div>
+              </td>
+              <td className={styles.buyDiff}>{Number(renderedTraderData[`shnu_qty_icdc${index + 1}`]).toLocaleString()}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className={styles.footer}>
         <span className={styles.sellForeignVolume}>
-          {data?.foreignVolume[0]?.sell !== undefined ? data.foreignVolume[0].sell.toLocaleString() : 'N/A'}
+          {Number(renderedTraderData.glob_total_seln_qty).toLocaleString()}
         </span>
         <span className={styles.titleForeignVolume}>외국계 추정 거래량</span>
         <span className={styles.buyForeignVolume}>
-          {data?.foreignVolume[0]?.buy !== undefined ? data.foreignVolume[0].buy.toLocaleString() : 'N/A'}
+          {Number(renderedTraderData.glob_total_shnu_qty).toLocaleString()}
         </span>
       </div>
     </div>

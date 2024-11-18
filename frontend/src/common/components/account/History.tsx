@@ -5,9 +5,9 @@ import StandardHistory from "./history/StandardHistory";
 import ScheduledHistory from "./history/ScheduledHistory";
 import styles from "./History.module.css";
 
-const History: React.FC<{ filter?: string }> = ({ filter = "ALL" }) => {
+const History: React.FC<{ filter?: string; isMyPage?: boolean }> = ({ filter = "ALL", isMyPage = false }) => {
   const TABS = [
-    { label: "일반 주문", component: <StandardHistory filter={filter} /> },
+    { label: "일반 주문", component: <StandardHistory filter={filter} isMyPage={isMyPage} /> },
     { label: "조건 주문", component: <ScheduledHistory filter={filter} /> }
   ];
 

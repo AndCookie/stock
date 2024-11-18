@@ -81,7 +81,8 @@ tr:hover {
 }
 
 .thChange {
-  min-width: 50px;
+  min-width: 70px;
+  /* border: 1px solid blue; */
 }
 
 .thRate {
@@ -92,12 +93,23 @@ tr:hover {
   min-width: 70px;
 }
 
+.tdPrice {
+  /* border: 1px solid blue; */
+  padding: 0px 20px 0px 20px;
+}
+
+.tdChange {
+  /* border: 1px solid blue; */
+  text-align: left;
+  padding: 0px 0px 0px 20px;
+}
+
 .positive {
-  color: #ff4b4b;
+  color: #CF5055;
 }
 
 .negative {
-  color: #4b92ff;
+  color: #4881FF;
 }
 
 /* 거래원 */

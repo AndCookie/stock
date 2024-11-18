@@ -82,7 +82,7 @@ export interface IStandardHistoryState {
   fetchStandardHistoryData: () => Promise<void>;
 }
 
-export interface IScheduledHistoryData{
+export interface IScheduledHistoryData {
   pdno: string; // 종목코드
   prdt_name: string; // 종목명
   sll_buy_dvsn_cd: string; // 구매/판매
@@ -96,8 +96,17 @@ export interface IScheduledHistoryState {
   fetchScheduledHistoryData: () => Promise<void>;
 }
 
+export interface IFavoriteData {
+  stock_code: string;
+  stock_name: string;
+  stock_price: string;
+  fluctuation_rate: string;
+  fluctuation_difference: string;
+}
+
 export interface IFavoriteState {
-  favoriteData: string[] | null;
+  favoriteData: IFavoriteData[] | null;
+  getLoginToken: () => string;
   fetchFavoriteData: () => Promise<void>;
   postFavoriteData: (stockCode: string) => Promise<void>;
   deleteFavoriteData: (stockCode: string) => Promise<void>;
@@ -210,11 +219,13 @@ export interface ITradingData {
 }
 
 export interface ISocketStore {
+  stockCodeData: string | null;
   kospiData: IIndicatorData | null;
   kosdaqData: IIndicatorData | null;
   orderBookData: IOrderBookData | null;
   tradingData: ITradingData | null;
 
+  setStockCodeData: (data: string) => void;
   setKospiData: (data: IIndicatorData) => void;
   setKosdaqData: (data: IIndicatorData) => void;
   setOrderBookData: (data: IOrderBookData) => void;
@@ -227,4 +238,9 @@ export interface IWidgetPositionState {
   widgetPosition: Layout[];
   fetchWidgetPosition: () => Promise<void>;
   postWidgetPosition: (layout: Layout[]) => Promise<void>;
+}
+
+export interface ILoginState {
+  loginToken: string;
+  login: () => Promise<void>;
 }

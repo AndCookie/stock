@@ -1,18 +1,36 @@
-// 투자자
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-import useFetch from "../../common/hooks/useFetch";
+import fetchTraderTrend from "./hooks/fetchTraderTrend";
 import { IInvestor } from "./definitions";
+
 import styles from "./TradingTrend.module.css";
 
 const Investor = () => {
-  // TODO: companyId
-  const companyId = 1;
-  const { data, loading, error } = useFetch<IInvestor[]>(
-    `trend/${companyId}/investor`
-  );
+  const { stockCode } = useParams();
+  const [renderedInvestorData, setRenderedInvestorData] = useState<IInvestor[] | null>(null);
 
-  if (loading) return <p>loading...</p>;
-  if (error) return <p>error</p>;
+  useEffect(() => {
+    if (!stockCode) return;
+
+    const fetchData = async () => {
+      try {
+        const data = await fetchTraderTrend("investor", stockCode);
+        setRenderedInvestorData(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData()
+  }, [stockCode])
+
+  useEffect(() => {
+    console.log(renderedInvestorData);
+  }, [renderedInvestorData])
+
+  if (!renderedInvestorData) return <div />;
+
   return (
     <div className={styles.subContent}>
       <table className={styles.investorTable}>
@@ -25,18 +43,17 @@ const Investor = () => {
           </tr>
         </thead>
         <tbody>
-          {data &&
-            data.map((item, index) => (
+          {renderedInvestorData.slice(1, renderedInvestorData.length).map((item, index) => (
               <tr key={index}>
-                <td>{item.date}</td>
-                <td className={item.foreigner >= 0 ? styles.positive : styles.negative}>
-                  {item.foreigner.toLocaleString()}
+                <td>{item.stck_bsop_date.slice(0, 4)}-{item.stck_bsop_date.slice(4, 6)}-{item.stck_bsop_date.slice(6, 8)}</td>
+                <td className={Number(item.frgn_ntby_qty) >= 0 ? styles.positive : styles.negative}>
+                  {Number(item.frgn_ntby_qty).toLocaleString()}
                 </td>
-                <td className={item.corporate >= 0 ? styles.positive : styles.negative}>
-                  {item.corporate.toLocaleString()}
+                <td className={Number(item.orgn_ntby_qty) >= 0 ? styles.positive : styles.negative}>
+                  {Number(item.orgn_ntby_qty).toLocaleString()}
                 </td>
-                <td className={item.individual >= 0 ? styles.positive : styles.negative}>
-                  {item.individual.toLocaleString()}
+                <td className={Number(item.prsn_ntby_qty) >= 0 ? styles.positive : styles.negative}>
+                  {Number(item.prsn_ntby_qty).toLocaleString()}
                 </td>
               </tr>
             ))}

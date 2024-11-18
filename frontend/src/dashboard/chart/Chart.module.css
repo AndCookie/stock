@@ -5,8 +5,8 @@
   border-radius: 2px;
   gap: 5px;
   margin: -3% 0 0 0px;
-  padding: 0 0 4px 0;
-  background-color: black;
+  padding: 5px 0 4px 0;
+  /* background-color: black; */
   /* background-color: #2e2e3a; */
 }
 
@@ -16,7 +16,7 @@
   border: none;
   border-radius: 8px;
   width: 30px;
-  padding: 5px 8px;
+  padding: 3px 6px;
   font-size: 12px;
   cursor: pointer;
   transition: background-color 0.2s;

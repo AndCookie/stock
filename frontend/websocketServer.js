@@ -1,24 +1,24 @@
-import { WebSocketServer } from "ws";
+import { WebSocketServer } from 'ws';
 
-const socket = new WebSocketServer({ port: 8080 });
+const socket = new WebSocketServer({ port: 8081 });
 
 function fakeKospiData() {
   const randomValue = (Math.random() * 1000 + 1000).toFixed(2);
   return {
-    stock_code: "0001",
+    stock_code: '0001',
     indicator: {
-      prpr_nmix: randomValue.toString()
-    }
+      prpr_nmix: randomValue.toString(),
+    },
   };
 }
 
 function fakeKosdaqData() {
   const randomValue = (Math.random() * 1000 + 1000).toFixed(2);
   return {
-    stock_code: "1001",
+    stock_code: '1001',
     indicator: {
-      prpr_nmix: randomValue.toString()
-    }
+      prpr_nmix: randomValue.toString(),
+    },
   };
 }
 
@@ -27,7 +27,7 @@ const fakeOrderBookData = () => {
   const randomVolume = () => Math.floor(Math.random() * 1000).toString();
 
   return {
-    "ORDER_BOOK": {
+    ORDER_BOOK: {
       ASKP1: randomPrice(),
       ASKP2: randomPrice(),
       ASKP3: randomPrice(),
@@ -77,17 +77,20 @@ const fakeOrderBookData = () => {
 const fakeTradingData = () => {
   const now = new Date();
   const formatTime = (date) =>
-    `${date.getHours().toString().padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}${date.getSeconds().toString().padStart(2, "0")}`;
+    `${date.getHours().toString().padStart(2, '0')}${date
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}${date.getSeconds().toString().padStart(2, '0')}`;
 
   return {
-    "trading": {
+    trading: {
       STCK_CNTG_HOUR: formatTime(now),
       STCK_PRPR: parseFloat((50000 * (1 + (Math.random() - 0.5) * 0.02)).toFixed(2)).toString(),
       CNTG_VOL: Math.floor(Math.random() * 1000).toString(),
       ACML_VOL: Math.floor(100000 + Math.random() * 5000).toString(),
       CTTR: parseFloat((50 + Math.random() * 50).toFixed(2)).toString(),
-      CCLD_DVSN: Math.random() < 0.33 ? "1" : Math.random() < 0.66 ? "3" : "5",
-    }
+      CCLD_DVSN: Math.random() < 0.33 ? '1' : Math.random() < 0.66 ? '3' : '5',
+    },
   };
 };
 
@@ -97,19 +100,64 @@ const sendData = (ws, data) => {
   }
 };
 
-socket.on("connection", (ws) => {
-  const intervalId = setInterval(() => {
-    sendData(ws, fakeKospiData());
-    sendData(ws, fakeKosdaqData());
-    sendData(ws, fakeTradingData());
-    sendData(ws, fakeOrderBookData());
-  }, 1000);
+const wsConnections = {};
+const activeStockCodes = {};
 
-  ws.on("close", () => {
-    clearInterval(intervalId);
+function startBaseInterval() {
+  setInterval(() => {
+    Object.values(wsConnections).forEach((ws) => {
+      sendData(ws, fakeKospiData());
+      sendData(ws, fakeKosdaqData());
+    });
+  }, 5000);
+}
+
+socket.on('connection', (ws) => {
+  wsConnections[ws] = ws;
+
+  startBaseInterval();
+
+  ws.on('message', (message) => {
+    try {
+      const parsedMessage = JSON.parse(message);
+
+      if (parsedMessage.stock_code) {
+        const stockCode = parsedMessage.stock_code;
+
+        if (!activeStockCodes[stockCode]) {
+          activeStockCodes[stockCode] = setInterval(() => {
+            const tradingData = { stock_code: stockCode, ...fakeTradingData() };
+            const orderBookData = { stock_code: stockCode, ...fakeOrderBookData() };
+
+            sendData(ws, tradingData);
+            sendData(ws, orderBookData);
+          }, 1000);
+        }
+      }
+
+      if (parsedMessage.exit && parsedMessage.stock_code) {
+        const stockCodeToExit = parsedMessage.stock_code;
+
+        if (activeStockCodes[stockCodeToExit]) {
+          clearInterval(activeStockCodes[stockCodeToExit]);
+          delete activeStockCodes[stockCodeToExit];
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
   });
 
-  ws.on("error", (error) => {
+  ws.on('close', () => {
+    delete wsConnections[ws];
+
+    Object.keys(activeStockCodes).forEach((stockCode) => {
+      clearInterval(activeStockCodes[stockCode]);
+      delete activeStockCodes[stockCode];
+    });
+  });
+
+  ws.on('error', (error) => {
     console.error(error);
   });
 });

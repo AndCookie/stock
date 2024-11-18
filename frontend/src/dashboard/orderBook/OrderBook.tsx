@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { usePastStockStore } from '../../store/usePastStockStore';
 import { useMinuteStockStore } from '../../store/useMinuteStockStore';
@@ -10,9 +11,11 @@ import styles from './OrderBook.module.css';
 import { COLORS } from '../../common/utils';
 
 const OrderBook: React.FC = () => {
+  const { stockCode } = useParams();
+
   const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
-  const { orderBookData, tradingData } = useSocketStore();
+  const { stockCodeData, orderBookData, tradingData } = useSocketStore();
 
   const currentPrice = Number(yesterdayStockData);                     // 기준가
   const { maxAskPrice, minBidPrice } = useStockLimit();                // 상한가와 하한가
@@ -33,16 +36,21 @@ const OrderBook: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (!tradingData) return;
+    if (!tradingData || stockCodeData != stockCode) return;
 
     setQuantity(Number(tradingData!.ACML_VOL));
     setMaxPrice(Number(tradingData.STCK_PRPR) > maxPrice ? Number(tradingData.STCK_PRPR) : maxPrice);
     setMinPrice(Number(tradingData.STCK_PRPR) < minPrice ? Number(tradingData.STCK_PRPR) : minPrice);
     setRenderedTradingData((prevData) => {
-      const updatedData = [...prevData, tradingData];
-      return updatedData.sort((a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR));
+      // 새로운 데이터 추가 및 정렬
+      const updatedData = [...prevData, tradingData].sort(
+        (a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR)
+      );
+    
+      // 최신 10개 데이터 유지
+      return updatedData.slice(0, 20);
     });
-  }, [tradingData])
+  }, [stockCode, stockCodeData, tradingData])
 
   // 스크롤을 중간 위치로 설정
   const scrollFlag = useRef(false);
@@ -94,7 +102,7 @@ const OrderBook: React.FC = () => {
                       <div className={styles.detailInfo}>하한가<br></br>{minBidPrice.toLocaleString()}</div>
                     </div>
                     <div className={styles.askInfoContainer}>
-                      <div className={styles.detailInfo}>최고가<br></br><span style={{ color: "#FF4F4F" }}>{maxPrice.toLocaleString()}</span></div>
+                      <div className={styles.detailInfo}>최고가<br></br><span style={{ color: "#CF5055" }}>{maxPrice.toLocaleString()}</span></div>
                       <div className={styles.detailInfo}>최저가<br></br><span style={{ color: "#4881FF" }}>{minPrice.toLocaleString()}</span></div>
                     </div>
                     <div className={styles.detailInfo}>거래량<br></br>{quantity.toLocaleString()}</div>
@@ -109,18 +117,21 @@ const OrderBook: React.FC = () => {
             {/* 매수 데이터 */}
             {[...Array(10)].map((_, i) => (
               <tr key={`bid-${i}`} className={styles.orderRow}>
-                {renderedTradingData.length > i && (
+                {i === 0 && renderedTradingData.length > 0 && (
                   <td className={styles.bidInfo} rowSpan={10}>
-                    <div className={styles.bidDetail}>
-                      <span style={{ color: '#bbb' }}>
-                        {Number(renderedTradingData[i].STCK_PRPR).toLocaleString()}
-                      </span>
-                      <span style={{
-                        color: renderedTradingData[i].CCLD_DVSN === 1 ? '#FF4F4F' : renderedTradingData[i].CCLD_DVSN === 5 ? '#4881FF' : '#26d4a5',
-                      }}>
-                        {Number(renderedTradingData[i].CNTG_VOL).toLocaleString()}
-                      </span>
-                    </div>
+                    {renderedTradingData.map((data, index) => (
+                      <div key={`info-${index}`} className={styles.bidDetail}>
+                        <span className={styles.bidVol}>
+                          {Number(data.STCK_PRPR).toLocaleString()}
+                        </span>
+                        <span className={styles.bidQty} style={{
+                          color: data.CCLD_DVSN === 1 ? '#CF5055' :
+                                data.CCLD_DVSN === 5 ? '#4881FF' : '#1EA083',
+                        }}>
+                          {Number(data.CNTG_VOL).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
                   </td>
                 )}
                 <td
