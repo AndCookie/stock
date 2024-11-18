@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./Balance.module.css";
 import { useBalanceStore } from "../../../store/useBalanceStore";
 import { COLORS } from '../../../common/utils';
@@ -7,6 +8,8 @@ import { IHolding } from "../../../store/definitions";
 const Balance = () => {
   const { balanceData, fetchBalanceData } = useBalanceStore();
   const [averageTotalPrice, setAverageTotalPrice] = useState<number | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBalanceData();
@@ -82,7 +85,7 @@ const Balance = () => {
 
       <div className={styles.holding}>
         {balanceData.holdings.map((item) => (
-          <div key={item.stock_name} className={styles.item}>
+          <div key={item.stock_name} className={styles.item} onClick={() => navigate(`dashboard/${item.stock_code}`)}>
             <div className={styles.itemLeft}>
               <span className={styles.itemName}>{item.stock_name}</span>
               <span className={styles.itemShares}>{item.total_amount}주</span>
