@@ -18,7 +18,7 @@ const TradingVolume: React.FC = () => {
       const updatedData = [...prevData, tradingData];
       return updatedData.sort((a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR));
     });
-  }, [stockCode, stockCodeData, tradingData]);
+  }, [stockCodeData, tradingData]);
 
   if (!renderedTradingData) return <div />;
 
@@ -26,7 +26,7 @@ const TradingVolume: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.categoryTabs}>시세</div>
 
-      <div className={styles.content}>
+      <div className={`content ${styles.content}`}>
         <table className={styles.tradingTable}>
           <thead>
             <tr>
@@ -39,7 +39,7 @@ const TradingVolume: React.FC = () => {
           <tbody>
             {renderedTradingData.map((data, idx) => (
               <tr key={idx}>
-                <td className={styles.tradePrice}>{Number(data.STCK_PRPR).toLocaleString()}</td>
+                <td className={styles.tradePrice}>{Number(Math.round(data.STCK_PRPR)).toLocaleString()}</td>
                 <td
                   className={styles.tradeVolume}
                   style={{

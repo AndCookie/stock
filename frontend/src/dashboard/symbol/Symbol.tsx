@@ -10,18 +10,13 @@ import { useFavoriteStore } from '../../store/useFavoriteStore';
 import { IWidgetComponentProps } from '../../common/definitions';
 import styles from './Symbol.module.css';
 import { COLORS } from '../../common/utils';
+import fetchInformation from './hooks/fetchInformation';
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
-  const name =
-    stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
-  const { industry, companyDetail, favorite } = {
-    industry: 'IT',
-    companyDetail: '반도체와반도체장비',
-    favorite: false,
-  };
+  const name = stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
 
   const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
@@ -30,12 +25,31 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [renderedValue, setRenderedValue] = useState(0);
   const [renderedChangeValue, setRenderedChangeValue] = useState(0);
   const [renderedChangeRate, setRenderedChangeRate] = useState(0);
-  const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
+
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [industry, setIndustry] = useState<string>("");
+  const [companyDetail, setCompanyDetail] = useState<string>("");
 
   const favoriteData = useFavoriteStore((state) => state.favoriteData);
   const fetchFavoriteData = useFavoriteStore((state) => state.fetchFavoriteData);
   const postFavoriteData = useFavoriteStore((state) => state.postFavoriteData);
   const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
+
+  useEffect(() => {
+    if (!stockCode) return;
+
+    const fetchData = async () => {
+      try {
+        const data = await fetchInformation(stockCode);
+        setIndustry(data.std_idst_clsf_cd_name);
+        setCompanyDetail(data.idx_bztp_scls_cd_name);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData()
+  }, [stockCode])
 
   useEffect(() => {
     if (!minuteStockData || !yesterdayStockData) return;
@@ -48,7 +62,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) -
         Number(yesterdayStockData)) /
         Number(yesterdayStockData)) *
-        100
+      100
     );
   }, [minuteStockData, yesterdayStockData]);
 
@@ -69,9 +83,9 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
     setRenderedChangeRate(
       ((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) *
-        100
+      100
     );
-  }, [tradingData]);
+  }, [stockCodeData, tradingData]);
 
   // TODO: 비즈니스 로직이니 분리하세요
   const toggleFavorite = () => {
@@ -90,21 +104,20 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   useEffect(() => {
     if (!stockCode) return;
 
-    if (!isFavorite) {
+    fetchFavoriteData();
+    if (isFavorite) {
       sendMessage({
         stock_code: stockCode,
       });
-      fetchFavoriteData();
     } else {
       sendMessage({
         stock_code: stockCode,
         exit: 'True',
       });
-      fetchFavoriteData();
     }
   }, [isFavorite]);
 
-  if (!renderedChangeValue) return <div />;
+  if (!industry || !companyDetail || !renderedChangeValue) return <div />;
 
   return (
     <div className={styles.container}>
@@ -135,7 +148,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       <div className={styles.rightSection}>
         <div
           className={styles.price}
-          // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
+        // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
         >
           {Number(renderedValue.toFixed(0)).toLocaleString()}원
         </div>

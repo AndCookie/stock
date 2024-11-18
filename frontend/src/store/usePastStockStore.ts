@@ -42,15 +42,11 @@ export const usePastStockStore = create<IPastStockState>((set, get) => ({
   },
 
   fetchYesterdayStockData: () => {
-    const { dailyPastStockData, pastStockData } = get();
+    const { dailyPastStockData } = get();
 
     if (dailyPastStockData) {
       set(() => ({
         yesterdayStockData: dailyPastStockData[dailyPastStockData.length - 2].stck_clpr,
-      }));
-    } else if (pastStockData) {
-      set(() => ({
-        yesterdayStockData: pastStockData[pastStockData.length - 2].stck_clpr,
       }));
     }
   },

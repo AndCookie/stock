@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { postMessage } from "./actions";
 
-const useChatBot = () => {
+const fetchChatBot = (loginToken: string) => {
   const [chat, setChat] = useState([
     {
       message: "안녕하세요! 저는 AI챗봇입니다. 무엇을 도와드릴까요?",
@@ -18,7 +18,7 @@ const useChatBot = () => {
     setChat((prevChat) => [...prevChat, { message, role: "me" }]);
 
     try {
-      const response = await postMessage(message);
+      const response = await postMessage(message, loginToken);
       setChat((prevChat) => [
         ...prevChat,
         { message: response, role: "gpt" },
@@ -38,4 +38,4 @@ const useChatBot = () => {
   return { chat, sendChat, newchat, setNewchat, loading };
 };
 
-export default useChatBot;
+export default fetchChatBot;

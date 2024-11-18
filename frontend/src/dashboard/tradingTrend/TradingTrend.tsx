@@ -1,5 +1,3 @@
-// 거래동향, 거래원, 투자자
-
 import { useState } from "react";
 import Daily from "./Daily";
 import Trader from "./Trader";
