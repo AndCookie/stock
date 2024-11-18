@@ -52,7 +52,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   }, [stockCode])
 
   useEffect(() => {
-    if (!minuteStockData || !yesterdayStockData) return;
+    if (!minuteStockData || minuteStockData.length === 0 || !yesterdayStockData) return;
 
     setRenderedValue(Number(minuteStockData![minuteStockData!.length - 1].stck_prpr));
     setRenderedChangeValue(
