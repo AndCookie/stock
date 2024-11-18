@@ -84,7 +84,10 @@
   display: grid;
   grid-template-columns: 4.3fr 3.4fr 4.3fr;
   gap: 30px;
-  margin: 0px 10px 50px 10px;
+  margin: -5px 10px -40px 10px;
+  /* border: 5px solid blue; */
+  /* height: 62vh; */
+  height: 52vh;
 }
 
 /* 하단 영역 */
