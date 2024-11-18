@@ -70,16 +70,16 @@ def chat(request):
         })
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-        # return Response(chat_completion.choices[0].message.content, status=status.HTTP_200_OK)
-        serializer = MessageSerializer(previous_message, many=True)
-        response_data = serializer.data
-        response_data.append({
-            "role": "user", 
-            "content": user_message
-        })
-        response_data.append({
-            "role": "assistant", 
-            "content": chat_completion.choices[0].message.content
-        })
-        return Response(response_data, status=status.HTTP_200_OK)
+        return Response(chat_completion.choices[0].message.content, status=status.HTTP_200_OK)
+        # serializer = MessageSerializer(previous_message, many=True)
+        # response_data = serializer.data
+        # response_data.append({
+        #     "role": "user", 
+        #     "content": user_message
+        # })
+        # response_data.append({
+        #     "role": "assistant", 
+        #     "content": chat_completion.choices[0].message.content
+        # })
+        # return Response(response_data, status=status.HTTP_200_OK)
     return Response({"error": "Invalid request method."}, status=400)
