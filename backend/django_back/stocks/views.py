@@ -272,25 +272,33 @@ def stock_price(request):
     start_date_str = start_date.strftime("%Y%m%d")
     
     end_date_str = end_date.strftime("%Y%m%d")
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    while indicator_data and json.loads(indicator_data[-1])["stck_bsop_date"] == end_date_str:
-        value = indicator_data.pop()
+    stock_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    while stock_data and json.loads(stock_data[-1])["stck_bsop_date"] == end_date_str:
+        value = stock_data.pop()
         redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
-    existing_dates = {json.loads(item)["stck_bsop_date"] for item in indicator_data}    
-    
+    existing_keys = set(stock_data)
     current_date = end_date
     while current_date >= start_date:
         end_date_str = current_date.strftime("%Y%m%d")
         
-        if end_date_str not in existing_dates:
-            response_data = fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_code)
-            if response_data:
-                last_date = response_data[-1]["stck_bsop_date"]
-                # 마지막 날짜 기준으로 업데이트 및 존재 확인
-                current_date = datetime.strptime(last_date, "%Y%m%d").date()
-                if current_date.strftime("%Y%m%d") in existing_dates:
-                    break
-            else:
+        response_data = fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_code)
+        if response_data:
+            last_date = response_data[-1]["stck_bsop_date"]
+            # 마지막 날짜 기준으로 업데이트 및 존재 확인
+            current_date = datetime.strptime(last_date, "%Y%m%d").date()
+            data = {
+                "stck_bsop_date": response_data[-1].get("stck_bsop_date"), 
+                "stck_clpr": response_data[-1].get("stck_clpr"), 
+                "stck_oprc": response_data[-1].get("stck_oprc"), 
+                "stck_hgpr": response_data[-1].get("stck_hgpr"), 
+                "stck_lwpr": response_data[-1].get("stck_lwpr"), 
+                "acml_vol": response_data[-1].get("acml_vol"), 
+                "prdy_vrss_sign": response_data[-1].get("prdy_vrss_sign"), 
+                "prdy_vrss": response_data[-1].get("prdy_vrss"), 
+            }
+            json_data = json.dumps(data).encode('utf-8')
+            # 중복 여부 확인
+            if json_data in existing_keys:
                 break
         else:
             break
@@ -298,8 +306,8 @@ def stock_price(request):
         current_date -= timedelta(days=1)
         time.sleep(0.2)
 
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    all_data = [json.loads(item) for item in indicator_data]
+    stock_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    all_data = [json.loads(item) for item in stock_data]
 
     return Response(all_data, status=status.HTTP_200_OK)
 
@@ -343,7 +351,7 @@ def fetch_and_save_stock_data(start_date_str, end_date_str, stock_code, period_c
         pipe.execute()
         while response_data['output2'] and "stck_bsop_date" not in response_data['output2'][-1]:
             response_data['output2'].pop()
-        return response_data['output2']  # 일별 데이터 반환
+        return response_data['output2']
     else:
         print(f"Failed to fetch data for {stock_code} on {start_date_str}: {response.status_code}")
         return None
@@ -756,26 +764,27 @@ def disclosure(request):
     end_date = date.today()
     start_date = end_date - timedelta(days=7)
 
-    end_date_str = end_date.strftime("%Y%m%d")
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
-    while indicator_data and json.loads(indicator_data[-1])["data_dt"] == end_date_str:
-        value = indicator_data.pop()
-        redis_client.zrem(cache_key, value)  # 오늘 데이터 삭제
-    existing_dates = {json.loads(item)["data_dt"] for item in indicator_data}
+    news_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    existing_keys = set(news_data)
     
     current_date = end_date
     while current_date >= start_date:
         current_date_str = current_date.strftime("%Y%m%d")
-        if current_date_str not in existing_dates:
-            fetch_and_save_stock_news(current_date_str, stock_code)
-        else:
+        response_data = fetch_and_save_stock_news(current_date_str, stock_code)
+        data = {
+                "hts_pbnt_titl_cntt": response_data[-1].get('hts_pbnt_titl_cntt'), 
+                "dorg": response_data[-1].get('dorg'), 
+                "data_dt": response_data[-1].get('data_dt'), 
+            }
+        json_data = json.dumps(data).encode('utf-8')
+        if json_data in existing_keys:
             break
 
         current_date -= timedelta(days=1)
         time.sleep(0.3)
 
-    indicator_data = redis_client.zrevrange(cache_key, 0, -1, withscores=False)
-    all_data = [json.loads(item) for item in indicator_data]
+    news_data = redis_client.zrevrange(cache_key, 0, -1, withscores=False)
+    all_data = [json.loads(item) for item in news_data]
     
     return Response(all_data, status=status.HTTP_200_OK)
 
@@ -811,6 +820,7 @@ def fetch_and_save_stock_news(date_str, stock_code):
             pipe.zadd(cache_key, {json.dumps(data): timestamp})
 
         pipe.execute()
+        return response_data['output']
     else:
         print(f"Failed to fetch news for {stock_code} on {stock_code}: {response.status_code}")
     return None
