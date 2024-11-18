@@ -14,7 +14,7 @@ const Item = ({
     <div className={styles.newsContent}>
       <div className={styles.newsTitle}>{hts_pbnt_titl_cntt}</div>
       <div className={styles.newsInfo}>
-        {data_dt} | {dorg}
+        {data_dt.slice(0, 4)}-{data_dt.slice(4, 6)}-{data_dt.slice(6, 8)} | {dorg}
       </div>
     </div>
   );
