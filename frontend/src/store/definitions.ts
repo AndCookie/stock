@@ -79,6 +79,7 @@ export interface IStandardHistoryData {
 
 export interface IStandardHistoryState {
   standardHistoryData: IStandardHistoryData[] | null;
+  getLoginToken: () => string;
   fetchStandardHistoryData: () => Promise<void>;
 }
 
@@ -93,6 +94,7 @@ export interface IScheduledHistoryData {
 
 export interface IScheduledHistoryState {
   scheduledHistoryData: IScheduledHistoryData[] | null;
+  getLoginToken: () => string;
   fetchScheduledHistoryData: () => Promise<void>;
 }
 
@@ -236,6 +238,7 @@ import { Layout } from 'react-grid-layout';
 
 export interface IWidgetPositionState {
   widgetPosition: Layout[];
+  getLoginToken: () => string;
   fetchWidgetPosition: () => Promise<void>;
   postWidgetPosition: (layout: Layout[]) => Promise<void>;
 }

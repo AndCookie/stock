@@ -2,6 +2,7 @@ import axios from 'axios';
 import { create } from 'zustand';
 import { Layout } from 'react-grid-layout';
 import { IWidgetPositionState } from './definitions';
+import { useLoginStore } from './useLoginStore';
 
 const baseURL = import.meta.env.VITE_LOCAL_BASEURL;
 
@@ -16,14 +17,18 @@ const initialLayout: Layout[] = [
   { i: 'tradingVolumeWidget', x: 9, y: 0, w: 3, h: 5 },
 ];
 
-export const useWidgetPositionStore = create<IWidgetPositionState>((set) => ({
+export const useWidgetPositionStore = create<IWidgetPositionState>((set, get) => ({
   widgetPosition: initialLayout,
 
+  getLoginToken: () => useLoginStore.getState().loginToken,
+
   fetchWidgetPosition: async () => {
+    const loginToken = get().getLoginToken();
+
     try {
       const response = await axios.get(`${baseURL}accounts/position/`, {
         headers: {
-          Authorization: 'Token 85142dd276d599bd69c0589df536f1884ea073e5',
+          Authorization: `Token ${loginToken}`,
         },
       });
 
@@ -50,6 +55,8 @@ export const useWidgetPositionStore = create<IWidgetPositionState>((set) => ({
   },
 
   postWidgetPosition: async (layout: Layout[]) => {
+    const loginToken = get().getLoginToken();
+
     try {
       const backendLayout = layout.map((item) => ({
         widget: item.i,
@@ -64,7 +71,7 @@ export const useWidgetPositionStore = create<IWidgetPositionState>((set) => ({
         { layout: backendLayout },
         {
           headers: {
-            Authorization: 'Token 85142dd276d599bd69c0589df536f1884ea073e5',
+            Authorization: `Token ${loginToken}`,
           },
         }
       );
