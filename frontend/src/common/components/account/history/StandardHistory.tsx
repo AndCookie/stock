@@ -5,12 +5,19 @@ import { IStandardHistoryData } from "../../../../store/definitions";
 import styles from "../History.module.css";
 
 const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filter, isMyPage }) => {
-  // const isDetailPage = filter !== "ALL";
+  // isDetailPage가 true면 filter가 stockCode
+  // isDetailPage가 false면 메인페이지랑 마이페이지
+  const isDetailPage = filter !== "ALL";
+
+  // TODO 이건 나중에 디자인 끝나고 지우세요!!
+  console.log("Temp", isMyPage)
+  console.log("Temp", isDetailPage)
+
   const today = new Date();
   const initialYear = today.getFullYear();
   const initialMonth = today.getMonth() + 1;
   const { standardHistoryData, fetchStandardHistoryData } = useStandardHistoryStore();
-  const [filteredHistoryData, setFilteredHistoryData] = useState<IStandardHistoryData[] | null>(null);
+  const [filteredHistoryData, setFilteredHistoryData] = useState<IStandardHistoryData[]>([]);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -80,7 +87,7 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
     }
   }, [standardHistoryData]);
 
-  const filteredByDateHistoryData = (filteredHistoryData || []).filter(({ ord_dt, mode }) => {
+  const filteredByDateHistoryData = filteredHistoryData.filter(({ ord_dt, mode }) => {
     const orderYear = ord_dt.slice(0, 4);
     const orderMonth = ord_dt.slice(4, 6);
     return (
@@ -89,8 +96,8 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
       (mode === "completed" || mode === "cancelled")
     );
   });
-  const completedHistoryData = (filteredHistoryData || []).filter(({ mode }) => mode === "completed" || mode === "cancelled");
-  const pendingHistoryData = (filteredHistoryData || []).filter(({ mode }) => mode === "pending");
+  const completedHistoryData = filteredHistoryData.filter(({ mode }) => mode === "completed" || mode === "cancelled");
+  const pendingHistoryData = filteredHistoryData.filter(({ mode }) => mode === "pending");
   const last60Months = getLast60Months();
 
   const renderHistoryData = (historyData: IStandardHistoryData[]) =>
