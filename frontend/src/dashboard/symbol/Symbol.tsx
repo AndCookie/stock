@@ -10,18 +10,13 @@ import { useFavoriteStore } from '../../store/useFavoriteStore';
 import { IWidgetComponentProps } from '../../common/definitions';
 import styles from './Symbol.module.css';
 import { COLORS } from '../../common/utils';
+import fetchInformation from './hooks/fetchInformation';
 
 const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const { stockCode } = useParams();
 
   // TODO: 실제 data를 넣어주세요
-  const name =
-    stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
-  const { industry, companyDetail, favorite } = {
-    industry: 'IT',
-    companyDetail: '반도체와반도체장비',
-    favorite: false,
-  };
+  const name = stockCode && stockCode in codeToName ? codeToName[stockCode as keyof typeof codeToName] : '';
 
   const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
@@ -30,12 +25,31 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   const [renderedValue, setRenderedValue] = useState(0);
   const [renderedChangeValue, setRenderedChangeValue] = useState(0);
   const [renderedChangeRate, setRenderedChangeRate] = useState(0);
-  const [isFavorite, setIsFavorite] = useState<boolean>(favorite || false);
+
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [industry, setIndustry] = useState<string>("");
+  const [companyDetail, setCompanyDetail] = useState<string>("");
 
   const favoriteData = useFavoriteStore((state) => state.favoriteData);
   const fetchFavoriteData = useFavoriteStore((state) => state.fetchFavoriteData);
   const postFavoriteData = useFavoriteStore((state) => state.postFavoriteData);
   const deleteFavoriteData = useFavoriteStore((state) => state.deleteFavoriteData);
+
+  useEffect(() => {
+    if (!stockCode) return;
+
+    const fetchData = async () => {
+      try {
+        const data = await fetchInformation(stockCode);
+        setIndustry(data.std_idst_clsf_cd_name);
+        setCompanyDetail(data.idx_bztp_scls_cd_name);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData()
+  }, [stockCode])
 
   useEffect(() => {
     if (!minuteStockData || !yesterdayStockData) return;
@@ -103,7 +117,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     }
   }, [isFavorite]);
 
-  if (!renderedChangeValue) return <div />;
+  if (!industry || !companyDetail || !renderedChangeValue) return <div />;
 
   return (
     <div className={styles.container}>
