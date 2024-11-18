@@ -25,6 +25,7 @@
   overflow-y: auto;
   overflow-x: auto;
   padding: 0;
+  padding-right: 5px;
 }
 
 .subContent::-webkit-scrollbar {
