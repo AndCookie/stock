@@ -58,7 +58,7 @@
 }
 
 .priceChange {
-  color: #ff3b30;
+  color: #CF5055;
 }
 
 /* 테이블 */
@@ -86,12 +86,12 @@
 
 .orderTable td.askPrice,
 .orderTable td.bidPrice {
-  padding: 10px 40px 10px 0;
+  padding: 10px 33px 10px 0;
   text-align: right;
 }
 
 .askVolume {
-  color: #FF4F4F;
+  color: #CF5055;
 }
 
 .orderTable .askInfo {
@@ -127,17 +127,36 @@
 }
 
 .bidInfo {
+  vertical-align: top;
   margin: 0;
-  padding: 0;
+  padding: 10px 5px 10px 0;
+  /* border: 1px solid red; */
 }
 
 .bidDetail {
   display: flex;
-  justify-content: space-around;
-  margin: 0;
+  flex-direction: row;
+  justify-content: center;
+  margin: 7px 0;
   padding: 0;
   font-size: 9px;
   width: 100%;
+  /* border: 1px solid green; */
+}
+
+.bidVol {
+  display: flex;
+  justify-content: flex-start;
+  color: #bbb;
+  width: 50px;
+  /* border: 1px solid blue; */
+}
+
+.bidQty {
+  display: flex;
+  justify-content: flex-end;
+  width: 25px;
+  /* border: 1px solid blue; */
 }
 
 .bidVolume {
@@ -155,13 +174,14 @@
 
 .askSummary, .bidSummary {
   color: #aaa;
-  width: 95px;
+  width: 100px;
+  min-width: 57px;
   text-align: center;
   /* border: 1px solid red; */
 }
 
 .askSummary span {
-  color: #FF4F4F;
+  color: #CF5055;
   padding-right: 5px;
 }
 
@@ -173,6 +193,7 @@
 .marketStatus {
   font-weight: bold;
   width: 95px;
+  min-width: 31px;
   text-align: center;
   /* border: 1px solid red; */
 }
