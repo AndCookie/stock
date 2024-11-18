@@ -42,8 +42,8 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
   };
 
   const formatDate = (ord_dt: string) => {
-    const month = ord_dt.slice(4, 6);
-    const day = ord_dt.slice(6, 8);
+    const month = ord_dt.slice(5, 7);
+    const day = ord_dt.slice(9, 11);
     return `${parseInt(month)}.${parseInt(day)}`;
   };
 
@@ -89,7 +89,7 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
 
   const filteredByDateHistoryData = filteredHistoryData.filter(({ ord_dt, mode }) => {
     const orderYear = ord_dt.slice(0, 4);
-    const orderMonth = ord_dt.slice(4, 6);
+    const orderMonth = ord_dt.slice(5, 7);
     return (
       parseInt(orderYear) === selectedYear &&
       parseInt(orderMonth) === selectedMonth &&
