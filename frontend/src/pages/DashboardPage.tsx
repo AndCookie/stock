@@ -69,7 +69,7 @@ const DashboardPage = () => {
     clearYesterdayStockData,
   } = usePastStockStore();
   const { minuteStockData, fetchMinuteStockData } = useMinuteStockStore();
-  const { indexData, fetchIndexData } = useIndexStore();
+  const { indexData } = useIndexStore();
 
   const { stockCode } = useParams();
 
@@ -79,7 +79,6 @@ const DashboardPage = () => {
     fetchDailyPastStockData(stockCode);
     fetchPastStockData(stockCode, 'M');
     fetchMinuteStockData(stockCode);
-    fetchIndexData();
 
     // 웹 소켓 종목코드 전송
     sendMessage({ stock_code: stockCode });

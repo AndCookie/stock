@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { usePastStockStore } from '../../store/usePastStockStore';
 import { useMinuteStockStore } from '../../store/useMinuteStockStore';
@@ -10,9 +11,11 @@ import styles from './OrderBook.module.css';
 import { COLORS } from '../../common/utils';
 
 const OrderBook: React.FC = () => {
+  const { stockCode } = useParams();
+
   const { yesterdayStockData } = usePastStockStore();
   const { minuteStockData } = useMinuteStockStore();
-  const { orderBookData, tradingData } = useSocketStore();
+  const { stockCodeData, orderBookData, tradingData } = useSocketStore();
 
   const currentPrice = Number(yesterdayStockData);                     // 기준가
   const { maxAskPrice, minBidPrice } = useStockLimit();                // 상한가와 하한가
@@ -33,7 +36,7 @@ const OrderBook: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    if (!tradingData) return;
+    if (!tradingData || stockCodeData !== stockCode) return;
 
     setQuantity(Number(tradingData!.ACML_VOL));
     setMaxPrice(Number(tradingData.STCK_PRPR) > maxPrice ? Number(tradingData.STCK_PRPR) : maxPrice);
