@@ -48,7 +48,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       ((Number(minuteStockData![minuteStockData!.length - 1].stck_prpr) -
         Number(yesterdayStockData)) /
         Number(yesterdayStockData)) *
-        100
+      100
     );
   }, [minuteStockData, yesterdayStockData]);
 
@@ -69,9 +69,9 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
     setRenderedChangeValue(Number(tradingData.STCK_PRPR) - Number(yesterdayStockData));
     setRenderedChangeRate(
       ((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) *
-        100
+      100
     );
-  }, [tradingData]);
+  }, [stockCodeData, tradingData]);
 
   // TODO: 비즈니스 로직이니 분리하세요
   const toggleFavorite = () => {
@@ -90,17 +90,16 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
   useEffect(() => {
     if (!stockCode) return;
 
-    if (!isFavorite) {
+    fetchFavoriteData();
+    if (isFavorite) {
       sendMessage({
         stock_code: stockCode,
       });
-      fetchFavoriteData();
     } else {
       sendMessage({
         stock_code: stockCode,
         exit: 'True',
       });
-      fetchFavoriteData();
     }
   }, [isFavorite]);
 
@@ -135,7 +134,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       <div className={styles.rightSection}>
         <div
           className={styles.price}
-          // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
+        // style={{ color: renderedChangeValue >= 0 ? COLORS.positive : COLORS.negative }}
         >
           {Number(renderedValue.toFixed(0)).toLocaleString()}원
         </div>
