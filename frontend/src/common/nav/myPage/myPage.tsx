@@ -3,12 +3,7 @@ import '../modal.css';
 import Account from '../../components/account/Account';
 import styles from './myPage.module.css';
 
-// closeModal prop을 필수로 지정한 인터페이스
-interface ModalComponentProps {
-  closeModal: () => void;
-}
-
-const MyPage: React.FC<ModalComponentProps> = ({ closeModal }) => (
+const MyPage: React.FC<{ closeModal: () => void }> = ({ closeModal }) => (
   <div className="modalOverlay" onClick={closeModal}>
     <div className="modal" onClick={(e) => e.stopPropagation()}>
       <button className="modalCloseButton" onClick={closeModal}>

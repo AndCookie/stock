@@ -10,9 +10,6 @@
 // alert창 CSS 부탁드립니다.
 // userSelect: 'none' 꼭 넣어야 합니다!! 텍스트 선택 방지 목적입니다. (Ctrl+f로 찾아보시면 딱 하나 있습니다.)
 
-// TO DO
-// Layout 정보 갱신될 때마다 백엔드에 POST 요청 보내서 저장하기, GET 요청 결과가 null이면 initialLayout으로
-
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GridLayout, { Layout } from 'react-grid-layout';
@@ -41,9 +38,11 @@ import { IWidgetComponentProps } from '../common/definitions';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import styles from './DashboardPage.module.css';
-import { AiOutlineClose, AiOutlineCheck } from 'react-icons/ai'; // X / 체크 아이콘
+import { AiOutlineClose, AiOutlineCheck } from "react-icons/ai"; // X / 체크 아이콘
+import { useWidgetPositionStore } from '../store/useWidgetPositionStore';
 
 const DashboardPage = () => {
+  const { widgetPosition, fetchWidgetPosition, postWidgetPosition } = useWidgetPositionStore();
   const {
     dailyPastStockData,
     pastStockData,
@@ -93,28 +92,26 @@ const DashboardPage = () => {
 
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
 
-  // 초기 레이아웃 설정
-  const initialLayout: Layout[] = [
-    { i: 'chartWidget', x: 0, y: 2, w: 6, h: 8 },
-    { i: 'infoWidget', x: 0, y: 10, w: 3, h: 6 },
-    { i: 'orderBookWidget', x: 6, y: 0, w: 3, h: 16 },
-    { i: 'symbolWidget', x: 0, y: 0, w: 6, h: 2 },
-    { i: 'tradingWidget', x: 9, y: 5, w: 3, h: 11 },
-    { i: 'tradingTrendWidget', x: 3, y: 10, w: 3, h: 6 },
-    { i: 'tradingVolumeWidget', x: 9, y: 0, w: 3, h: 5 },
-  ];
-
-  const [layout, setLayout] = useState<Layout[]>(initialLayout); // 위젯 레이아웃 상태
+  const [layout, setLayout] = useState<Layout[]>([]); // 위젯 레이아웃 상태
   const [forceRerenderKey, setForceRerenderKey] = useState(0); // 강제 리렌더링을 위한 key
-  const [isWidgetVisible, setIsWidgetVisible] = useState<{ [key: string]: boolean }>({
-    chartWidget: true,
-    infoWidget: true,
-    orderBookWidget: true,
-    symbolWidget: true,
-    tradingWidget: true,
-    tradingTrendWidget: true,
-    tradingVolumeWidget: true,
-  });
+  const [isWidgetVisible, setIsWidgetVisible] = useState<{ [key: string]: boolean }>({});
+
+  // 저장된 위젯 위치 불러오기
+  useEffect(() => {
+    fetchWidgetPosition();
+  }, []);
+
+  // 저장된 위젯 위치 불러온 후에 화면에 적용
+  useEffect(() => {
+    if (widgetPosition) {
+      setLayout(widgetPosition);
+      const visibility = widgetPosition.reduce((acc, item) => {
+        acc[item.i] = true;
+        return acc;
+      }, {} as { [key: string]: boolean });
+      setIsWidgetVisible(visibility);
+    }
+  }, [widgetPosition]);
 
   // const [selectedWidgets, setSelectedWidgets] = useState<{ [key: string]: boolean }>(
   //   Object.keys(widgetComponents).reduce((acc, key) => ({ ...acc, [key]: true }), {})
@@ -148,6 +145,12 @@ const DashboardPage = () => {
     } else {
       setLayout(layout); // 문제 없으면 위치를 업데이트
     }
+  };
+
+  // 위젯 위치 저장 함수
+  const saveLayout = () => {
+    postWidgetPosition(layout);
+    setForceRerenderKey(prevKey => prevKey + 1);
   };
 
   // 모달 창 토글 함수
@@ -247,6 +250,10 @@ const DashboardPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.addButton}>
+        <button onClick={saveLayout} className={styles.addBtn} style={{ marginRight: 5 }}>
+          위치 저장
+          <span style={{ fontSize: "10px", marginLeft: "5px" }}>@@</span>
+        </button>
         <button onClick={toggleModal} className={styles.addBtn}>
           화면 편집
           <span style={{ fontSize: '10px', marginLeft: '5px' }}>▼</span>

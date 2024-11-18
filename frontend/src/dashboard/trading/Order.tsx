@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import useSocketStore from "../../store/useSocketStore";
 import Buy from "./order/Buy";
 import Sell from "./order/Sell";
-import Hold from "./order/Hold";
+// import Hold from "./order/Hold";
 import styles from "./Order.module.css";
 
 const Order = () => {
@@ -22,7 +22,7 @@ const Order = () => {
   const TABS = [
     { label: "구매", component: <Buy initialMarketPrice={initialMarketPrice} />, styleClass: "activeBuy" },
     { label: "판매", component: <Sell initialMarketPrice={initialMarketPrice} />, styleClass: "activeSell" },
-    { label: "대기", component: <Hold />, styleClass: "activeHold" },
+    // { label: "대기", component: <Hold />, styleClass: "activeHold" },
   ];
 
   const [selectedTab, setSelectedTab] = useState(0);
