@@ -85,10 +85,8 @@ const DashboardPage = () => {
   useEffect(() => {
     if (dailyPastStockData) {
       fetchYesterdayStockData();
-    } else if (pastStockData) {
-      fetchYesterdayStockData();
     }
-  }, [dailyPastStockData, pastStockData]);
+  }, [dailyPastStockData]);
 
   const { width, height } = useWindowSize(); // 윈도우 크기 가져오기
 
@@ -234,29 +232,29 @@ const DashboardPage = () => {
     name: string;
     component: React.ComponentType<IWidgetComponentProps>;
   }[] = [
-    { id: 'symbolWidget', name: '개요', component: Symbol },
-    { id: 'chartWidget', name: '차트', component: Chart },
-    { id: 'orderBookWidget', name: '호가', component: OrderBook },
-    { id: 'tradingVolumeWidget', name: '거래량', component: TradingVolume },
-    { id: 'tradingWidget', name: '주문', component: Trading },
-    {
-      id: 'infoWidget',
-      name: '기업정보/뉴스/공시',
-      component: Info, // stockCode 전달
-    },
-    { id: 'tradingTrendWidget', name: '거래동향/거래원/투자자', component: TradingTrend },
-  ];
+      { id: 'symbolWidget', name: '개요', component: Symbol },
+      { id: 'chartWidget', name: '차트', component: Chart },
+      { id: 'orderBookWidget', name: '호가', component: OrderBook },
+      { id: 'tradingVolumeWidget', name: '거래량', component: TradingVolume },
+      { id: 'tradingWidget', name: '주문', component: Trading },
+      {
+        id: 'infoWidget',
+        name: '기업정보/뉴스/공시',
+        component: Info, // stockCode 전달
+      },
+      { id: 'tradingTrendWidget', name: '거래동향/거래원/투자자', component: TradingTrend },
+    ];
 
   return (
     <div className={styles.container}>
       <div className={styles.addButton}>
-        <button onClick={saveLayout} className={styles.addBtn} style={{ marginRight: 5 }}>
-          위치 저장
-          <span style={{ fontSize: "10px", marginLeft: "5px" }}>@@</span>
-        </button>
-        <button onClick={toggleModal} className={styles.addBtn}>
+        <button onClick={toggleModal} className={styles.addBtn} style={{ marginRight: 5 }}>
           화면 편집
           <span style={{ fontSize: '10px', marginLeft: '5px' }}>▼</span>
+        </button>
+        <button onClick={saveLayout} className={styles.saveBtn}>
+          저장
+          {/* <span style={{ fontSize: "10px", marginLeft: "5px" }}></span> */}
         </button>
       </div>
 
@@ -275,11 +273,10 @@ const DashboardPage = () => {
                   {widgetConfig.map(({ id, name }) => (
                     <li
                       key={id}
-                      className={`${styles.widgetItem} ${
-                        isWidgetVisible[id]
+                      className={`${styles.widgetItem} ${isWidgetVisible[id]
                           ? styles.widgetItemSelected
                           : styles.widgetItemUnselected
-                      }`}
+                        }`}
                       onClick={() => toggleWidgetVisibility(id)}
                     >
                       <AiOutlineCheck

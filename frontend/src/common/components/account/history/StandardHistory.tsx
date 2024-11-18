@@ -1,16 +1,24 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { useStandardHistoryStore } from "../../../../store/useHistoryStore";
-import { IStandardHistoryData } from "../../../../store/definitions";
-import styles from "../History.module.css";
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { useStandardHistoryStore } from '../../../../store/useHistoryStore';
+import { IStandardHistoryData } from '../../../../store/definitions';
+import styles from '../History.module.css';
 
 const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filter, isMyPage }) => {
-  // const isDetailPage = filter !== "ALL";
+  // isDetailPage가 true면 filter가 stockCode
+  // isDetailPage가 false면 메인페이지랑 마이페이지
+  const isDetailPage = filter !== 'ALL';
+
+  // TODO 이건 나중에 디자인 끝나고 지우세요!!
+  console.log('Temp', isMyPage);
+  console.log('Temp', isDetailPage);
+
   const today = new Date();
   const initialYear = today.getFullYear();
   const initialMonth = today.getMonth() + 1;
-  const { standardHistoryData, fetchStandardHistoryData } = useStandardHistoryStore();
-  const [filteredHistoryData, setFilteredHistoryData] = useState<IStandardHistoryData[] | null>(null);
+  const { standardHistoryData, fetchStandardHistoryData, deleteStandardArray } =
+    useStandardHistoryStore();
+  const [filteredHistoryData, setFilteredHistoryData] = useState<IStandardHistoryData[]>([]);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -34,9 +42,22 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
     setIsDropdownOpen(false);
   };
 
+  const handleDelete = (index: number) => {
+    if (!deleteStandardArray.includes(index)) {
+      deleteStandardArray.push(index);
+      console.log('삭제 목록 :', deleteStandardArray);
+    }
+    fetchStandardHistoryData();
+  };
+
+  const indexedFilteredHistoryData = filteredHistoryData.map((item, index) => ({
+    ...item,
+    originalIndex: index,
+  }));
+
   const formatDate = (ord_dt: string) => {
-    const month = ord_dt.slice(4, 6);
-    const day = ord_dt.slice(6, 8);
+    const month = ord_dt.slice(5, 7);
+    const day = ord_dt.slice(9, 11);
     return `${parseInt(month)}.${parseInt(day)}`;
   };
 
@@ -66,13 +87,11 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
 
   useEffect(() => {
     if (standardHistoryData) {
-      console.log("### standardHistoryData: ", standardHistoryData)
-      if (filter === "ALL") {
+      console.log('### standardHistoryData: ', standardHistoryData);
+      if (filter === 'ALL') {
         setFilteredHistoryData(standardHistoryData);
       } else {
-        setFilteredHistoryData(
-          standardHistoryData.filter(({ pdno }) => pdno === filter)
-        );
+        setFilteredHistoryData(standardHistoryData.filter(({ pdno }) => pdno === filter));
       }
       setSelectedYear(initialYear);
       setSelectedMonth(initialMonth);
@@ -80,17 +99,21 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
     }
   }, [standardHistoryData]);
 
-  const filteredByDateHistoryData = (filteredHistoryData || []).filter(({ ord_dt, mode }) => {
+  const filteredByDateHistoryData = filteredHistoryData.filter(({ ord_dt, mode }) => {
     const orderYear = ord_dt.slice(0, 4);
-    const orderMonth = ord_dt.slice(4, 6);
+    const orderMonth = ord_dt.slice(5, 7);
     return (
       parseInt(orderYear) === selectedYear &&
       parseInt(orderMonth) === selectedMonth &&
-      (mode === "completed" || mode === "cancelled")
+      (mode === 'completed' || mode === 'cancelled')
     );
   });
-  const completedHistoryData = (filteredHistoryData || []).filter(({ mode }) => mode === "completed" || mode === "cancelled");
-  const pendingHistoryData = (filteredHistoryData || []).filter(({ mode }) => mode === "pending");
+  const completedHistoryData = filteredHistoryData.filter(
+    ({ mode }) => mode === 'completed' || mode === 'cancelled'
+  );
+  const pendingHistoryData = indexedFilteredHistoryData.filter(
+    ({ mode, originalIndex }) => mode === 'pending' && !deleteStandardArray.includes(originalIndex)
+  );
   const last60Months = getLast60Months();
 
   const renderHistoryData = (historyData: IStandardHistoryData[]) =>
@@ -112,18 +135,18 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
                     : order.sll_buy_dvsn_cd === 'BUY'
                     ? styles['status-buy']
                     : styles['status-sell']
-                  }`}
+                }`}
               >
-                {order.sll_buy_dvsn_cd === "BUY" ? "구매" : "판매"}{" "}
-                {order.mode === "completed" ? "완료" : order.mode === "pending" ? "대기" : "취소"}
-              </span>{" "}
-              ·{" "}
+                {order.sll_buy_dvsn_cd === 'BUY' ? '구매' : '판매'}{' '}
+                {order.mode === 'completed' ? '완료' : order.mode === 'pending' ? '대기' : '취소'}
+              </span>{' '}
+              ·{' '}
               <span className={`${isMyPage ? styles.sharesModal : styles.shares}`}>
                 {order.ord_qty}주
               </span>
             </div>
           </div>
-          {order.mode === "cancelled" ? (
+          {order.mode === 'cancelled' ? (
             <div className={styles.price}></div>
           ) : (
             <div className={`${styles.price} ${isMyPage ? styles.priceModal : ''}`}>
@@ -131,13 +154,14 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
               {order.avg_prvs.toLocaleString()}원
             </div>
           )}
+          <div onClick={() => handleDelete(order.originalIndex as number)}>X</div>
         </div>
       ))
     ) : (
       <p className={styles.emptyMessage}>주문내역이 없습니다</p>
     );
 
-  return(
+  return (
     <div>
       {isPendingView ? (
         <div>
@@ -172,7 +196,7 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
             ▶ 대기 중인 주문 {pendingHistoryData.length}건
           </button>
 
-          {filter === "ALL" ? (
+          {filter === 'ALL' ? (
             <>
               <div className={styles.dateDropdown}>
                 <button
@@ -182,8 +206,8 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
                   }}
                   onClick={toggleDropdown}
                 >
-                  {selectedDate || "날짜 선택"}{" "}
-                  <span className={styles.arrow}>{isDropdownOpen ? "▲" : "▼"}</span>
+                  {selectedDate || '날짜 선택'}{' '}
+                  <span className={styles.arrow}>{isDropdownOpen ? '▲' : '▼'}</span>
                 </button>
                 {isDropdownOpen && (
                   <div className={styles.dropdownContent}>
@@ -210,11 +234,10 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
               </div>
             </>
           ) : (
+            // isDetailPage이 true일 때
             <>
               <div className={styles.content}>
-                <div className={styles.section}>
-                  {renderHistoryData(completedHistoryData)}
-                </div>
+                <div className={styles.section}>{renderHistoryData(completedHistoryData)}</div>
               </div>
             </>
           )}
@@ -224,4 +247,4 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
   );
 };
 
-export default StandardHistory
+export default StandardHistory;

@@ -10,7 +10,7 @@ const Dropdown = ({
   return (
     <div className={styles.DropDownBox}>
       {dropDownList.length === 0 && (
-        <div className={styles.DropDownItem}>해당하는 단어가 없습니다</div>
+        <div className={styles.DropDownItem}>해당하는 종목이 없습니다</div>
       )}
       {dropDownList.slice(0, 4).map((dropDownItem, dropDownIndex) => (
         <div

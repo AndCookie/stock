@@ -81,6 +81,7 @@ const Rolling = () => {
         className={`${styles.inner} ${isPaused ? styles.paused : ''}`} // 상태에 따라 클래스 변경
       >
         {formattedData}
+        {formattedData}
       </div>
     </div>
   );

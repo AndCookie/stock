@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const BASEURL = import.meta.env.VITE_LOCAL_BASEURL;
 
-const fetchTraderTrend = async (keyword: string, stockCode: string) => {
+const fetchInformation = async (stockCode: string) => {
   try {
-    const response = await axios.get(BASEURL + `stocks/trend/${keyword}`, {
+    const response = await axios.get(BASEURL + 'stocks/information/', {
       params: {
         stock_code: stockCode,
       }
@@ -15,4 +15,4 @@ const fetchTraderTrend = async (keyword: string, stockCode: string) => {
   }
 };
 
-export default fetchTraderTrend;
+export default fetchInformation;

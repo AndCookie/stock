@@ -10,8 +10,6 @@ import { COLORS } from '../../common/utils';
 import { IChartStockData, IChartVolumeData } from './definitions';
 
 const Chart = () => {
-  // return <div />;
-
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const histogramSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
@@ -22,7 +20,7 @@ const Chart = () => {
   const [chartStockData, setChartStockData] = useState<IChartStockData[] | null>(null);
   const [chartVolumeData, setChartVolumeData] = useState<IChartVolumeData[] | null>(null);
 
-  const [selectedPeriodCode, setSelectedPeriodCode] = useState('M');
+  const [selectedPeriodCode, setSelectedPeriodCode] = useState('D');
 
   const { stockCode } = useParams();
 

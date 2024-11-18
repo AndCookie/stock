@@ -40,23 +40,23 @@ export interface IIndexState {
 
 // type of Balance
 export interface IHolding {
-  name: string;
-  shares: number;
-  currentValue: number;
-  prevValue: number;
-  currentEstimatedValue: number;
-  prevEstimatedValue: number;
+  stock_code: string;
+  total_amount: number;
+  average_price: number;
+  stock_name: string;
+  current_price: string;
+  difference: string;
+  percentage: string;
 }
 
 export interface IBalanceData {
-  balance: number;
-  currentValue: number;
-  prevValue: number;
   holdings: IHolding[];
+  balance: number;
 }
 
 export interface IBalanceState {
   balanceData: IBalanceData | null;
+  getLoginToken: () => string;
   fetchBalanceData: () => Promise<void>;
 }
 
@@ -75,11 +75,15 @@ export interface IStandardHistoryData {
   ord_unpr: number; // 주문단가
   avg_prvs: number; // 체결평균가
   mode: string; // 모드 (프론트에서 처리)
+  originalIndex?: number; // 삭제 로직
 }
 
 export interface IStandardHistoryState {
   standardHistoryData: IStandardHistoryData[] | null;
+  deleteStandardArray: number[];
+  getLoginToken: () => string;
   fetchStandardHistoryData: () => Promise<void>;
+  deleteStandardHistoryData: (order_number: string) => Promise<void>;
 }
 
 export interface IScheduledHistoryData {
@@ -93,6 +97,8 @@ export interface IScheduledHistoryData {
 
 export interface IScheduledHistoryState {
   scheduledHistoryData: IScheduledHistoryData[] | null;
+  deleteScheduledArray: number[];
+  getLoginToken: () => string;
   fetchScheduledHistoryData: () => Promise<void>;
 }
 
@@ -236,6 +242,7 @@ import { Layout } from 'react-grid-layout';
 
 export interface IWidgetPositionState {
   widgetPosition: Layout[];
+  getLoginToken: () => string;
   fetchWidgetPosition: () => Promise<void>;
   postWidgetPosition: (layout: Layout[]) => Promise<void>;
 }
