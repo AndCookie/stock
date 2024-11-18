@@ -46,10 +46,10 @@ const TradingVolume: React.FC = () => {
                   style={{
                     color:
                       data.CCLD_DVSN === 1
-                        ? '#FF4F4F'
+                        ? '#CF5055'
                         : data.CCLD_DVSN === 5
                         ? '#4881FF'
-                        : '#26d4a5',
+                        : '#1EA083',
                   }}
                 >
                   {Number(data.CNTG_VOL).toLocaleString()}
