@@ -32,6 +32,7 @@ import { usePastStockStore } from '../store/usePastStockStore';
 import { useMinuteStockStore } from '../store/useMinuteStockStore';
 import { useIndexStore } from '../store/useIndexStore';
 import { sendMessage } from '../store/useSocketStore';
+import { useDisclosure } from '../store/useDisclosure';
 
 // 인터페이스 임포트
 import { IWidgetComponentProps } from '../common/definitions';
@@ -41,21 +42,6 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import styles from './DashboardPage.module.css';
 import { AiOutlineClose, AiOutlineCheck } from 'react-icons/ai'; // X / 체크 아이콘
-
-// 위젯 구성 객체 (이름, 컴포넌트, 순서 정보 포함)
-const widgetConfig: {
-  id: string;
-  name: string;
-  component: React.ComponentType<IWidgetComponentProps>;
-}[] = [
-  { id: 'symbolWidget', name: '개요', component: Symbol },
-  { id: 'chartWidget', name: '차트', component: Chart },
-  { id: 'orderBookWidget', name: '호가', component: OrderBook },
-  { id: 'tradingVolumeWidget', name: '거래량', component: TradingVolume },
-  { id: 'tradingWidget', name: '주문', component: Trading },
-  { id: 'infoWidget', name: '기업정보/뉴스/공시', component: Info },
-  { id: 'tradingTrendWidget', name: '거래동향/거래원/투자자', component: TradingTrend },
-];
 
 const DashboardPage = () => {
   const {
@@ -70,6 +56,7 @@ const DashboardPage = () => {
   } = usePastStockStore();
   const { minuteStockData, fetchMinuteStockData } = useMinuteStockStore();
   const { indexData } = useIndexStore();
+  const { fetchDisclosureData } = useDisclosure();
 
   const { stockCode } = useParams();
 
@@ -79,6 +66,7 @@ const DashboardPage = () => {
     fetchDailyPastStockData(stockCode);
     fetchPastStockData(stockCode, 'M');
     fetchMinuteStockData(stockCode);
+    fetchDisclosureData(stockCode);
 
     // 웹 소켓 종목코드 전송
     sendMessage({ stock_code: stockCode });
@@ -236,6 +224,25 @@ const DashboardPage = () => {
   };
 
   if (!pastStockData || !minuteStockData || !indexData) return <div />;
+
+  // 위젯 구성 객체 (이름, 컴포넌트, 순서 정보 포함)
+  const widgetConfig: {
+    id: string;
+    name: string;
+    component: React.ComponentType<IWidgetComponentProps>;
+  }[] = [
+    { id: 'symbolWidget', name: '개요', component: Symbol },
+    { id: 'chartWidget', name: '차트', component: Chart },
+    { id: 'orderBookWidget', name: '호가', component: OrderBook },
+    { id: 'tradingVolumeWidget', name: '거래량', component: TradingVolume },
+    { id: 'tradingWidget', name: '주문', component: Trading },
+    {
+      id: 'infoWidget',
+      name: '기업정보/뉴스/공시',
+      component: Info, // stockCode 전달
+    },
+    { id: 'tradingTrendWidget', name: '거래동향/거래원/투자자', component: TradingTrend },
+  ];
 
   return (
     <div className={styles.container}>
