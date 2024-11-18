@@ -71,7 +71,7 @@ const Symbol = ({ setIsDraggable }: IWidgetComponentProps) => {
       ((Number(tradingData.STCK_PRPR) - Number(yesterdayStockData)) / Number(yesterdayStockData)) *
         100
     );
-  }, [tradingData]);
+  }, [stockCodeData, tradingData]);
 
   // TODO: 비즈니스 로직이니 분리하세요
   const toggleFavorite = () => {

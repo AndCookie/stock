@@ -5,7 +5,7 @@ import { usePastStockStore } from '../../store/usePastStockStore';
 import { useMinuteStockStore } from '../../store/useMinuteStockStore';
 import useSocketStore from '../../store/useSocketStore';
 import useStockLimit from '../../common/hooks/useStockLimit';
-import { ITradingData } from '../../store/definitions';
+import { IOrderBookData, ITradingData } from '../../store/definitions';
 
 import styles from './OrderBook.module.css';
 import { COLORS } from '../../common/utils';
@@ -23,7 +23,8 @@ const OrderBook: React.FC = () => {
   const [minPrice, setMinPrice] = useState(Number.POSITIVE_INFINITY);  // 최저가
   const [quantity, setQuantity] = useState(0);                         // 거래량
 
-  const [renderedTradingData, setRenderedTradingData] = useState<ITradingData[]>([]);
+  const [renderedTradingData, setRenderedTradingData] = useState<ITradingData[] | null>(null);
+  const [renderedOrderBookData, setRenderedOrderBookData] = useState<IOrderBookData | null>(null);
 
   useEffect(() => {
     setMaxPrice(minuteStockData!.reduce((maxValue, data) => {
@@ -43,7 +44,7 @@ const OrderBook: React.FC = () => {
     setMinPrice(Number(tradingData.STCK_PRPR) < minPrice ? Number(tradingData.STCK_PRPR) : minPrice);
     setRenderedTradingData((prevData) => {
       // 새로운 데이터 추가 및 정렬
-      const updatedData = [...prevData, tradingData].sort(
+      const updatedData = [...(prevData || []), tradingData].sort(
         (a, b) => Number(b.STCK_CNTG_HOUR) - Number(a.STCK_CNTG_HOUR)
       );
     
@@ -51,6 +52,12 @@ const OrderBook: React.FC = () => {
       return updatedData.slice(0, 20);
     });
   }, [stockCode, stockCodeData, tradingData])
+
+  useEffect(() => {
+    if (!orderBookData || stockCodeData != stockCode) return;
+    
+    setRenderedOrderBookData(orderBookData);
+  }, [stockCodeData, orderBookData])
 
   // 스크롤을 중간 위치로 설정
   const scrollFlag = useRef(false);
@@ -64,7 +71,7 @@ const OrderBook: React.FC = () => {
     }
   }, [orderBookData, tradingData]);
 
-  if (!orderBookData || !tradingData || !renderedTradingData) return <div className={styles.loading} />;
+  if (!orderBookData || !tradingData || !renderedTradingData || !renderedOrderBookData) return <div className={styles.loading} />;
 
   return (
     <div className={styles.container}>
@@ -88,12 +95,12 @@ const OrderBook: React.FC = () => {
             {/* 매도 데이터 */}
             {[...Array(10)].map((_, i) => (
               <tr key={`ask-${i}`} className={styles.orderRow}>
-                <td className={styles.askVolume}>{Number(orderBookData[`ASKP_RSQN${10 - i}`]).toLocaleString()}</td>
+                <td className={styles.askVolume}>{Number(renderedOrderBookData[`ASKP_RSQN${10 - i}`]).toLocaleString()}</td>
                 <td
                   className={styles.askPrice}
-                  style={{ color: Number(orderBookData[`ASKP${10 - i}`]) > currentPrice ? COLORS.positive : Number(orderBookData[`ASKP${10 - i}`]) < currentPrice ? COLORS.negative : "#bbb" }}
+                  style={{ color: Number(renderedOrderBookData[`ASKP${10 - i}`]) > currentPrice ? COLORS.positive : Number(renderedOrderBookData[`ASKP${10 - i}`]) < currentPrice ? COLORS.negative : "#bbb" }}
                 >
-                  {Number(orderBookData[`ASKP${10 - i}`]).toLocaleString()}
+                  {Number(renderedOrderBookData[`ASKP${10 - i}`]).toLocaleString()}
                 </td>
                 {i === 0 && (
                   <td className={styles.askInfo} rowSpan={10}>
@@ -136,11 +143,11 @@ const OrderBook: React.FC = () => {
                 )}
                 <td
                   className={styles.bidPrice}
-                  style={{ color: Number(orderBookData[`BIDP${i + 1}`]) > currentPrice ? COLORS.positive : Number(orderBookData[`BIDP${i + 1}`]) < currentPrice ? COLORS.negative : "#bbb" }}
+                  style={{ color: Number(renderedOrderBookData[`BIDP${i + 1}`]) > currentPrice ? COLORS.positive : Number(renderedOrderBookData[`BIDP${i + 1}`]) < currentPrice ? COLORS.negative : "#bbb" }}
                 >
-                  {Number(orderBookData[`BIDP${i + 1}`]).toLocaleString()}
+                  {Number(renderedOrderBookData[`BIDP${i + 1}`]).toLocaleString()}
                 </td>
-                <td className={styles.bidVolume}>{Number(orderBookData[`BIDP_RSQN${i + 1}`]).toLocaleString()}</td>
+                <td className={styles.bidVolume}>{Number(renderedOrderBookData[`BIDP_RSQN${i + 1}`]).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -149,12 +156,12 @@ const OrderBook: React.FC = () => {
       <div className={styles.summary}>
         <p className={styles.askSummary}>
           <span>판매대기</span>
-          {orderBookData.TOTAL_ASKP_RSQN.toLocaleString()}
+          {renderedOrderBookData.TOTAL_ASKP_RSQN.toLocaleString()}
         </p>
         <p className={styles.marketStatus}>정규장</p>
         <p className={styles.bidSummary}>
           <span>구매대기</span>
-          {orderBookData.TOTAL_BIDP_RSQN.toLocaleString()}
+          {renderedOrderBookData.TOTAL_BIDP_RSQN.toLocaleString()}
         </p>
       </div>
     </div>
