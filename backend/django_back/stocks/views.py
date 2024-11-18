@@ -504,7 +504,7 @@ def orders(request):
                     "sll_buy_dvsn_cd": "SELL" if data.price < 0 else "BUY", 
                     "ord_qty": abs(data.amount), 
                     "ord_unpr": data.price / data.amount, 
-                    "avg_prvs": data.target_price, 
+                    "tar_pr": data.target_price, 
                 }
                 for data in all_data
             ]
@@ -692,6 +692,8 @@ def holdings(request):
         for index, output in enumerate(outputs):
             response_data["holdings"][index]['stock_name'] = output.get("inter_kor_isnm")
             response_data["holdings"][index]['current_price'] = output.get("inter2_prpr")
+            response_data["holdings"][index]['difference'] = output.get("inter2_prdy_vrss")
+            response_data["holdings"][index]['percentage'] = output.get("prdy_ctrt")
     else:
         print(response.json())
         return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
