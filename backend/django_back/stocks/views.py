@@ -437,7 +437,7 @@ def orders(request):
     if request.method == 'GET':
         user = request.user
         history_type = request.GET.get('history_type')
-        incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).order_by('-execution_date', '-execution_time')
+        incomplete_data = StockData.objects.filter(user=user).exclude(remain_amount=0).exclude(order_number="지정주문").order_by('-execution_date', '-execution_time')
         for stock_data in incomplete_data:
             execution_date = stock_data.execution_date.strftime("%Y%m%d")
             order_number = stock_data.order_number
@@ -479,31 +479,36 @@ def orders(request):
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif history_type == 'standard':
             all_data = StockData.objects.filter(user=user).exclude(order_type="02").order_by('-execution_date', '-execution_time')
-            serializer = StockDataSerializer(instance=all_data, many=True)
-            response_data = [{
-                
-            }]
-            '''
-            {
-                "order_number": "46509",
-                "stock_code": "005930",
-                "execution_date": "2024-11-18",
-                "execution_time": "13:01:53",
-                "amount": -50,
-                "real_amount": 0,
-                "cancel_amount": 0,
-                "remain_amount": 0,
-                "price": -2829000,
-                "real_price": 0.0,
-                "target_price": 0,
-                "order_type": "01"
-            }
-            '''
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response_data = [
+                {
+                    "odno": data.order_number, 
+                    "pdno": data.stock_code, 
+                    "sll_buy_dvsn_cd": "SELL" if data.price < 0 else "BUY", 
+                    "ord_dt": data.execution_date, 
+                    "ord_tmd": data.execution_time, 
+                    "ord_qty": abs(data.amount), 
+                    "tot_ccld_qty": abs(data.amount - data.remain_amount), 
+                    "cncl_cfrm_qty": data.cancel_amount, 
+                    "rmn_qty": data.remain_amount, 
+                    "ord_unpr": data.price / data.amount, 
+                    "avg_prvs": data.price / data.amount, 
+                }
+                for data in all_data
+            ]
+            return Response(response_data, status=status.HTTP_200_OK)
         elif history_type == 'scheduled':
-            all_data = StockData.objects.filter(user=user).filter(order_type="02").order_by('-execution_date', '-execution_time')
-            serializer = StockDataSerializer(instance=all_data, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            all_data = StockData.objects.filter(user=user).filter(order_type="03").order_by('-execution_date', '-execution_time')
+            response_data = [
+                {
+                    "pdno": data.stock_code, 
+                    "sll_buy_dvsn_cd": "SELL" if data.price < 0 else "BUY", 
+                    "ord_qty": abs(data.amount), 
+                    "ord_unpr": data.price / data.amount, 
+                    "avg_prvs": data.target_price, 
+                }
+                for data in all_data
+            ]
+            return Response(response_data, status=status.HTTP_200_OK)
             
     if request.method == 'POST':
         user = request.user
@@ -529,7 +534,22 @@ def orders(request):
             # 아니면 지정가 주문
         # 조건 주문
         else:
-            pass
+            serializer = StockDataSaveSerializer(data={
+                    "user": user.id,
+                    "order_number": "지정주문", 
+                    "stock_code": stock_code,
+                    "execution_date": datetime.now().strftime("%Y%m%d"), 
+                    "execution_time": datetime.now().strftime("%H%M%S"), 
+                    "amount": amount, 
+                    "remain_amount": amount, 
+                    "price": price, 
+                    "target_price": target_price, 
+                    "order_type": payload['ORD_DVSN'] if target_price == "0" else "03"
+                    }
+                )
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({"msg1": "모의투자 매수주문이 완료 되었습니다."}, status=status.HTTP_200_OK)
         url = f"{PAPER_KIS_API_BASE_URL}/uapi/domestic-stock/v1/trading/order-cash"
 
         headers = get_paper_headers('VTTC0802U' if trade_type == 'buy' else 'VTTC0801U')
