@@ -74,7 +74,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             if KISWebSocketConsumer.kis_socket:
                 await self.request_to_kis("1", "H0STASP0", stock_code)  # 주식 체결 실시간 등록
                 await self.request_to_kis("1", "H0STCNT0", stock_code)  # 주식 호가 실시간 등록
-                await self.send(json.dumps({"message": f"{stock_code} WebSocket connection stopped"}))
+                await self.send(json.dumps({"message": f"{stock_code} WebSocket connection connected"}))
             else:
                 await self.send(json.dumps({"message": f"KIS WebSocket connection is strange..."}))
 
@@ -236,6 +236,8 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
     
     async def request_to_kis(self, tr_type, tr_id, stock_code):
         payload = self.get_payload(tr_type, tr_id, stock_code)
+        print(KISWebSocketConsumer.tasks[self.channel_name])
+        await self.send(json.dumps({"current subscribe": f"{KISWebSocketConsumer.tasks[self.channel_name]} Tracking..."}))
         await KISWebSocketConsumer.kis_socket.send(json.dumps(payload))
         if tr_type == "2":
             await self.send(json.dumps({"message": f"{stock_code} {tr_id} Tracking finished"}))

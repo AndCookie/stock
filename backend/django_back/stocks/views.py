@@ -455,19 +455,18 @@ def orders(request):
                 return Response({"error": "Failed to order from KIS API"}, status=status.HTTP_502_BAD_GATEWAY)
             time.sleep(0.5)
             
-        if not history_type:
+        if not history_type:  # 전체 주문 내역
             all_data = StockData.objects.filter(user=user).order_by('-execution_date', '-execution_time')
-
             serializer = StockDataSerializer(instance=all_data, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif history_type == 'standard':
             all_data = StockData.objects.filter(user=user).exclude(order_type="02").order_by('-execution_date', '-execution_time')
-            response_data = []
-            for data in all_data:
-                pass
-            pass
+            serializer = StockDataSerializer(instance=all_data, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         elif history_type == 'scheduled':
-            pass
+            all_data = StockData.objects.filter(user=user).filter(order_type="02").order_by('-execution_date', '-execution_time')
+            serializer = StockDataSerializer(instance=all_data, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
             
     if request.method == 'POST':
         user = request.user
@@ -562,7 +561,6 @@ def orders(request):
         
         if response.status_code == 200:
             response_data = response.json()
-            print(response_data)
             if response_data.get('rt_cd') == "0": # 성공
                 output = response_data.get('output')
                 execution_date = datetime.now().strftime("%Y%m%d")
