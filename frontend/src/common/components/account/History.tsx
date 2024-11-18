@@ -1,16 +1,16 @@
 // 주문내역
-
+import React from "react";
 import { useState } from "react";
 import StandardHistory from "./history/StandardHistory";
 import ScheduledHistory from "./history/ScheduledHistory";
 import styles from "./History.module.css";
 
-const TABS = [
-  { label: "일반 주문", component: <StandardHistory /> },
-  { label: "조건 주문", component: <ScheduledHistory /> }
-]
+const History: React.FC<{ filter?: string }> = ({ filter = "ALL" }) => {
+  const TABS = [
+    { label: "일반 주문", component: <StandardHistory filter={filter} /> },
+    { label: "조건 주문", component: <ScheduledHistory filter={filter} /> }
+  ];
 
-const History = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   return(
@@ -22,6 +22,9 @@ const History = () => {
             key={index}
             className={`tabButton ${styles.tabButton}
               ${selectedTab === index ? "activeTab" : ""}`}
+            onMouseDown={(event) => {
+              event.stopPropagation(); // 클릭 시 드래그 방지
+            }}
             onClick={() => {
               setSelectedTab(index);
             }}

@@ -1,10 +1,10 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { useStandardHistoryStore } from "../../../../store/useHistoryStore";
 import { IStandardHistoryData } from "../../../../store/definitions";
 import styles from "../History.module.css";
 
-const StandardHistory = () => {
-  const filter = "ALL";
+const StandardHistory: React.FC<{ filter: string }> = ({ filter }) => {
   const today = new Date();
   const initialYear = today.getFullYear();
   const initialMonth = today.getMonth() + 1;
@@ -14,9 +14,14 @@ const StandardHistory = () => {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPendingView, setIsPendingView] = useState(false);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
+  };
+
+  const togglePendingView = () => {
+    setIsPendingView((prev) => !prev);
   };
 
   const handleDateChange = (date: [number, number]) => {
@@ -38,7 +43,7 @@ const StandardHistory = () => {
     const lastDates: [number, number][] = [];
     let year = initialYear;
     let month = initialMonth;
-    
+
     // 60개월이 너무 많으면 아래에 i < 60을 조정하면 됩니다.
     for (let i = 0; i < 60; i++) {
       lastDates.push([year, month]);
@@ -48,7 +53,7 @@ const StandardHistory = () => {
         year -= 1;
       }
     }
-    
+
     return lastDates;
   };
 
@@ -74,16 +79,17 @@ const StandardHistory = () => {
     }
   }, [standardHistoryData]);
 
-  const filteredByDate = (filteredHistoryData || []).filter(({ ord_dt }) => {
+  const filteredByDateHistoryData = (filteredHistoryData || []).filter(({ ord_dt, mode }) => {
     const orderYear = ord_dt.slice(0, 4);
     const orderMonth = ord_dt.slice(4, 6);
     return (
       parseInt(orderYear) === selectedYear &&
-      parseInt(orderMonth) === selectedMonth
+      parseInt(orderMonth) === selectedMonth &&
+      (mode === "completed" || mode === "cancelled")
     );
   });
-  const completedAndCancelledHistoryData = filteredByDate.filter((order) => order.mode === "completed" || order.mode === "cancelled")
-  const pendingHistoryData = filteredByDate.filter((order) => order.mode === "pending")
+  const completedHistoryData = (filteredHistoryData || []).filter(({ mode }) => mode === "completed" || mode === "cancelled");
+  const pendingHistoryData = (filteredHistoryData || []).filter(({ mode }) => mode === "pending");
   const last60Months = getLast60Months();
 
   const renderHistoryData = (historyData: IStandardHistoryData[]) =>
@@ -120,33 +126,87 @@ const StandardHistory = () => {
 
   return(
     <div>
-      <div className={styles.dateDropdown}>
-        <button className={styles.filterButton} onClick={toggleDropdown}>
-          {selectedDate || "날짜 선택"}{" "}
-          <span className={styles.arrow}>{isDropdownOpen ? "▲" : "▼"}</span>
-        </button>
-        {isDropdownOpen && (
-          <div className={styles.dropdownContent}>
-            {last60Months.map((date, index) => (
-              <div key={index} onClick={() => handleDateChange(date)}>
-                {date[0]}년 {date[1]}월
-              </div>
-            ))}
+      {isPendingView ? (
+        <div>
+          {/* TODO backButton CSS */}
+          <button
+            className={styles.backButton}
+            onMouseDown={(event) => {
+              event.stopPropagation(); // 클릭 시 드래그 방지
+            }}
+            onClick={() => setIsPendingView(false)}
+          >
+            ◀ 뒤로가기
+          </button>
+
+          <div className={styles.content}>
+            <div className={styles.section}>
+              <div className={styles.title}>대기 중인 주문</div>
+              {renderHistoryData(pendingHistoryData)}
+            </div>
           </div>
-        )}
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.section}>
-          <div className={styles.title}>체결된 주문</div>
-          {renderHistoryData(completedAndCancelledHistoryData)}
         </div>
+      ) : (
+        <div>
+          {/* TODO pendingButton CSS */}
+          <button
+            className={styles.pendingButton}
+            onMouseDown={(event) => {
+              event.stopPropagation(); // 클릭 시 드래그 방지
+            }}
+            onClick={togglePendingView}
+          >
+            ▶ 대기 중인 주문 {pendingHistoryData.length}건
+          </button>
 
-        <div className={styles.section}>
-          <div className={styles.title}>미체결 주문</div>
-          {renderHistoryData(pendingHistoryData)}
+          {filter === "ALL" ? (
+            <>
+              <div className={styles.dateDropdown}>
+                <button
+                  className={styles.filterButton}
+                  onMouseDown={(event) => {
+                    event.stopPropagation(); // 클릭 시 드래그 방지
+                  }}
+                  onClick={toggleDropdown}
+                >
+                  {selectedDate || "날짜 선택"}{" "}
+                  <span className={styles.arrow}>{isDropdownOpen ? "▲" : "▼"}</span>
+                </button>
+                {isDropdownOpen && (
+                  <div className={styles.dropdownContent}>
+                    {last60Months.map((date, index) => (
+                      <div
+                        key={index}
+                        onMouseDown={(event) => {
+                          event.stopPropagation(); // 클릭 시 드래그 방지
+                        }}
+                        onClick={() => handleDateChange(date)}
+                      >
+                        {date[0]}년 {date[1]}월
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.content}>
+                <div className={styles.section}>
+                  <div className={styles.title}>완료된 주문</div>
+                  {renderHistoryData(filteredByDateHistoryData)}
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.content}>
+                <div className={styles.section}>
+                  {renderHistoryData(completedHistoryData)}
+                </div>
+              </div>
+            </>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };
