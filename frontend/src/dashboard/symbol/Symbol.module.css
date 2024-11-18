@@ -70,6 +70,8 @@
   align-items: center;
   justify-content: flex-end;
   gap: 5px;
+  min-width: 130px;
+  /* border: 1px solid blue; */
   color: #FF4F4F !important;
 }
 
