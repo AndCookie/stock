@@ -32,8 +32,8 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             data = json.loads(text_data)
-            await self.send(json.dumps({"error": f"{data} is not accepted."}))
         except:
+            await self.send(json.dumps({"error": f"{text_data} is not accepted."}))
             return
         stock_code = data.get("stock_code")
         exit_request = data.get("exit")

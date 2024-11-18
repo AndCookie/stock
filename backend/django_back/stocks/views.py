@@ -744,7 +744,7 @@ def disclosure(request):
     
     cache_key = f"stock_news:{stock_code}"
     end_date = date.today()
-    start_date = end_date - timedelta(days=90)
+    start_date = end_date - timedelta(days=7)
 
     end_date_str = end_date.strftime("%Y%m%d")
     indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
@@ -756,10 +756,7 @@ def disclosure(request):
     current_date = end_date
     while current_date >= start_date:
         current_date_str = current_date.strftime("%Y%m%d")
-        # 누락된 날짜에 대해 데이터 요청 및 저장
-        if current_date == end_date:  # 오늘 데이터는 무조건 가져오게
-            fetch_and_save_stock_news(current_date_str, stock_code)
-        elif current_date_str not in existing_dates:
+        if current_date_str not in existing_dates:
             fetch_and_save_stock_news(current_date_str, stock_code)
         else:
             break
@@ -767,7 +764,7 @@ def disclosure(request):
         current_date -= timedelta(days=1)
         time.sleep(0.3)
 
-    indicator_data = redis_client.zrange(cache_key, 0, -1, withscores=False)
+    indicator_data = redis_client.zrevrange(cache_key, 0, -1, withscores=False)
     all_data = [json.loads(item) for item in indicator_data]
     
     return Response(all_data, status=status.HTTP_200_OK)
