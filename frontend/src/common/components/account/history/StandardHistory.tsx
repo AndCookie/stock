@@ -5,7 +5,7 @@ import { IStandardHistoryData } from "../../../../store/definitions";
 import styles from "../History.module.css";
 
 const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filter, isMyPage }) => {
-  const isDetailPage = filter !== "ALL";
+  // const isDetailPage = filter !== "ALL";
   const today = new Date();
   const initialYear = today.getFullYear();
   const initialMonth = today.getMonth() + 1;
