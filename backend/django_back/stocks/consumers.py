@@ -303,5 +303,5 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                         {"type": "send_stock_data", "data": random_data},
                     )
 
-            await asyncio.sleep(0.1)  # 0.1초 간격으로 전송
+            await asyncio.sleep(1)  # 0.1초 간격으로 전송
     ############################
