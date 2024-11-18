@@ -1,6 +1,6 @@
 import styles from './App.module.css';
 
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 import Nav from './common/nav/Nav';
 import HomePage from './pages/HomePage';
@@ -13,6 +13,8 @@ import './index.css';
 // import './axiosMock';
 
 function App() {
+  const location = useLocation();
+
   return (
     <div id="app" className={styles.mainContainer}>
       <Nav />
@@ -21,7 +23,8 @@ function App() {
         <Route path="/dashboard/:stockCode" element={<DashboardPage />}></Route>
         <Route path="/market/:indexTypeId" element={<MarketPage />}></Route>
       </Routes>
-      <Rolling />
+      {/* HomePage가 아닌 경우에만 Rolling 렌더링 */}
+      {location.pathname !== '/' && <Rolling />}
     </div>
   );
 }
