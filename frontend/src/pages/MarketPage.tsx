@@ -12,6 +12,10 @@ const MarketPage = () => {
     fetchIndexData();
   }, [])
 
+  useEffect(() => {
+    console.log(indexData)
+  }, [indexData])
+
   const { indexTypeId } = useParams();
   const indexTypes = ["국내", "해외", "환율", "원자재"];
   const initialIndex = indexTypeId && indexTypes[parseInt(indexTypeId, 10)] ? indexTypes[parseInt(indexTypeId, 10)] : "국내";
