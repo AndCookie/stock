@@ -30,7 +30,11 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         print(f"Disconnected client: {self.channel_name}")
 
     async def receive(self, text_data):
-        data = json.loads(text_data)
+        try:
+            data = json.loads(text_data)
+            await self.send(json.dumps({"error": f"{data} is not accepted."}))
+        except:
+            return
         stock_code = data.get("stock_code")
         exit_request = data.get("exit")
         username = data.get('username')
@@ -94,7 +98,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                     if not data:
                         continue
                     stock_code = data.get("stock_code")
-                    
+                    # print(data)
                     # 각 클라이언트의 구독 목록 확인 후 데이터 전송
                     for channel_name, client_data in KISWebSocketConsumer.tasks.items():
                         if stock_code in client_data["subscribed_stocks"] or stock_code in client_data["favorite_stocks"]:
@@ -102,7 +106,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                                 channel_name,
                                 {"type": "send_stock_data", "data": data},
                             )
-                            print(f"Sending data to channel {channel_name}: {data}")
+                            # print(f"Sending data to channel {channel_name}: {data}")
                         else:
                             if data.get('indicator'):
                                 await self.channel_layer.send(
