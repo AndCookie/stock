@@ -43,12 +43,12 @@ const Nav: React.FC = () => {
             alt="chatBot"
             onClick={handleOpenModal('chatBot')}
           />
-          <img
+          {/* <img
             className={styles.icon2}
             src={heatMap}
             alt="heatMap"
             onClick={handleOpenModal('heatMap')}
-          />
+          /> */}
           <img
             className={styles.icon3}
             src={member}

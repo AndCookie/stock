@@ -169,7 +169,8 @@ tr:hover {
 }
 
 .company {
-  min-width: 50px;
+  min-width: 70px;
+  border: 1px solid green;
 }
 
 .footer {
