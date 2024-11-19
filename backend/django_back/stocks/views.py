@@ -487,7 +487,7 @@ def orders(request):
                     "ord_dt": data.execution_date, 
                     "ord_tmd": data.execution_time, 
                     "ord_qty": abs(data.amount), 
-                    "tot_ccld_qty": abs(data.amount - data.remain_amount), 
+                    "tot_ccld_qty": data.cancel_amount, 
                     "cncl_cfrm_qty": data.cancel_amount, 
                     "rmn_qty": data.remain_amount, 
                     "ord_unpr": data.price / data.amount, 
