@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useScheduledHistoryStore } from '../../../../store/useHistoryStore';
 import { IScheduledHistoryData } from '../../../../store/definitions';
+import styles from './ScheduledHistory.module.css';
 
 const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
   filter,
@@ -48,20 +49,28 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
     historyData.length - deleteScheduledArray.length > 0 ? (
       historyData.map((order, index) =>
         !deleteScheduledArray.includes(index) ? (
-          <div key={index}>
-            <span>{order.prdt_name}</span>
-            <span>
-              현재가 {order.tar_pr}원 {order.sll_buy_dvsn_cd === 'BUY' ? '이하' : '이상'}일 때
-            </span>
-            <span>
-              {order.sll_buy_dvsn_cd === 'BUY' ? '구매' : '판매'} {order.ord_qty}주
-            </span>{' '}
-            ·{' '}
-            <span>
-              {order.ord_unpr === 0 ? '시장가 주문' : `지정가 주문 · 주문가 ${order.ord_unpr}원`}
-            </span>
+          <div className={styles.orderList} key={index}>
+            <div className={styles.stockInfo}>
+              <span className={styles.stockName}>{order.prdt_name}</span>
+              <span className={styles.stockCondition}>
+                현재가 {order.tar_pr}원 {order.sll_buy_dvsn_cd === 'BUY' ? '이하' : '이상'}일 때
+              </span>
+              <div className={styles.stockDetail}>
+                <span
+                  className={`${styles.stockAction} ${
+                    order.sll_buy_dvsn_cd === 'BUY' ? styles.statusBuy : styles.statusSell
+                  }`}
+                >
+                  {order.sll_buy_dvsn_cd === 'BUY' ? '구매' : '판매'} {order.ord_qty}주
+                </span>{' '}
+                ·{' '}
+                <span className={styles.stockType}>
+                  {order.ord_unpr === 0 ? '시장가 주문' : `지정가 주문 · 주문가 ${Math.floor(order.ord_unpr).toLocaleString()}원`}
+                </span>
+              </div>
+            </div>
             {/* 대기 주문 취소 */}
-            <div onClick={() => deleteScheduledHistoryData(index)}>X</div>
+            <div className={styles.cancelBtn} onClick={() => deleteScheduledHistoryData(index)}>x</div>
           </div>
         ) : null
       )
@@ -70,14 +79,12 @@ const ScheduledHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({
     );
 
   return (
-    <div>
-      <div className="content">
-        <div className="section">
-          <div className="title">조건 현황 {filteredHistoryData.length - deleteScheduledArray.length}건</div>
-          {renderHistoryData(filteredHistoryData)}
-        </div>
+    <>
+      <div className={styles.section}>
+        <div className={styles.title}>조건 현황 {filteredHistoryData.length - deleteScheduledArray.length}건</div>
+        {renderHistoryData(filteredHistoryData)}
       </div>
-    </div>
+    </>
   );
 };
 
