@@ -665,7 +665,7 @@ def holdings(request):
     )
     
     if not holdings:
-        return Response({"balance": 5000000 - balance}, status=status.HTTP_200_OK)
+        return Response({"balance": 5000000 - balance, "holdings": []}, status=status.HTTP_200_OK)
 
     url = f"{REAL_KIS_API_BASE_URL}/uapi/domestic-stock/v1/quotations/intstock-multprice"
     headers = get_real_headers('FHKST11300006', "P")
