@@ -20,10 +20,10 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         await self.accept()
         if not KISWebSocketConsumer.kis_socket:
             asyncio.create_task(self.connect_to_kis())
-            
-        if not KISWebSocketConsumer.random_data_task:
-            asyncio.create_task(self.send_random_data())
-            
+        ########  
+        # if not KISWebSocketConsumer.random_data_task:
+        #     asyncio.create_task(self.send_random_data())
+        ########
         KISWebSocketConsumer.tasks[self.channel_name] = {
             "subscribed_stocks": set(),
             "favorite_stocks": set(),
