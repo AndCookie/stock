@@ -7,8 +7,8 @@ import styles from "./History.module.css";
 
 const History: React.FC<{ filter?: string; isMyPage?: boolean }> = ({ filter = "ALL", isMyPage = false }) => {
   const TABS = [
-    { label: "일반 주문", component: <StandardHistory filter={filter} isMyPage={isMyPage} /> },
-    { label: "조건 주문", component: <ScheduledHistory filter={filter} isMyPage={isMyPage} /> }
+    { label: "일반 주문", component: <StandardHistory filter={filter} isMyPage={isMyPage} /> , styleClass: "active"},
+    { label: "조건 주문", component: <ScheduledHistory filter={filter} isMyPage={isMyPage} />, styleClass: "active" }
   ];
 
   const [selectedTab, setSelectedTab] = useState(0);
@@ -16,12 +16,11 @@ const History: React.FC<{ filter?: string; isMyPage?: boolean }> = ({ filter = "
   return(
     <div className={styles.container}>
       {/* 탭 */}
-      <div className="categoryTabs">
+      <div className={styles.navbar}>
         {TABS.map((tab, index) => (
           <button
             key={index}
-            className={`tabButton ${styles.tabButton}
-              ${selectedTab === index ? "activeTab" : ""}`}
+            className={`${styles.navItem} ${selectedTab === index ? styles[tab.styleClass] : styles.unactive}`}
             onMouseDown={(event) => {
               event.stopPropagation(); // 클릭 시 드래그 방지
             }}
@@ -33,6 +32,7 @@ const History: React.FC<{ filter?: string; isMyPage?: boolean }> = ({ filter = "
           </button>
         ))}
       </div>
+      
       {/* 선택된 탭의 컴포넌트 렌더링 */}
       <div className={`content ${styles.content}`}>
         {TABS[selectedTab].component}

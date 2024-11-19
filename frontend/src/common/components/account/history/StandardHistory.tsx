@@ -117,7 +117,7 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
   const last60Months = getLast60Months();
 
   const renderHistoryData = (historyData: IStandardHistoryData[]) =>
-    historyData.length > 0 ? (
+    historyData.length - deleteStandardArray.length > 0 ? (
       historyData.map((order, index) => (
         <div key={index} className={`${isMyPage ? styles.orderModal : styles.order}`}>
           <span className={`${isMyPage ? styles.dateModal : styles.date}`}>
@@ -149,12 +149,15 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
           {order.mode === 'cancelled' ? (
             <div className={styles.price}></div>
           ) : (
-            <div className={`${styles.price} ${isMyPage ? styles.priceModal : ''}`}>
-              <span className={styles.priceTerm}>주당</span> {isMyPage && <br />}
-              {order.avg_prvs.toLocaleString()}원
+            <div className={`${isMyPage ? styles.priceModal : styles.price}`}>
+              <span className={`${isMyPage ? styles.priceTermModal : styles.priceTerm}`}>주당</span> {isMyPage && <br />}
+              {Math.floor(order.avg_prvs).toLocaleString()}원
             </div>
           )}
-          <div onClick={() => handleDelete(order.originalIndex as number)}>X</div>
+          {/* 여기 취소, 삭제 버튼 */}
+          {isPendingView ? (
+            <div className={styles.cancelBtn} onClick={() => handleDelete(order.originalIndex as number)}>x</div>
+          ) : null}
         </div>
       ))
     ) : (
@@ -165,36 +168,40 @@ const StandardHistory: React.FC<{ filter: string; isMyPage: boolean }> = ({ filt
     <div>
       {isPendingView ? (
         <div>
-          {/* TODO backButton CSS */}
-          <button
-            className={styles.backButton}
-            onMouseDown={(event) => {
-              event.stopPropagation(); // 클릭 시 드래그 방지
-            }}
-            onClick={() => setIsPendingView(false)}
-          >
-            ◀ 뒤로가기
-          </button>
+          <div className={styles.filter}>
+            {/* TODO backButton CSS */}
+            <button
+              className={styles.backButton}
+              onMouseDown={(event) => {
+                event.stopPropagation(); // 클릭 시 드래그 방지
+              }}
+              onClick={() => setIsPendingView(false)}
+            >
+              ◀ 뒤로가기
+            </button>
+          </div>
 
           <div className={styles.content}>
             <div className={styles.section}>
-              <div className={styles.title}>대기 중인 주문</div>
+              <div className={styles.title}>미체결 주문</div>
               {renderHistoryData(pendingHistoryData)}
             </div>
           </div>
         </div>
       ) : (
         <div>
-          {/* TODO pendingButton CSS */}
-          <button
-            className={styles.pendingButton}
-            onMouseDown={(event) => {
-              event.stopPropagation(); // 클릭 시 드래그 방지
-            }}
-            onClick={togglePendingView}
-          >
-            ▶ 대기 중인 주문 {pendingHistoryData.length}건
-          </button>
+          <div className={styles.filter}>
+            {/* TODO pendingButton CSS */}
+            <button
+              className={styles.pendingButton}
+              onMouseDown={(event) => {
+                event.stopPropagation(); // 클릭 시 드래그 방지
+              }}
+              onClick={togglePendingView}
+            >
+              ▶ 미체결 주문 {pendingHistoryData.length - deleteStandardArray.length}건
+            </button>
+          </div>
 
           {filter === 'ALL' ? (
             <>
