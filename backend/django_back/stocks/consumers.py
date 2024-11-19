@@ -128,7 +128,7 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
                                    channel_name,
                                     {"type": "send_stock_data", "data": data},
                                 )
-                    await asyncio.sleep(1)  # 0.1초 간격으로 전송
+                    # await asyncio.sleep(1)
 
         except Exception as e:
             print(f"KIS WebSocket connection error: {e}")
