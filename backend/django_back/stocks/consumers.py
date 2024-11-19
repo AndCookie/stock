@@ -5,16 +5,16 @@ import websockets
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from asgiref.sync import sync_to_async
-#############
-import random
-#############
+# #############
+# import random
+# #############
 
 class KISWebSocketConsumer(AsyncWebsocketConsumer):
     kis_socket = None
     tasks = {}  # 클라이언트별 종목코드 추적
-    ###########            
-    random_data_task = None  # 랜덤 데이터 전송 태스크
-    ###########            
+    # ###########            
+    # random_data_task = None  # 랜덤 데이터 전송 태스크
+    # ###########            
 
     async def connect(self):
         await self.accept()
@@ -36,12 +36,12 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
         if self.channel_name in KISWebSocketConsumer.tasks:
             del KISWebSocketConsumer.tasks[self.channel_name]
         
-        ###########            
-        # 모든 클라이언트가 해제된 경우 랜덤 데이터 태스크 취소
-        if not KISWebSocketConsumer.tasks:
-            KISWebSocketConsumer.random_data_task.cancel()
-            KISWebSocketConsumer.random_data_task = None
-        ###########            
+        # ###########            
+        # # 모든 클라이언트가 해제된 경우 랜덤 데이터 태스크 취소
+        # if not KISWebSocketConsumer.tasks:
+        #     KISWebSocketConsumer.random_data_task.cancel()
+        #     KISWebSocketConsumer.random_data_task = None
+        # ###########            
         print(f"Disconnected client: {self.channel_name}")
 
     async def receive(self, text_data):
@@ -264,46 +264,46 @@ class KISWebSocketConsumer(AsyncWebsocketConsumer):
             await self.send(json.dumps({"message": f"{stock_code} {tr_id} Tracking finished"}))
         else:
             await self.send(json.dumps({"message": f"{stock_code} {tr_id} Tracking started"}))
-    ##########################
-    async def send_random_data(self):
-        """랜덤 데이터를 모든 클라이언트에게 전송"""
-        while True:
-            if KISWebSocketConsumer.tasks:  # 연결된 클라이언트가 있을 때만 실행
-                # stock_code를 005930 또는 000660 중에서 랜덤 선택
-                stock_code = random.choice(["005930", "000660"])
+    # ##########################
+    # async def send_random_data(self):
+    #     """랜덤 데이터를 모든 클라이언트에게 전송"""
+    #     while True:
+    #         if KISWebSocketConsumer.tasks:  # 연결된 클라이언트가 있을 때만 실행
+    #             # stock_code를 005930 또는 000660 중에서 랜덤 선택
+    #             stock_code = random.choice(["005930", "000660"])
                 
-                # stock_code에 따른 데이터 값 설정
-                if stock_code == "005930":
-                    random_data = {
-                        "stock_code": stock_code,
-                        "trading": {
-                            "STCK_CNTG_HOUR": f"{random.randint(9, 15)}:{random.randint(0, 59)}:{random.randint(0, 59)}",
-                            "STCK_PRPR": f"{random.randint(50, 150)}",
-                            "CNTG_VOL": "100",
-                            "ACML_VOL": "100",
-                            "CTTR": f"{random.uniform(0.1, 2.0):.2f}"
-                            # CCLD_DVSN은 없음
-                        }
-                    }
-                elif stock_code == "000660":
-                    random_data = {
-                        "stock_code": stock_code,
-                        "trading": {
-                            "STCK_CNTG_HOUR": f"{random.randint(9, 15)}:{random.randint(0, 59)}:{random.randint(0, 59)}",
-                            "STCK_PRPR": f"{random.randint(90000, 150000)}",
-                            "CNTG_VOL": "100000",
-                            "ACML_VOL": "100000",
-                            "CTTR": f"{random.uniform(0.1, 2.0):.2f}",
-                            "CCLD_DVSN": f"{random.choice(['1', '5'])}"  # 매수: 1, 매도: 5
-                        }
-                    }
+    #             # stock_code에 따른 데이터 값 설정
+    #             if stock_code == "005930":
+    #                 random_data = {
+    #                     "stock_code": stock_code,
+    #                     "trading": {
+    #                         "STCK_CNTG_HOUR": f"{random.randint(9, 15)}:{random.randint(0, 59)}:{random.randint(0, 59)}",
+    #                         "STCK_PRPR": f"{random.randint(50, 150)}",
+    #                         "CNTG_VOL": "100",
+    #                         "ACML_VOL": "100",
+    #                         "CTTR": f"{random.uniform(0.1, 2.0):.2f}"
+    #                         # CCLD_DVSN은 없음
+    #                     }
+    #                 }
+    #             elif stock_code == "000660":
+    #                 random_data = {
+    #                     "stock_code": stock_code,
+    #                     "trading": {
+    #                         "STCK_CNTG_HOUR": f"{random.randint(9, 15)}:{random.randint(0, 59)}:{random.randint(0, 59)}",
+    #                         "STCK_PRPR": f"{random.randint(90000, 150000)}",
+    #                         "CNTG_VOL": "100000",
+    #                         "ACML_VOL": "100000",
+    #                         "CTTR": f"{random.uniform(0.1, 2.0):.2f}",
+    #                         "CCLD_DVSN": f"{random.choice(['1', '5'])}"  # 매수: 1, 매도: 5
+    #                     }
+    #                 }
                 
-                # 모든 클라이언트에 데이터 전송
-                for channel_name in KISWebSocketConsumer.tasks.keys():
-                    await self.channel_layer.send(
-                        channel_name,
-                        {"type": "send_stock_data", "data": random_data},
-                    )
+    #             # 모든 클라이언트에 데이터 전송
+    #             for channel_name in KISWebSocketConsumer.tasks.keys():
+    #                 await self.channel_layer.send(
+    #                     channel_name,
+    #                     {"type": "send_stock_data", "data": random_data},
+    #                 )
 
-            await asyncio.sleep(1)  # 0.1초 간격으로 전송
-    ############################
+    #         await asyncio.sleep(1)  # 0.1초 간격으로 전송
+    # ############################
